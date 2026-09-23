@@ -1,7 +1,9 @@
 {
-  "tests": null,
-  "lint": null,
-  "typecheck": null,
-  "build": null,
-  "e2e": null
+  "tests": ["npm", "test", "--", "--ci"],
+  "lint": ["npm", "run", "lint"],
+  "typecheck": ["npm", "run", "typecheck"],
+  "build": ["npm", "run", "build"],
+  "e2e": {
+    "not_applicable": "A US-041 entrega somente a base técnica e não define fluxos de produto para E2E."
+  }
 }

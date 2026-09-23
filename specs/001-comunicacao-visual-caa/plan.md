@@ -2,21 +2,21 @@
 
 **Branch**: uma branch curta por Issue (`feat/us-xxx-slug`, `fix/...` ou `chore/...`); não há branch de milestone. **Date**: 2026-09-23. **Spec**: [spec.md](spec.md)
 
-**Input**: Milestone #9, Issues funcionais #1–#5 e história técnica US-041/#41, com critérios e esclarecimentos registrados em [spec.md](spec.md). A stack abaixo é uma decisão de planejamento, não autorização para inicializar o aplicativo.
+**Input**: Milestone #9, Issues funcionais #1–#5 e história técnica US-041/#41, com critérios e esclarecimentos registrados em [spec.md](spec.md). Bootstrap autorizado exclusivamente para T001–T008; comportamentos das Issues #1–#5 permanecem planejados.
 
 ## Summary
 
 Usar Expo como framework React Native para Android e iOS, TypeScript strict, Expo Router e geração nativa contínua (CNG). Armazenar cartões personalizados e favoritos em SQLite local; manter a frase somente em memória durante a sessão. Copiar imagens aceitas para o diretório privado de documentos do aplicativo e persistir apenas o caminho local. A fala será encapsulada por um pequeno módulo nativo Expo para filtrar vozes pt-BR locais, pois a API JavaScript de `expo-speech` não expõe de forma suficiente a necessidade de rede de cada voz Android.
 
-O repositório não contém app, manifesto de dependências ou build móvel. Esta decisão define um plano reproduzível sem inicializar o app, instalar dependências ou implementar qualquer história. O bootstrap técnico está vinculado à [Issue #41](https://github.com/Nosso-Espectro/aplicativo/issues/41); sua execução depende da revisão de prontidão. Não há backend, conta, sincronização, banco remoto, telemetria, TTS remoto ou EAS.
+Na inspeção inicial não havia aplicativo. A [Issue #41](https://github.com/Nosso-Espectro/aplicativo/issues/41) passou pela revisão de prontidão e agora possui base local na branch `chore/us-041-bootstrap-react-native`: manifesto/lockfile, rota neutra, ferramentas de qualidade e diretórios funcionais vazios. As evidências e pendências constam do [quickstart](quickstart.md) e de [bootstrap-tecnico.md](../../docs/bootstrap-tecnico.md). Não há backend, conta, sincronização, banco remoto, telemetria do aplicativo, TTS remoto ou EAS; a Issue permanece aberta.
 
 ## Stack
 
-**Framework e runtime**: Expo SDK 57 estável, alinhado a React Native 0.86 e React 19.2.3; TypeScript strict; Hermes padrão. A documentação consultada lista SDK 58 como beta em 2026-09-23, então não será adotado até tornar-se estável e ser avaliado em uma tarefa de upgrade.
+**Framework e runtime**: Expo SDK 57 (`expo` 57.0.24), React Native 0.86.3 e React 19.2.3; TypeScript 6.0.3 strict; Hermes padrão confirmado nos projetos gerados por CNG e nos bundles `.hbc` exportados. Expo Router 57.0.22. SDK 58 não faz parte deste bootstrap; upgrades exigem avaliação própria.
 
 **Ambiente**: Node.js 24.21.0 LTS e npm 11.19.0 (bundled), fixados em `.nvmrc`/CI; usar `package-lock.json` e `npm ci`. Node 24 excede o mínimo 22.13.x publicado pelo Expo SDK 57; validar Expo Doctor e builds no bootstrap. Se houver incompatibilidade comprovada com a cadeia RN/Expo, fallback técnico Node 22.23.3 LTS com npm 10.9.9. `npx expo install` alinha módulos ao SDK.
 
-**Plataformas mínimas planejadas**: Android 7 (API 24) ou posterior e iOS 16.4 ou posterior, mínimos listados pelo Expo SDK 57. A compatibilidade real deve ser confirmada no bootstrap; não ampliar nem reduzir o público suportado sem registrar impacto.
+**Plataformas mínimas configuradas**: Android 7/API 24 (catálogo Gradle de RN consumido pelo Expo) e iOS 16.4 (`app.json`, Podfile/projeto CNG). Confirmar execução nesses mínimos continua pendente. Não ampliar nem reduzir o público suportado sem registrar impacto.
 
 **Navegação**: Expo Router com rotas locais em `src/app/` e navegação nativa Stack. Evita uma segunda implementação de navegação e oferece retorno previsível entre quadro, favoritos e editor. Não configurar compartilhamento de rotas, analytics ou backend.
 
@@ -26,7 +26,7 @@ O repositório não contém app, manifesto de dependências ou build móvel. Est
 
 **Qualidade**: Jest com `jest-expo` e `@testing-library/react-native` para comportamento JS; TypeScript com `npx tsc --noEmit`; lint com `npx expo lint`/ESLint; `npx expo-doctor` para compatibilidade. Sem Prettier, E2E, Maestro, mocks globais ou outras ferramentas até haver necessidade demonstrada. Testes simulados não substituem builds/dispositivos Android e iOS para TTS, permissões, armazenamento e acessibilidade.
 
-**Build e CI previstos**: `npm ci`, `npx expo lint`, `npx tsc --noEmit`, `npm test -- --ci`, `npx expo-doctor`, `npx expo run:android` e `npx expo run:ios`. O bootstrap configura GitHub Actions para os checks JavaScript e builds nativos disponíveis; iOS local requer macOS/Xcode. Atualizar `scripts/quality-gate.json` somente quando os comandos reais existirem. Não configurar build/publicação em serviço externo.
+**Build e CI configurados**: `npm ci`, `npm run lint` (`expo lint .`), `npx tsc --noEmit`, `npm test -- --ci` e `npx expo-doctor`. `npm run build:android` usa CNG/Gradle `assembleRelease`; `npm run build:ios` usa `expo run:ios --configuration Release --no-bundler`. O script `build` exige ambos, e é o comando do quality gate. GitHub Actions configura checks JavaScript e build Android; execução remota pendente. iOS exige macOS/Xcode. Builds locais de teste, sem EAS/publicação; comandos e limitações em [quickstart.md](quickstart.md).
 
 **Escopo**: cinco histórias de produto P0 (US-001/#1 a US-005/#5, 19 RFs e quatro RNFs) e a história técnica de bootstrap US-041/#41. O mapeamento das dez mensagens e a seleção/licença dos pictogramas ainda devem ser registrados no backlog #1 antes da implementação do quadro.
 
@@ -51,8 +51,10 @@ Não marcar história Ready enquanto faltarem aprovações de conteúdo da Issue
 | Recursos | `assets/communication/pictograms/` | Ícones licenciados localmente, após aprovação #1 |
 | Testes | `tests/features/communication/` | Jest/RNTL, separados por história |
 
-Os caminhos são escolhas de planejamento agora aprovadas para guiar tasks; ainda não existem
-no repositório. Não criar camadas transversais adicionais sem necessidade comprovada.
+No bootstrap existem `src/app/_layout.tsx`, `src/app/index.tsx` (apenas título TEAr),
+`tests/tooling/app-start.test.tsx` e os diretórios vazios de comunicação e fala.
+Os demais caminhos da tabela são destino das Issues funcionais. Não criar camadas transversais
+adicionais sem necessidade comprovada.
 
 ## Modelo de dados
 
@@ -135,7 +137,7 @@ ORM, estado global, Prettier, E2E ou EAS está aprovada neste plano.
 
 **Simplicidade e dependências**: passa; Expo SDK alinhado, um banco local sem ORM, navegação oferecida pelo framework e um módulo nativo pequeno apenas pela lacuna comprovada de TTS offline. Instalar módulos nas Issues correspondentes, evitando adiantar dependências futuras no bootstrap.
 
-**Testes e DoD**: passa como plano, sem alegar app/testes já existentes. Automatizar regras de dados e interações; completar com validação nativa e revisão de acessibilidade, privacidade, segurança e design por história. A ausência atual de checks do app não é aprovação.
+**Testes e DoD**: a base tem smoke test de rota pelo Router/Jest/RNTL e checks JS; os resultados estão no quickstart. A DoD da #41 continua pendente de builds/abertura nativa, validação offline/assistiva e revisão no PR. Automatizar regras de dados e interações somente nas histórias correspondentes.
 
 **Trunk-based e prontidão**: cada Issue recebe uma branch própria da `main` atualizada e PR para `main`. US-041/#41 passou pela revisão DoR em 2026-09-23 e consta em `ready_stories`; a inicialização exige main atualizada e árvore limpa. As histórias funcionais permanecem sem prontidão registrada. O conteúdo dos dez cartões/pictogramas bloqueia US-001, não as decisões da base técnica.
 
@@ -149,6 +151,12 @@ ORM, estado global, Prettier, E2E ou EAS está aprovada neste plano.
 - **Jest/RNTL em vez de suíte E2E inicial**: cobre lógica e acessibilidade sem introduzir infraestrutura nativa frágil; capacidades de sistema serão verificadas em builds reais. Adotar E2E somente se a equipe demonstrar necessidade e ambiente reproduzível.
 
 ## Arquitetura atual
+
+A base possui duas rotas (`_layout.tsx` e `index.tsx`), teste de inicialização,
+configurações de qualidade e os diretórios vazios definidos na #41. Não há camadas de
+domínio, armazenamento ou fala implementadas.
+
+### Estrutura de destino da feature
 
 ```text
 app.json                        # configuração Expo, permissões mínimas
@@ -179,13 +187,22 @@ tests/features/communication/   # testes Jest/RNTL organizados por história
 
 Rotas finas delegam a fluxos/componentes nas features; não criar camadas genéricas de serviço, repositório ou estado até uma repetição concreta justificá-las. Assets de pictogramas e seu arquivo de atribuições serão determinados na Issue #1. `android/` e `ios/` são artefatos gerados pelo CNG e não devem ser editados manualmente; configuração nativa persistente fica em `app.json`/config plugins e código nativo próprio em `modules/`.
 
-## Bootstrap de US-041/#41 (não executar nesta etapa)
+## Bootstrap de US-041/#41
 
 1. Consultar US-041/#41 e confirmar sua Definition of Ready. Preservar alterações locais; iniciar somente com árvore limpa, em branch própria `chore/us-041-bootstrap-react-native` nascida da `main` atualizada.
 2. Na branch própria, criar base pelo template TypeScript Expo SDK 57; fixar Node 24.21.0/npm 11.19.0 em `.nvmrc`/CI, guardar lockfile, habilitar TypeScript strict e Expo Router. Não escolher SDK beta. Se Expo Doctor/build demonstrar incompatibilidade de Node 24, registrar evidência e aplicar fallback definido Node 22.23.3/npm 10.9.9.
 3. Adicionar apenas ferramentas de qualidade da base; adicionar `expo-sqlite`, `expo-image-picker` e `expo-file-system` nas respectivas Issues funcionais. Não instalar `expo-speech`; criar módulo nativo apenas na Issue #3. Remover permissão de microfone do picker.
 4. Criar a árvore mínima acima, smoke test da inicialização, configuração Jest/ESLint/typecheck e GitHub Actions. Registrar comandos reais em [quickstart.md](quickstart.md) e preencher gates reais em `scripts/quality-gate.json`.
 5. Compilar e abrir em Android e iOS; documentar limites do ambiente iOS/macOS, rodar checks, validar o bundle instalado em modo avião, e revisar permissões, rede, logs, acessibilidade, simplicidade e privacidade. Não implementar US-001–US-005 na branch de bootstrap.
+
+O bootstrap preservou Node 24.21.0/npm 11.19.0; não houve evidência para acionar fallback.
+`react-dom` 19.2.3 satisfaz peers de tooling/Router sem habilitar web. Reanimated 4.5.1 e
+Worklets 0.10.1 atendem à cadeia de peers do Router nas versões do template SDK 57;
+não implementam animações de produto. ESLint 9.39.5/config Expo 57.0.2, Jest 29.7.0,
+jest-expo 57.0.5 e RNTL 13.3.3 formam a suíte inicial, com renderizador React 19.2.3.
+As dependências transitivas e alertas da auditoria estão em
+[bootstrap-tecnico.md](../../docs/bootstrap-tecnico.md); não foram aplicados overrides ou
+upgrades incompatíveis para ocultar os alertas. Android/iOS gerados por CNG ficam ignorados.
 
 ## Riscos
 

@@ -2,7 +2,7 @@
 
 **Milestone**: #9 — [spec](spec.md)
 **Plano técnico**: [plan](plan.md)
-**Estado**: todas as tasks pendentes; nenhuma execução ou validação do aplicativo é declarada.
+**Estado**: T001–T006 concluídas localmente na US-041/#41, com evidências em [quickstart](quickstart.md). T007 e T008 permanecem pendentes; nenhuma plataforma nativa nem a Issue foi declarada concluída. T009 em diante não foram executadas.
 
 Os IDs T são locais à feature. Cada grupo US corresponde a uma Issue e deve ser executado em
 sua própria branch curta, criada da `main` atualizada e integrada por PR. Não executar tasks de
@@ -18,14 +18,20 @@ Definition of Ready e manter a árvore limpa antes de iniciar a branch
 typecheck e Expo Doctor; abrir a base em Android e iOS e registrar evidência por plataforma.
 Validação de plataforma indisponível deve permanecer explicitamente pendente.
 
-- [ ] T001 [US-041] Criar o app Expo SDK 57 com TypeScript strict, Expo Router, Hermes, `package.json`, `package-lock.json`, `app.json` e `.nvmrc` na raiz, fixando Node.js 24.21.0/npm 11.19.0; usar Node 22.23.3/npm 10.9.9 somente se incompatibilidade comprovada for registrada em `docs/bootstrap-tecnico.md`.
-- [ ] T002 [US-041] Configurar ESLint/`npx expo lint`, TypeScript strict/`npx tsc --noEmit`, Jest com `jest-expo` e React Native Testing Library em `eslint.config.js`, `tsconfig.json`, `jest.config.js` e `package.json`.
-- [ ] T003 [P] [US-041] Criar a estrutura vazia de rotas e módulos conforme plano em `src/app/`, `src/features/communication/`, `tests/features/communication/` e `modules/tear-speech/`, sem implementar quadro, frase, fala, cartões ou favoritos.
-- [ ] T004 [P] [US-041] Criar teste mínimo de inicialização da base em `tests/tooling/app-start.test.tsx`, sem testar comportamentos futuros das histórias.
-- [ ] T005 [US-041] Configurar workflow de CI para instalar via lockfile e executar lint, typecheck, testes e Expo Doctor em `.github/workflows/mobile-quality.yml`; registrar somente comandos reais em `scripts/quality-gate.json`.
-- [ ] T006 [US-041] Atualizar `docs/development-workflow.md`, `specs/001-comunicacao-visual-caa/quickstart.md` e `docs/bootstrap-tecnico.md` com Node/npm escolhidos, requisitos de Android 7/API 24 e iOS 16.4, limites do ambiente, comandos executados e evidências/pendências por plataforma.
+- [x] T001 [US-041] Criar o app Expo SDK 57 com TypeScript strict, Expo Router, Hermes, `package.json`, `package-lock.json`, `app.json` e `.nvmrc` na raiz, fixando Node.js 24.21.0/npm 11.19.0; usar Node 22.23.3/npm 10.9.9 somente se incompatibilidade comprovada for registrada em `docs/bootstrap-tecnico.md`.
+- [x] T002 [US-041] Configurar ESLint/`npx expo lint`, TypeScript strict/`npx tsc --noEmit`, Jest com `jest-expo` e React Native Testing Library em `eslint.config.js`, `tsconfig.json`, `jest.config.js` e `package.json`.
+- [x] T003 [P] [US-041] Criar a estrutura vazia de rotas e módulos conforme plano em `src/app/`, `src/features/communication/`, `tests/features/communication/` e `modules/tear-speech/`, sem implementar quadro, frase, fala, cartões ou favoritos.
+- [x] T004 [P] [US-041] Criar teste mínimo de inicialização da base em `tests/tooling/app-start.test.tsx`, sem testar comportamentos futuros das histórias.
+- [x] T005 [US-041] Configurar workflow de CI para instalar via lockfile e executar lint, typecheck, testes e Expo Doctor em `.github/workflows/mobile-quality.yml`; registrar somente comandos reais em `scripts/quality-gate.json`.
+- [x] T006 [US-041] Atualizar `docs/development-workflow.md`, `specs/001-comunicacao-visual-caa/quickstart.md` e `docs/bootstrap-tecnico.md` com Node/npm escolhidos, requisitos de Android 7/API 24 e iOS 16.4, limites do ambiente, comandos executados e evidências/pendências por plataforma.
 - [ ] T007 [US-041] Construir e abrir o app-base em Android e iOS, registrar comandos, toolchains, resultados e limitações em `specs/001-comunicacao-visual-caa/quickstart.md`; validar bundle instalado offline, distinguindo-o do servidor de desenvolvimento, e confirmar ausência de conta, backend, telemetria e transmissão de conteúdo.
 - [ ] T008 [US-041] Revisar dependências, permissões, rede e logs da base em `package.json`, `app.json` e `docs/bootstrap-tecnico.md`; documentar que SQLite, seleção de imagens e fala nativa serão adicionados somente nas Issues correspondentes, reconciliar caminhos e comandos reais em `specs/001-comunicacao-visual-caa/plan.md`, `specs/001-comunicacao-visual-caa/quickstart.md` e `specs/001-comunicacao-visual-caa/tasks.md`, e registrar evidência de privacidade e acessibilidade da base no PR.
+
+**Pendências da #41**: T007 não pôde compilar/abrir Android (sem Java/SDK) ou iOS (Linux,
+sem Xcode). Prebuild e bundles Hermes passaram, mas não provam execução nativa/offline.
+Em T008, a revisão local e a reconciliação documental estão em
+[bootstrap-tecnico.md](../../docs/bootstrap-tecnico.md); faltam validação nativa, resolução/revisão
+dos alertas da auditoria e registro no PR. Nenhum PR/push/merge foi realizado.
 
 ## Fase 2: Fundacional — pré-requisitos das histórias funcionais
 

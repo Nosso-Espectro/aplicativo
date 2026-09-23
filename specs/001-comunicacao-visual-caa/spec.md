@@ -543,7 +543,7 @@ Como equipe de desenvolvimento do TEAr, quero inicializar a base React Native pa
   da conclusão dos pré-requisitos correspondentes.
 
 
-Pré-requisito técnico das US-001–US-005; esta história não adiciona funcionalidade ao produto. Stack e estrutura estão em [plan.md](plan.md); escopo e DoD em [bootstrap-tecnico.md](../../docs/bootstrap-tecnico.md) e na Issue #41. Sua decomposição está em [tasks.md](tasks.md), fases T001–T008; nenhuma task foi executada. Revisão de prontidão registrada em 2026-09-23 na Issue #41: história, dez critérios, vínculo, plano e tasks T001–T008 conferidos; somente US-041 incluída em `ready_stories`. Builds, compatibilidade e execução nas plataformas são critérios de entrega a verificar durante o bootstrap. Início da branch depende de main atualizada e árvore limpa.
+Pré-requisito técnico das US-001–US-005; esta história não adiciona funcionalidade ao produto. Stack e estrutura estão em [plan.md](plan.md); escopo e DoD em [bootstrap-tecnico.md](../../docs/bootstrap-tecnico.md) e na Issue #41. Sua decomposição e o estado de execução estão em [tasks.md](tasks.md), fases T001–T008; evidências e limitações em [quickstart.md](quickstart.md). Revisão de prontidão registrada em 2026-09-23 na Issue #41: história, dez critérios, vínculo, plano e tasks T001–T008 conferidos; somente US-041 incluída em `ready_stories`. Builds, compatibilidade e execução nas plataformas são critérios de entrega a verificar durante o bootstrap. Início da branch depende de main atualizada e árvore limpa.
 
 
 #### Definition of Done original — Issue #41
