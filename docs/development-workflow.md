@@ -38,7 +38,29 @@ Não há banco separado de rastreabilidade. Os metadados no início de spec.md f
 
 ## Ferramentas e estado real
 
-Git, Bash, Python 3 e GitHub CLI (`gh`) são necessários aos helpers. A conta do gh precisa de leitura do repositório; os scripts não criam login nem exibem tokens. O repositório ainda não tem código React Native ou comandos de instalação, teste e build do app. React Native e primeira versão sem backend são diretrizes confirmadas; linguagem, Expo, navegação, persistência e ferramentas de qualidade ainda precisam ser definidos.
+Git, Bash, Python 3 e GitHub CLI (`gh`) são necessários aos helpers. A conta do gh precisa de leitura do repositório; os scripts não criam login nem exibem tokens. A US-041/#41 materializa a base Expo SDK 57/React Native 0.86.3/React 19.2.3, TypeScript strict, Hermes e Expo Router, sem backend. Use Node 24.21.0 (`.nvmrc`) e npm 11.19.0, fornecido com esse Node. O lockfile é versionado; instale com `npm ci`.
+
+```bash
+nvm install
+nvm use
+export EXPO_NO_TELEMETRY=1
+npm ci
+npx expo lint
+npm run lint
+npx tsc --noEmit
+npm test -- --ci
+npx expo-doctor
+```
+
+`npm run lint` inclui testes e configurações, além das rotas verificadas por `npx expo lint`.
+O workflow [mobile-quality.yml](../.github/workflows/mobile-quality.yml) configura esses checks
+e build Android com bundle embutido. Sua execução remota ainda não foi comprovada.
+Android requer JDK 17, Android SDK/API 36, build-tools 36.0.0 e NDK 27.1.12297006;
+iOS requer macOS, Xcode e CocoaPods compatíveis com SDK 57. Os mínimos de execução são
+Android 7/API 24 e iOS 16.4; geração de projetos e bundles não prova execução nessas versões.
+Use `npm run build:android` e, no macOS, `npm run build:ios`. Consulte os comandos de
+instalação/offline e os resultados em [quickstart](../specs/001-comunicacao-visual-caa/quickstart.md)
+e a [revisão do bootstrap](bootstrap-tecnico.md).
 
 Spec Kit não está instalado. A [estrutura preparada](../.specify/README.md) fornece constituição, templates e specs sem fingir que comandos do agente já estão disponíveis. Skills canônicas estão em `.codex/skills`, com descoberta por `.agents/skills` através de link. Se o ambiente não reconhecer o link, ler o SKILL.md explicitamente.
 
@@ -136,9 +158,9 @@ Os gates automáticos e a revisão manual se complementam. O helper verifica est
 
 ### Configuração dos comandos de qualidade
 
-[scripts/quality-gate.json](../scripts/quality-gate.json) começa com `null` em todos os campos e **bloqueia a release**. Quando a stack existir, substitua por arrays de comando e argumentos reais (`tests`, `lint`, `typecheck`, `build`, `e2e`), executados da raiz sem shell implícito. Nunca configure comandos triviais para obter sucesso artificial.
+[scripts/quality-gate.json](../scripts/quality-gate.json) aponta para testes Jest, lint, typecheck e `npm run build`, que exige os builds Android e iOS. O gate completo precisa de macOS com ambos os toolchains; sem eles, falha e **bloqueia a release**. Os arrays são executados da raiz sem shell implícito. Não substituir build nativo por exportação JS nem configurar comandos triviais para obter sucesso artificial.
 
-Somente `typecheck` e `e2e` podem usar um objeto `{"not_applicable": "justificativa técnica revisada e concreta"}` quando realmente não aplicáveis. Testes, lint e build são obrigatórios. Nenhum desses comandos roda durante a geração documental.
+Somente `typecheck` e `e2e` podem usar um objeto `{"not_applicable": "justificativa técnica revisada e concreta"}` quando realmente não aplicáveis. Testes, lint e build são obrigatórios. E2E está justificado como não aplicável à base neutra da US-041; reavaliar nas histórias funcionais. Configuração do gate não equivale a aprovação: builds, abertura offline e revisões nativas continuam pendentes conforme as evidências locais.
 
 ### Evidências e tag
 

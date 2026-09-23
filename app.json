@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "TEAr",
+    "slug": "tear-aplicativo",
+    "scheme": "tear",
+    "version": "1.0.0",
+    "platforms": ["android", "ios"],
+    "android": {
+      "package": "org.nossoespectro.tear",
+      "allowBackup": false,
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.VIBRATE"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "org.nossoespectro.tear",
+      "deploymentTarget": "16.4"
+    },
+    "plugins": ["expo-router"]
+  }
+}
