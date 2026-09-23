@@ -24,7 +24,7 @@ PLAN_SECTIONS = (
     "Persistência", "Fluxos principais", "Offline", "Acessibilidade", "Privacidade e segurança",
     "Estratégia de testes", "Dependências técnicas", "Riscos", "Decisões arquiteturais",
 )
-SKILLS = {
+REQUIRED_SKILLS = {
     "spec-driven-development", "github-trunk-workflow", "clean-code",
     "accessibility-neuroinclusive", "ui-ux-design", "testing-quality",
     "privacy-security", "offline-first", "code-review", "milestone-release",
@@ -46,7 +46,68 @@ def original_section(body, title):
     return match[1].strip()
 
 
+def skill_identity(path):
+    """Read required top-level scalar fields without treating nested metadata as fields."""
+    match = re.match(r"\A---\n(.*?)\n---(?:\n|\Z)", path.read_text(), re.S)
+    ensure(match, f"Frontmatter ausente em {path}.")
+    fields = {}
+    lines = match[1].splitlines()
+    for index, line in enumerate(lines):
+        field = re.match(r"^(name|description):\s*(.*)$", line)
+        if not field:
+            continue
+        key, value = field.groups()
+        ensure(key not in fields, f"Campo {key} duplicado em {path}.")
+        if value in ("|", "|-", "|+", ">", ">-", ">+"):
+            block = []
+            for continuation in lines[index + 1:]:
+                if continuation and not continuation.startswith((" ", "\t")):
+                    break
+                block.append(continuation.strip())
+            value = (" " if value.startswith(">") else "\n").join(block).strip()
+        elif value.startswith('"'):
+            try:
+                value = json.loads(value)
+            except ValueError:
+                raise workflow.WorkflowError(f"Campo {key} com aspas inválidas em {path}.")
+        elif value.startswith("'"):
+            ensure(value.endswith("'") and len(value) >= 2, f"Aspas inválidas em {path}.")
+            value = value[1:-1].replace("''", "'")
+        else:
+            value = value.split(" #", 1)[0].strip()
+            ensure(value.lower() not in {"null", "true", "false", "~"}
+                   and not value.startswith(("[", "{", "&", "*", "!"))
+                   and not re.fullmatch(r"[-+]?\d+(?:\.\d+)?", value),
+                   f"Campo {key} deve ser texto em {path}.")
+        ensure(isinstance(value, str) and value.strip(), f"Campo {key} vazio em {path}.")
+        fields[key] = value
+    ensure(set(fields) == {"name", "description"}, f"name/description ausente em {path}.")
+    return fields
+
+
+def validate_skills():
+    directory = ROOT / ".codex/skills"
+    folders = sorted(p for p in directory.iterdir() if p.is_dir())
+    missing = REQUIRED_SKILLS - {p.name for p in folders}
+    ensure(not missing, f"Skills obrigatórias ausentes: {', '.join(sorted(missing))}.")
+    paths = []
+    for folder in folders:
+        path = folder / "SKILL.md"
+        ensure(path.is_file(), f"SKILL.md ausente em {folder}.")
+        fields = skill_identity(path)
+        ensure(re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", fields["name"])
+               and len(fields["name"]) <= 64, f"Nome de Skill inválido em {path}.")
+        ensure(fields["name"] == folder.name, f"Nome inconsistente em {path}.")
+        paths.append(path)
+    ensure((ROOT / ".agents/skills").resolve() == directory.resolve(),
+           "Link de descoberta das Skills inválido.")
+    print(f"SKILLS OK: {len(paths)} Skills; {len(REQUIRED_SKILLS)} obrigatórias presentes; "
+          "identificação das Skills adicionais validada.")
+    return paths
+
+
 def validate_local():
+    skill_paths = validate_skills()
     mapping = workflow.specs()
     ensure(mapping, "Nenhuma spec encontrada.")
     all_issues, all_stories = [], []
@@ -84,15 +145,6 @@ def validate_local():
                f"Spec/tag ausente no índice: {path}.")
     ensure(not duplicates(all_issues), f"Issues duplicadas: {duplicates(all_issues)}")
     ensure(not duplicates(all_stories), f"US duplicadas: {duplicates(all_stories)}")
-    skill_paths = list((ROOT / ".codex/skills").glob("*/SKILL.md"))
-    ensure({p.parent.name for p in skill_paths} == SKILLS, "Conjunto de Skills incompleto/inesperado.")
-    for path in skill_paths:
-        data = workflow.metadata(path)
-        ensure(data.get("name") == path.parent.name, f"Nome inconsistente em {path}.")
-        ensure(isinstance(data.get("description"), str) and data["description"].strip(),
-               f"Descrição ausente em {path}.")
-    ensure((ROOT / ".agents/skills").resolve() == (ROOT / ".codex/skills").resolve(),
-           "Link de descoberta das Skills inválido.")
     documents = [ROOT / "README.md", ROOT / "AGENTS.md"]
     for directory in ("specs", "docs", ".specify", ".codex", ".github"):
         documents.extend((ROOT / directory).rglob("*.md"))
@@ -148,12 +200,17 @@ def validate_github(mapping, local_numbers):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--github", action="store_true", help="Comparar com GitHub (somente leitura).")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--github", action="store_true", help="Comparar com GitHub (somente leitura).")
+    mode.add_argument("--skills-only", action="store_true", help="Validar somente as Skills locais.")
     args = parser.parse_args()
     try:
-        mapping, numbers = validate_local()
-        if args.github:
-            validate_github(mapping, numbers)
+        if args.skills_only:
+            validate_skills()
+        else:
+            mapping, numbers = validate_local()
+            if args.github:
+                validate_github(mapping, numbers)
     except (workflow.WorkflowError, OSError, ValueError, KeyError, TypeError) as exc:
         print(f"ERRO: {exc}", file=sys.stderr)
         sys.exit(1)

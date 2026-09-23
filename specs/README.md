@@ -1,12 +1,12 @@
 # Índice de especificações
 
-Fonte de produto: [GitHub Issues](https://github.com/Nosso-Espectro/aplicativo/issues) e [Milestones](https://github.com/Nosso-Espectro/aplicativo/milestones). Consulta: 2026-09-23. 16 milestones, 40 Issues abertas, nenhuma sem milestone. A numeração abaixo é a ordem da spec, não o número da milestone no GitHub.
+Fonte de produto: [GitHub Issues](https://github.com/Nosso-Espectro/aplicativo/issues) e [Milestones](https://github.com/Nosso-Espectro/aplicativo/milestones). Consulta: 2026-09-23. 16 milestones, 41 Issues abertas (40 funcionais e uma técnica de bootstrap), nenhuma sem milestone. A numeração abaixo é a ordem da spec, não o número da milestone no GitHub.
 
 Cada milestone tem spec.md (o quê/por quê), plan.md (proposta técnica) e tasks.md (execução por história). GitHub prevalece em caso de divergência; sincronizar os documentos antes de implementar. Não renumerar specs publicadas para acomodar mudanças de prioridade.
 
 | Ordem | Prioridade | Milestone | Spec | Issues | Tag |
 | --- | --- | --- | --- | --- | --- |
-| 001 | P0 | [#9 — P0 — Comunicação Visual / CAA](https://github.com/Nosso-Espectro/aplicativo/milestone/9) | [001-comunicacao-visual-caa](001-comunicacao-visual-caa/spec.md) | [#1](https://github.com/Nosso-Espectro/aplicativo/issues/1), [#2](https://github.com/Nosso-Espectro/aplicativo/issues/2), [#3](https://github.com/Nosso-Espectro/aplicativo/issues/3), [#4](https://github.com/Nosso-Espectro/aplicativo/issues/4), [#5](https://github.com/Nosso-Espectro/aplicativo/issues/5) | `m001-comunicacao-visual-caa` |
+| 001 | P0 | [#9 — P0 — Comunicação Visual / CAA](https://github.com/Nosso-Espectro/aplicativo/milestone/9) | [001-comunicacao-visual-caa](001-comunicacao-visual-caa/spec.md) | [#1](https://github.com/Nosso-Espectro/aplicativo/issues/1), [#2](https://github.com/Nosso-Espectro/aplicativo/issues/2), [#3](https://github.com/Nosso-Espectro/aplicativo/issues/3), [#4](https://github.com/Nosso-Espectro/aplicativo/issues/4), [#5](https://github.com/Nosso-Espectro/aplicativo/issues/5), [#41](https://github.com/Nosso-Espectro/aplicativo/issues/41) | `m001-comunicacao-visual-caa` |
 | 002 | P0 | [#10 — P0 — Rotina Visual](https://github.com/Nosso-Espectro/aplicativo/milestone/10) | [002-rotina-visual](002-rotina-visual/spec.md) | [#6](https://github.com/Nosso-Espectro/aplicativo/issues/6), [#7](https://github.com/Nosso-Espectro/aplicativo/issues/7), [#8](https://github.com/Nosso-Espectro/aplicativo/issues/8) | `m002-rotina-visual` |
 | 003 | P0 | [#13 — P0 — Perfil de Comunicação](https://github.com/Nosso-Espectro/aplicativo/milestone/13) | [003-perfil-de-comunicacao](003-perfil-de-comunicacao/spec.md) | [#14](https://github.com/Nosso-Espectro/aplicativo/issues/14), [#15](https://github.com/Nosso-Espectro/aplicativo/issues/15), [#16](https://github.com/Nosso-Espectro/aplicativo/issues/16) | `m003-perfil-de-comunicacao` |
 | 004 | P0 | [#12 — P0 — Plano de Apoio / Crise](https://github.com/Nosso-Espectro/aplicativo/milestone/12) | [004-plano-de-apoio-crise](004-plano-de-apoio-crise/spec.md) | [#11](https://github.com/Nosso-Espectro/aplicativo/issues/11), [#12](https://github.com/Nosso-Espectro/aplicativo/issues/12), [#13](https://github.com/Nosso-Espectro/aplicativo/issues/13) | `m004-plano-de-apoio-crise` |
@@ -85,5 +85,8 @@ Uma Issue = uma branch curta. Nomes abaixo calculados das histórias atuais; nen
 | [#38](https://github.com/Nosso-Espectro/aplicativo/issues/38) | US-038 | `feat/us-038-consultar-historico-de-registros` |
 | [#39](https://github.com/Nosso-Espectro/aplicativo/issues/39) | US-039 | `feat/us-039-visualizar-tendencias-simples` |
 | [#40](https://github.com/Nosso-Espectro/aplicativo/issues/40) | US-040 | `feat/us-040-excluir-dados-do-historico` |
+| [#41](https://github.com/Nosso-Espectro/aplicativo/issues/41) | US-041 | `chore/us-041-bootstrap-react-native` |
 
 O corpo da spec conserva histórias, critérios, DoD e observações originais. Cada RF aponta à Issue e à task principal; testes e revisões complementam essa relação. Commits usam `Refs #N`, PRs usam `Closes #N` quando correto e a tag referencia o commit integrado, conforme o [workflow](../docs/development-workflow.md). Não há banco paralelo de rastreabilidade.
+
+O bootstrap técnico #41 foi acrescentado à milestone de CAA sem alterar prioridades ou renumerar specs. Deve preceder a execução das histórias funcionais dependentes; registrar trabalho no backlog não significa prontidão ou conclusão.
