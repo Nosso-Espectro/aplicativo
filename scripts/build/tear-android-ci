@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Forced SSH command: no arbitrary shell, ref, path or repository from the caller.
+request=${SSH_ORIGINAL_COMMAND:-}
+if [[ ! "$request" =~ ^(build|artifact)\ ([a-f0-9]{40})$ ]]; then
+  printf 'Expected build or artifact followed by a complete commit SHA.\n' >&2
+  exit 64
+fi
+operation=${BASH_REMATCH[1]}
+sha=${BASH_REMATCH[2]}
+base=/srv/tear-build
+artifact="$base/artifacts/$sha/app-release.apk"
+exec 9>"$base/build.lock"
+flock -w 3600 9
+
+if [[ "$operation" == artifact ]]; then
+  [[ -s "$artifact" ]] || { printf 'Artifact unavailable.\n' >&2; exit 66; }
+  cat "$artifact"
+  exit 0
+fi
+
+export PATH=/opt/tear-build/node/bin:/opt/tear-build/android-sdk/cmdline-tools/latest/bin:/opt/tear-build/android-sdk/platform-tools:$PATH
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export ANDROID_HOME=/opt/tear-build/android-sdk
+export ANDROID_SDK_ROOT=$ANDROID_HOME
+export GRADLE_USER_HOME="$base/cache/gradle"
+export HOME="$base/home"
+export EXPO_NO_TELEMETRY=1 CI=1
+export GIT_TERMINAL_PROMPT=0
+checkout="$base/checkout"
+if [[ ! -d "$checkout/.git" ]]; then
+  git clone --no-checkout https://github.com/Nosso-Espectro/aplicativo.git "$checkout"
+fi
+git -C "$checkout" fetch origin main
+git -C "$checkout" merge-base --is-ancestor "$sha" origin/main || {
+  printf 'Only commits integrated into main may be built.\n' >&2; exit 65;
+}
+# This disposable checkout belongs only to the build user, not a developer workspace.
+git -C "$checkout" reset --hard
+git -C "$checkout" clean -ffdx
+git -C "$checkout" checkout --detach "$sha"
+rm -f "$artifact"
+cd "$checkout"
+[[ "$(node --version)" == "v$(cat .nvmrc)" ]] || { printf 'Node version mismatch.\n' >&2; exit 69; }
+npm ci --include=dev
+npm run build:android
+mkdir -p "$(dirname "$artifact")"
+install -m 600 android/app/build/outputs/apk/release/app-release.apk "$artifact"
+printf 'Android artifact ready for %s\n' "$sha"
