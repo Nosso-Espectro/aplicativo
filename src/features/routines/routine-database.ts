@@ -1,5 +1,6 @@
 import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
 import { normalizedRoutine, type Routine, type RoutineDraft } from './routine-model';
+import { routineExecution, type ProgressAction } from './routine-execution';
 
 async function readRoutines(db: SQLiteDatabase): Promise<Routine[]> {
   const routines = await db.getAllAsync<{ id: string; name: string }>('SELECT id, name FROM routines ORDER BY rowid');
@@ -37,6 +38,28 @@ export async function openRoutineDatabase() {
   }
   return {
     list: () => enqueue(() => readRoutines(db)),
+    progress: (id: string, action: ProgressAction, expectedId: string | null) => enqueue(async () => {
+      let saved: Routine[] = [];
+      await db.withExclusiveTransactionAsync(async (tx) => {
+        const routine = (await readRoutines(tx)).find((item) => item.id === id);
+        if (!routine || routine.steps.length === 0) throw new Error('Routine unavailable.');
+        const execution = routineExecution(routine.steps);
+        if ((execution.current?.id ?? null) !== expectedId) throw new Error('Routine changed.');
+        if (action === 'complete') {
+          if (!execution.current) throw new Error('No current step.');
+          await tx.runAsync('UPDATE routine_steps SET completed = 1 WHERE routine_id = ? AND id = ?', id, execution.current.id);
+        } else if (action === 'previous') {
+          if (!execution.canGoBack) throw new Error('No previous step.');
+          const previous = routine.steps[execution.index - 1];
+          await tx.runAsync('UPDATE routine_steps SET completed = 0 WHERE routine_id = ? AND position >= (SELECT position FROM routine_steps WHERE routine_id = ? AND id = ?)', id, id, previous.id);
+        } else if (action === 'restart') {
+          if (!execution.done) throw new Error('Routine not finished.');
+          await tx.runAsync('UPDATE routine_steps SET completed = 0 WHERE routine_id = ?', id);
+        } else throw new Error('Invalid progress action.');
+        saved = await readRoutines(tx);
+      });
+      return saved;
+    }),
     save: (input: RoutineDraft, id?: string) => enqueue(async () => {
       const draft = normalizedRoutine(input);
       const routineId = id ?? `routine-${Date.now()}-${Math.random().toString(36).slice(2)}`;

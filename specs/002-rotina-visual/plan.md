@@ -1,6 +1,6 @@
 # Plano de implementação — Rotina Visual
 
-Spec: [spec.md](spec.md). Milestone #10; Issues #6, #7, #8. Plano da US-006/US-007 atualizado em 2026-10-13; #8 continua sujeita às questões em aberto.
+Spec: [spec.md](spec.md). Milestone #10; Issues #6, #7, #8. Plano das três histórias atualizado em 2026-10-13, conforme refinamentos registrados nas respectivas Issues.
 
 ## Stack
 
@@ -22,7 +22,7 @@ Módulo: `src/features/routines/`. Rotas `/routines`, `/routines/new` e `/routin
 
 - `src/features/routines/RoutineEditor.tsx`, `RoutineProvider.tsx`, `routine-model.ts`, `routine-storage.ts`, `routine-database.ts` — [US-006] Criar uma rotina visual.
 - `src/features/routines/step-order.ts`, `RoutineEditor.tsx` e `routine-database.ts` — [US-007] Reordenar etapas da rotina.
-- `src/features/routines/routine-player` — [US-008] Executar rotina com Agora e Depois.
+- `src/features/routines/RoutinePlayer.tsx`, `routine-execution.ts` e rota `/routines/play/[id]` — [US-008] Executar rotina com Agora e Depois.
 
 ## Modelo de dados
 
@@ -39,6 +39,16 @@ Subir/descer transforma apenas a sequência do rascunho, mantendo objetos estáv
 Persistir rotinas, ordem e progresso (#6–#8); operações devem preservar status ao reordenar e restaurar execução após fechamento.
 
 ## Fluxos principais
+
+US-008: `routineExecution` deriva Agora/Depois das duas primeiras etapas pendentes
+na ordem salva, sem guardar cursor por índice. SQLite v2 existente, sem migração
+adicional. `progress` valida ID esperado da etapa atual em transação antes de
+concluir; voltar reabre a etapa anterior e as posteriores; reiniciar somente
+após conclusão e confirmação explícita na UI. Cada ação publica estado após
+commit e usa a mesma fila que edição/reordenação. Fronteira recusa ações obsoletas,
+rotina vazia/ausente e limites inválidos. Falha conserva estado confirmado e retry.
+Fechar o player não reinicia progresso; edição/deleção/reordenação reconciliam-se
+pelos IDs/status persistidos ao reabrir. Sem som, timer ou avanço automático.
 
 Sequência de capacidades: Criar uma rotina visual → Reordenar etapas da rotina → Executar rotina com Agora e Depois.
 
