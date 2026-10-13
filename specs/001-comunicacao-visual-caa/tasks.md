@@ -99,11 +99,15 @@ alternativa visual acessível se voz local não estiver disponível.
 validar pt-BR offline em Android/iOS quando voz local compatível estiver disponível; testar
 ausência de voz e falha sem travamento ou chamada remota.
 
-- [ ] T020 [US-003] Adicionar testes da interface de fala para frase vazia, início explícito, interrupção e indisponibilidade em `tests/features/communication/speech/speech-controls.test.tsx`.
-- [ ] T021 [US-003] Implementar a ponte TypeScript de disponibilidade, falar e interromper em `src/features/communication/speech/local-speech.ts`, sem acionar fala na seleção de cartão.
+- [x] T020 [US-003] Adicionar testes da interface de fala para frase vazia, início explícito, interrupção e indisponibilidade em `tests/features/communication/speech/speech-controls.test.tsx`. Evidência: suíte JS de 40 testes aprovada, incluindo cancelamento durante consulta, retry de interrupção e manutenção da frase visível.
+- [x] T021 [US-003] Implementar a ponte TypeScript de disponibilidade, falar e interromper em `src/features/communication/speech/local-speech.ts`, sem acionar fala na seleção de cartão. Evidência: módulo opcional, sequência de partes sem perda/Unicode, interrupção entre partes e erro sem fallback remoto verificados em testes.
 - [ ] T022 [US-003] Implementar módulo Expo nativo para RF-010 em Android e iOS em `modules/tear-speech/`, aceitando apenas voz local pt-BR conforme o plano; Android deve rejeitar voz com `isNetworkConnectionRequired == true`, e iOS deve enumerar voz pt-BR instalada. Não baixar vozes nem enviar conteúdo.
-- [ ] T023 [US-003] Implementar controles acessíveis de reproduzir/interromper para RF-009 e orientação para frase vazia, voz ausente ou falha para RF-011 em `src/features/communication/speech/` e integrar com `src/features/communication/sentence/`.
+- [x] T023 [US-003] Implementar controles acessíveis de reproduzir/interromper para RF-009 e orientação para frase vazia, voz ausente ou falha para RF-011 em `src/features/communication/speech/` e integrar com `src/features/communication/sentence/`. Evidência: controles nomeados, mensagens de alerta, frase mantida, estado assíncrono e ações explícitas testados; revisão assistiva em aparelho separada em T024.
 - [ ] T024 [US-003] Validar RF-012 (operação sem servidor remoto), voz pt-BR e interrupção em aparelhos Android/iOS reais, em modo avião e com voz ausente; registrar dispositivos, resultados e limitações em `specs/001-comunicacao-visual-caa/quickstart.md` e no PR, mantendo a frase visível quando não houver leitura.
+
+US-003: código Kotlin/Swift criado e reconhecido pelo autolinking de Android/Apple.
+T022 permanece pendente de compilação e validação nativa. T024 depende de aparelho.
+Builds executados no GitHub em paralelo; não substituem testes reais de voz offline.
 
 ## Fase 6: US-004 — Cartões personalizados (Priority: P0, Issue #4)
 

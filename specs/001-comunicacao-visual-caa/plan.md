@@ -24,6 +24,20 @@ Na inspeção inicial não havia aplicativo. A [Issue #41](https://github.com/No
 
 **Text-to-Speech**: não adotar `expo-speech` como fronteira suficiente para a exigência offline, porque sua API pública não informa de modo confiável se cada voz Android exige rede. A Issue #3 deve criar `modules/tear-speech` com Expo Modules API e APIs nativas: Android seleciona somente voz pt-BR disponível com `isNetworkConnectionRequired == false`; iOS enumera vozes pt-BR instaladas por `AVSpeechSynthesisVoice`. A interface TS oferece apenas consulta de disponibilidade, leitura iniciada explicitamente e interrupção. Não baixar vozes nem recorrer à rede. Confirmar operação em modo avião em aparelhos reais; se as APIs do sistema não permitirem comprovar disponibilidade local, manter o fallback visual e registrar a limitação, sem alegar voz offline.
 
+US-003: módulo local reconhecido pelo autolinking Android/Apple, sem dependência
+de runtime adicional. Android também exclui vozes com feature notInstalled e
+limita espera pela inicialização do serviço a 10 segundos. O cliente divide
+mensagens segundo o limite nativo, preservando conteúdo/Unicode e interrompendo
+as partes restantes em cancelamento. iOS enumera vozes disponíveis pt-BR e usa
+AVSpeechSynthesizer; cancelamento do sistema encerra a sequência. No navegador
+ou sem módulo instalado, disponibilidade falsa preserva a comunicação visual.
+Sem fallback SpeechSynthesis web, download de voz ou envio de conteúdo.
+
+Referências técnicas: [Expo Modules](https://docs.expo.dev/modules/get-started/),
+[vozes Android embarcadas](https://developer.android.com/reference/android/speech/tts/TextToSpeech.Engine),
+[vozes Apple disponíveis](https://developer.apple.com/documentation/avfaudio/avspeechsynthesisvoice/speechvoices()),
+[síntese Apple no dispositivo](https://developer.apple.com/documentation/avfoundation/speech-synthesis).
+
 **Qualidade**: Jest com `jest-expo` e `@testing-library/react-native` para comportamento JS; TypeScript com `npx tsc --noEmit`; lint com `npx expo lint`/ESLint; `npx expo-doctor` para compatibilidade. Sem Prettier, E2E, Maestro, mocks globais ou outras ferramentas até haver necessidade demonstrada. Testes simulados não substituem builds/dispositivos Android e iOS para TTS, permissões, armazenamento e acessibilidade.
 
 **Build e CI configurados**: `npm ci`, `npm run lint` (`expo lint .`), `npx tsc --noEmit`, `npm test -- --ci` e `npx expo-doctor`. `npm run build:android` usa CNG/Gradle `assembleRelease`; `npm run build:ios` usa `expo run:ios --configuration Release --no-bundler`. O script `build` exige ambos, e é o comando do quality gate. GitHub Actions configura checks JavaScript e build Android; execução remota pendente. iOS exige macOS/Xcode. Builds locais de teste, sem EAS/publicação; comandos e limitações em [quickstart.md](quickstart.md).

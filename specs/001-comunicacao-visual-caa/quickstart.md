@@ -79,7 +79,34 @@ permite a integração futura da exclusão na #4, sem implementar editor nesta I
   erro e registrou a inicialização. Automação do navegador negada por permissão;
   não foi realizada inspeção visual automatizada.
 
-## Pré-Requisitos Históricos Do Bootstrap
+## US-003 — Fala Local Em Desenvolvimento
+
+Branch `feat/us-003-reproduzir-mensagens-por-text-to-speech`. Dependência US-002
+integrada pelo PR #44. Código nativo local em modules/tear-speech, reconhecido
+por Expo Autolinking para Android e Apple; não é prova de compilação.
+
+- 40 testes JS aprovados: 25 anteriores mais controles de fala e cliente nativo.
+  Frase vazia, voz ausente, falhas, início explícito, interrupção, desmontagem,
+  cancelamento durante consulta e manutenção da frase visual cobertos.
+- Cliente preserva conteúdo/Unicode em mensagens acima do limite nativo;
+  cancelamento/erro impedem leitura das partes restantes.
+- Lint, typecheck, Expo Doctor 21/21 e validação documental aprovados.
+- Android rejeita vozes com rede necessária ou dados não instalados.
+  Inicialização do serviço tem espera limitada. iOS usa vozes pt-BR disponíveis
+  e AVSpeechSynthesizer; nenhuma aquisição de voz ou alternativa remota.
+- Manifesto do módulo só acrescenta query TTS_SERVICE; sem permissão de
+  microfone, cliente de rede ou logs de textos. Podspec herda Apache-2.0 do projeto.
+- Browser/Expo Go sem o módulo mantêm frase/quadro e mostram indisponibilidade
+  apenas após pedido explícito de leitura. Prévia em http://localhost:8082.
+- Compilação Kotlin/Swift, voz em modo avião e acessibilidade nativa não foram
+  aprovadas localmente. Permanecem em T022/T024 e gate remoto/dispositivos.
+- Build remoto da main/US-002:
+  [run 38402614322](https://github.com/Nosso-Espectro/aplicativo/actions/runs/38402614322).
+  Android falhou antes de compilar, pois setup-android tentou instalar o
+  pacote obsoleto tools. Correção de CI separada, sem bloquear desenvolvimento
+  da US-003, conforme solicitação do mantenedor.
+
+## Histórico Da Base
 
 - Feature: [spec.md](spec.md), Issues #1–#5 e US-041/#41 da milestone #9.
 - Comportamento: [contrato de interação](contracts/user-interaction.md).
