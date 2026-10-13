@@ -36,3 +36,22 @@ de imagens em comunicação. O primeiro teste a frio atingiu timeout ao competir
 com lint; reexecução serial focada e suíte completa passaram sem aumentar timeout
 ou desabilitar testes. Verificação assistiva e binário offline continuam pendentes.
 Expo Doctor: 21/21 checks aprovados. Sem novas dependências nem permissões.
+
+## US-007 — Reordenação
+
+No editor, usar subir/descer para trocar duas etapas; limites da lista ficam
+desabilitados e a posição é anunciada por texto. Salvar, reabrir e conferir a nova
+ordem, IDs, título/imagem e status. Cancelar deve conservar a versão salva.
+Simular falha após as escritas, confirmar rollback e edição intacta, depois retry.
+Banco v1 migra para v2 com status pendente sem perda de dados; uma versão futura
+é recusada sem rebaixamento. Status existente é preservado por ID, não pelo índice
+nem por valor obsoleto do formulário. Não há controle de conclusão/Agora-Depois.
+
+111 testes Jest/20 suítes aprovados: dez novos (três lógica de ordem, três editor,
+quatro SQLite real). Lint/typecheck e 47 testes tooling aprovados. Rótulos, limites,
+alvos de toque, texto escalável e fluxo sem gestos obrigatórios revisados
+estaticamente. T011 mantém revisão assistiva/foco e reabertura offline nativa
+pendentes; nenhuma alteração global de acessibilidade/rede do aparelho necessária
+para instalar o APK. Build remoto e atualização preservando dados após integração.
+Expo Doctor 21/21, validador estrutural e diff check aprovados. Revisão do diff
+não identificou regressão bloqueante; nenhum build local executado.

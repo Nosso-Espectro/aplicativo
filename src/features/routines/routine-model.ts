@@ -1,4 +1,4 @@
-export type RoutineStep = { id: string; title: string; imageUri: string | null };
+export type RoutineStep = { id: string; title: string; imageUri: string | null; completed?: boolean };
 export type RoutineDraft = { name: string; steps: RoutineStep[] };
 export type Routine = RoutineDraft & { id: string };
 
