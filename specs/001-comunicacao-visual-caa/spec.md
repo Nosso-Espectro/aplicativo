@@ -3,7 +3,7 @@ milestone: 9
 priority: P0
 tag: m001-comunicacao-visual-caa
 status: draft
-ready_stories: ["US-041", "US-001", "US-002"]
+ready_stories: ["US-041", "US-001", "US-002", "US-003"]
 source_checked: 2026-09-23
 ---
 
@@ -191,10 +191,17 @@ Como usuário com dificuldade de fala, quero que o aplicativo leia em voz alta a
 
 #### Critérios de aceite
 
-- Deve existir um botão claro para reproduzir a frase montada.
-- A leitura deve utilizar o mecanismo de Text-to-Speech disponível no dispositivo, em português brasileiro (pt-BR). Se não houver voz local compatível, informar a indisponibilidade e manter a frase visível (Clarify, rodada 5).
-- A ausência de voz instalada deve gerar orientação compreensível, sem travar o aplicativo.
-- O recurso deve funcionar sem depender de um servidor remoto.
+- [ ] Deve existir um botão claro para reproduzir a frase montada.
+- [ ] A leitura deve utilizar o mecanismo de Text-to-Speech disponível no dispositivo.
+- [ ] A ausência de voz instalada deve gerar orientação compreensível, sem travar o aplicativo.
+- [ ] O recurso deve funcionar sem depender de um servidor remoto.
+
+Refinamento aprovado na Issue #3: somente voz local pt-BR em Android/iOS,
+início explícito, interrupção no mesmo controle e orientação para frase vazia
+ou voz ausente, preservando a comunicação visual. Sem aquisição de voz ou TTS remoto.
+Prontidão conferida em 2026-10-13: US-002 integrada pelo PR #44 no SHA
+f8ea4203b9f510fbfe7a713a46266e5f2c85524d; plano, tasks e critérios consistentes.
+Validação em aparelho e build seguem no gate remoto, sem bloquear desenvolvimento.
 
 **Why this priority**: prioridade P0 da Issue e da milestone; valor expresso na história original.
 

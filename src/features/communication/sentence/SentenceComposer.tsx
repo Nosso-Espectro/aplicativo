@@ -1,9 +1,11 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSentence } from './SentenceProvider';
+import { SpeechControls } from '../speech/SpeechControls';
 
 export function SentenceComposer() {
   const { state, dispatch } = useSentence();
   const empty = state.entries.length === 0;
+  const text = state.entries.map((entry) => entry.card.title).join(' ');
 
   return (
     <View style={styles.section}>
@@ -20,6 +22,7 @@ export function SentenceComposer() {
           <Text style={[styles.controlLabel, empty && styles.disabled]}>Limpar</Text>
         </Pressable>
       </View>
+      <SpeechControls text={text} />
       {empty ? (
         <Text style={styles.empty}>Frase vazia</Text>
       ) : (
