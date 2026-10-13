@@ -12,7 +12,8 @@ describe('US-001 board navigation (RF-001/RF-003/RF-004)', () => {
         expect(screen.getByRole('button', { name: card.title })).toBeOnTheScreen();
       }
       const images = screen.UNSAFE_getAllByType(Image);
-      expect(images).toHaveLength(10);
+      expect(images).toHaveLength(initialCards.length + 1);
+      expect(screen.getByRole('header', { name: 'TEAr' })).toBeOnTheScreen();
       images.forEach((image) => {
         expect(image.props.source).toBeTruthy();
         expect(image.props.accessible).toBe(false);

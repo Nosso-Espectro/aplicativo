@@ -4,6 +4,8 @@
     "slug": "tear-aplicativo",
     "scheme": "tear",
     "version": "1.0.0",
+    "icon": "./assets/branding/tear-icon.png",
+    "web": { "favicon": "./assets/branding/tear-icon.png" },
     "platforms": [
       "android",
       "ios",
@@ -35,7 +37,17 @@
           "cameraPermission": "Permitir que o TEAr use a câmera para a imagem de um cartão escolhido por você."
         }
       ],
-      "expo-font"
+      "expo-font",
+      ["expo-splash-screen", {
+        "image": "./assets/branding/tear-icon.png",
+        "imageWidth": 240,
+        "resizeMode": "contain",
+        "backgroundColor": "#233E78",
+        "dark": {
+          "image": "./assets/branding/tear-icon.png",
+          "backgroundColor": "#233E78"
+        }
+      }]
     ]
   }
 }

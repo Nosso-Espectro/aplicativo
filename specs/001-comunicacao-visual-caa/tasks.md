@@ -149,6 +149,12 @@ novamente, reiniciar em modo avião; testar lista vazia e falha de gravação/re
 - [ ] T035 [US-005] Implementar acesso direto à área de favoritos para RF-018 e estado vazio informativo em `src/app/favorites.tsx` e `src/features/communication/favorites/`; informar falha de modo acessível e permitir tentar novamente.
 - [ ] T036 [US-005] Revisar navegação, leitor de tela, foco, ordem e erros de favoritos; testar persistência após reinício offline e registrar evidências de acessibilidade, privacidade e operação local em `specs/001-comunicacao-visual-caa/quickstart.md` e no PR.
 
+## Identidade visual solicitada — US-052 / Issue #52
+
+- [x] T040 [US-052] Gerar e salvar o ícone raster aprovado em `assets/branding/tear-icon.png`, registrar referência/prompt e preservar exatamente a imagem aprovada. Evidência: PNG RGB 1254x1254 copiado sem edição, aprovado expressamente pelo usuário e documentado em README.
+- [x] T041 [US-052] Implementar RF-020: configurar ícone Android/iOS, favicon e tela de inicialização nativa via Expo SplashScreen, usando o asset local sem áudio, animação ou timer artificial. Evidência: teste de configuração/PNG, fonte local e padrão automático Expo Router, sem timers ou alteração da comunicação.
+- [ ] T042 [US-052] Testar configuração/asset e regressões do quadro; executar checks leves, acionar build remoto e atualizar o app por USB com `adb install -r`, sem apagar dados; registrar evidências e limitações em quickstart.
+
 ## Fase 8: Polish e verificações transversais
 
 **Objetivo**: verificar coerência entre histórias implementadas e Definition of Done, sem antecipar
