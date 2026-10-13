@@ -3,8 +3,8 @@ milestone: 10
 priority: P0
 tag: m002-rotina-visual
 status: draft
-ready_stories: []
-source_checked: 2026-09-23
+ready_stories: ["US-006"]
+source_checked: 2026-10-13
 ---
 
 # Rotina Visual
@@ -110,7 +110,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Implementações de outras milestones, requisitos não rastreados e decisões funcionais listadas como pendentes. Nesta execução apenas documentação e ferramentas de engenharia; nenhuma funcionalidade é implementada.
+Implementações de outras milestones, requisitos não rastreados e decisões funcionais ainda pendentes. Implementação atual restrita à US-006; reordenação e execução permanecem nas branches futuras de #7/#8.
 
 ## Dependências funcionais
 
@@ -124,8 +124,10 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-ROTINA-01 — Como representar rotina vazia, conclusão da última etapa, reinício e remoção da etapa atual (#6/#8)?
-- Q-ROTINA-02 — Qual origem das imagens e limites de conteúdo? A reordenação deve ter alternativa acessível ao gesto; definir interação com produto (#6/#7).
+US-006 pronta após refinamento registrado na [Issue #6](https://github.com/Nosso-Espectro/aplicativo/issues/6#issuecomment-6149132832), sob delegação explícita do usuário: nome/títulos não vazios após trim, rotina nomeada pode não ter etapas, imagens locais de arquivo/câmera opcionais, remoção de etapa confirmada, gravação transacional com retry e preservação da edição. Reordenação/execução continuam fora do escopo da #6. Sem limites artificiais de conteúdo.
+
+- Q-ROTINA-01 — Rotina vazia definida para #6; conclusão da última etapa, reinício e remoção da etapa atual continuam pendentes da #8.
+- Q-ROTINA-02 — Imagens locais e ausência de limites artificiais definidos para #6; interação de reordenação acessível continua pendente da #7.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 

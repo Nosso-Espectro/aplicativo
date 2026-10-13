@@ -1,5 +1,5 @@
 import { Directory, File } from 'expo-file-system';
-import { localImages } from '../../../../src/features/communication/custom-cards/local-image-storage';
+import { createLocalImageStorage, localImages } from '../../../../src/features/communication/custom-cards/local-image-storage';
 jest.mock('expo-file-system', () => ({ File: jest.fn(), Directory: jest.fn(), Paths: { document: 'file:///private/' } }));
 const copy = jest.fn(); const remove = jest.fn(); const create = jest.fn();
 beforeEach(() => {
@@ -30,4 +30,10 @@ it('cleans up a failed copy and returns only a generic error', async () => {
   copy.mockImplementationOnce(() => { throw new Error('private path'); });
   await expect(localImages.copy('file:///cache/synthetic.png')).rejects.toThrow('Image unavailable.');
   expect(remove).toHaveBeenCalledTimes(1);
+});
+it('isolates routine image deletion from communication images', async () => {
+  jest.mocked(Directory).mockImplementationOnce(() => ({ uri: 'file:///private/routine-images/', create } as unknown as Directory));
+  await createLocalImageStorage('routine-images').remove('file:///private/communication-images/keep.png');
+  expect(Directory).toHaveBeenCalledWith('file:///private/', 'routine-images');
+  expect(remove).not.toHaveBeenCalled();
 });

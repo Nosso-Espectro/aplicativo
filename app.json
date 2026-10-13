@@ -34,7 +34,7 @@
         {
           "microphonePermission": false,
           "photosPermission": false,
-          "cameraPermission": "Permitir que o TEAr use a câmera para a imagem de um cartão escolhido por você."
+          "cameraPermission": "Permitir que o TEAr use a câmera para a imagem de um cartão ou etapa de rotina escolhido por você."
         }
       ],
       "expo-font",
