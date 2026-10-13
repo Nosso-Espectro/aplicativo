@@ -6,6 +6,8 @@ node_modules/
 .expo/
 dist/
 build/
+!scripts/build/
+!scripts/build/*
 web-build/
 coverage/
 *.tsbuildinfo

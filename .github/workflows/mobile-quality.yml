@@ -52,39 +52,41 @@ jobs:
         run: npx expo-doctor
 
   android-build:
-    if: github.event_name == 'workflow_dispatch' && (inputs.platform == 'android' || inputs.platform == 'both')
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && (inputs.platform == 'android' || inputs.platform == 'both')
     name: Android release APK (test signing)
     runs-on: ubuntu-latest
     needs: quality
-    timeout-minutes: 35
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: platform-tools
-      - name: Install Android platform tools
-        run: sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.1.12297006"
-      - name: Install locked dependencies
-        run: npm ci
-      - name: Build Android app with embedded bundle through CNG
-        run: npm run build:android
+      - name: Build Android over SSH and retrieve APK
+        env:
+          BUILD_HOST: ${{ secrets.TEAR_BUILD_HOST }}
+          BUILD_SSH_KEY: ${{ secrets.TEAR_BUILD_SSH_KEY }}
+          BUILD_KNOWN_HOSTS: ${{ secrets.TEAR_BUILD_KNOWN_HOSTS }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${BUILD_HOST:?Missing TEAR_BUILD_HOST}" "${BUILD_SSH_KEY:?Missing TEAR_BUILD_SSH_KEY}" "${BUILD_KNOWN_HOSTS:?Missing TEAR_BUILD_KNOWN_HOSTS}"
+          umask 077
+          key=$(mktemp "$RUNNER_TEMP/tear-key.XXXXXX")
+          hosts=$(mktemp "$RUNNER_TEMP/tear-hosts.XXXXXX")
+          trap 'rm -f "$key" "$hosts"' EXIT
+          printf '%s\n' "$BUILD_SSH_KEY" > "$key"
+          printf '%s\n' "$BUILD_KNOWN_HOSTS" > "$hosts"
+          unset BUILD_SSH_KEY BUILD_KNOWN_HOSTS
+          options=(-T -i "$key" -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o "UserKnownHostsFile=$hosts" -o ConnectTimeout=20 -o ServerAliveInterval=30 -o ServerAliveCountMax=6)
+          ssh "${options[@]}" "tear-build@$BUILD_HOST" "build $GITHUB_SHA"
+          mkdir -p build/android
+          ssh "${options[@]}" "tear-build@$BUILD_HOST" "artifact $GITHUB_SHA" > build/android/app-release.apk.part
+          test -s build/android/app-release.apk.part
+          mv build/android/app-release.apk.part build/android/app-release.apk
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
           name: tear-android-${{ github.sha }}
-          path: android/app/build/outputs/apk/release/*.apk
+          path: build/android/*.apk
           if-no-files-found: error
           retention-days: 14
 
