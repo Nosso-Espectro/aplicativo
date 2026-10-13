@@ -6,9 +6,12 @@ Spec: [spec.md](spec.md). Milestone #19; Issues #27, #28. Plano proposto, sujeit
 
 Inspeção em 2026-10-13: Expo57.0.28/RN0.86.3/React19.2.3, TypeScript strict,
 Router e Node24.21.0/npm11.19.0, Jest/RNTL/checks leves existentes. Áudio de mídia
-e slider ainda não instalados. bundledNativeModules.json recomenda expo-audio
-~57.0.5 e @react-native-community/slider5.2.0; avaliar/installar versões fixadas,
-lockfile/licenças/audit e preservar avisos antes de entrega. FFmpeg já disponível
+e slider agora instalados nas versões exatas expo-audio57.0.5 e
+@react-native-community/slider5.2.0, conforme bundledNativeModules.json.
+expo-asset57.0.19, já transitivo, declarado diretamente para autolinking do peer
+nativo exigido pelo áudio; Doctor identificou a ausência e passou21/21 após essa
+correção. Lockfile adiciona somente dois pacotes e a referência direta ao asset,
+sem novas dependências runtime transitivas. FFmpeg já disponível
 para gerar assets originais com DSP existente, não para compilar aplicativo.
 
 ## Arquitetura atual
@@ -59,8 +62,8 @@ testes tooling exercitam integridade/ausência/duplicação/níveis e preservaç
 Suíte tooling56 verde, lint/tipos e validador verdes. Escuta e loop imperceptível
 não alegados; documentação de origem/limites no README junto aos arquivos.
 
-Instalação/revisão das dependências, engine/provider, UI/slider, opção confirmada
-de background e coordenação/regressão TTS ainda faltam. Nenhuma task concluída
+Dependências e configuração do plugin avaliadas; engine/provider, UI/slider,
+opção confirmada de background e coordenação/regressão TTS ainda faltam. Nenhuma task concluída
 pelo modelo/assets isolados, nenhum fluxo de reprodução alegado como entregue.
 
 Assets locais essenciais, sem banco novo ou restauração de autoplay. Seleção,
@@ -117,11 +120,34 @@ sem player nativo artesanal/framework de mídia. [Audio SDK57](https://docs.expo
 e [Slider](https://docs.expo.dev/versions/v57.0.0/sdk/slider/) são fontes primárias.
 Plugin de playback: capacidade audio iOS e foreground media playback Android;
 gravação/microfone explícitos desabilitados, sem requests de recording. Rever
-manifest/plist/permissões efetivas, não assumir defaults do pacote. Sessão de
-áudio configurada segundo flag confirmada, não mudar ajustes globais. Instalar
-somente dependências justificadas e preservar licenças na distribuição; nenhuma
-dependência nova foi instalada nesta etapa; assets de síntese já gerados e
-verificados, mas ainda sem player/empacotamento nativo validado.
+manifest/plist/permissões efetivas, não assumir defaults do pacote. Introspecção
+real `expo config --type introspect --json` avaliou mods somente em memória,
+sem criar projetos nativos ou compilar. Quatro testes verificam serviço
+AudioControlsService não exportado/mediaPlayback, FOREGROUND_SERVICE e
+FOREGROUND_SERVICE_MEDIA_PLAYBACK/MODIFY_AUDIO_SETTINGS, RECORD_AUDIO removido,
+nenhum serviço de gravação ou permissão POST_NOTIFICATIONS/foreground microphone,
+audio iOS sem NSMicrophoneUsageDescription; backup Android continua false.
+Isso não substitui revisão do manifesto mesclado final no APK.
+
+Sessão de áudio futura configurada segundo flag confirmada, não ajustes globais.
+Fontes/types instaladas confirmam `createAudioPlayer`, status event/listener,
+setAudioModeAsync e controle de mídia. `AudioPlayer` herda `release()` de
+SharedObject; Android sharedObjectDidRelease e iOS sharedObjectWillRelease limpam
+recursos, listener tem `remove()` próprio. Existe também método player.remove(),
+mas não confundir remoção do registro com descarte do shared object. Controller
+e testes desse lifecycle ainda faltam; manter criação tardia sob ação explícita.
+
+Licenças MIT expo-audio/expo-asset preservadas dos pacotes fixados; slider omite
+LICENSE no npm, texto obtido de LICENSE.md no tag v5.2.0 upstream,
+commit a7c1169f292763efb43b3089cd7b513a9db94d8b. Artefatos Android/iOS concatenam
+todos docs/third-party-notices/*.txt, preservando libphonenumber e novos avisos.
+Teste confere textos e inclusão em ambas distribuições. Licenças transitivas
+nativas/empacotamento final continuam parte da revisão remota, não garantidas
+apenas pelos textos npm. Audit antes/depois: mesmos66 apontamentos (16moderate,
+49high,1critical), nenhum advisory novo; #51 permanece aberta, sem audit fix force.
+Oito testes relacionados/configuração/avisos, suíte321/50, tooling56, lint/tipos,
+Doctor21/21 e validador verdes. Assets e capacidades preparadas, mas sem
+player/UI/TTS ou empacotamento nativo validado.
 
 ## Riscos
 
@@ -136,5 +162,5 @@ pendentes, não autorizam instalação no celular. Ver [auditoria](../../docs/ba
 
 - Diretriz confirmada: React Native; MVP sem backend.
 - US-027: TypeScript, assets locais procedurais declarados, engine/slider SDK recomendados, escolhas voláteis e coordenação mínima com TTS existente.
-- Pendente: instalação/revisão de dependências/lifecycle e implementação do player/UI/TTS; escuta nativa dos assets e política própria de término #28.
+- Pendente: implementação e testes de lifecycle/player/UI/TTS; validação nativa de permissões/escuta/background e política própria de término #28.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.

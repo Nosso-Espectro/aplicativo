@@ -32,6 +32,15 @@
       "expo-sqlite",
       "./plugins/with-whatsapp-visibility.cjs",
       [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundRecording": false,
+          "enableBackgroundPlayback": true
+        }
+      ],
+      [
         "expo-image-picker",
         {
           "microphonePermission": false,
