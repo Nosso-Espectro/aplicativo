@@ -41,6 +41,12 @@ atuais, não copiados. Contato/mensagem e visualização em cartão ficam nas #1
 
 ## Persistência
 
+Andamento inicial da US-011: `support-plan.ts` implementa modelo/normalização,
+quatro sugestões originais, seleção vazia, IDs validados e referências sem texto
+copiado do perfil. Seis testes unitários aprovados, lint/typecheck verdes. Editor,
+SQLite, navegação e cenários de persistência/erro ainda não implementados; nenhuma
+task de entrega marcada concluída e Issue #11 permanece aberta.
+
 US-011 planeja banco privado `tear-support-plan.db`, schema próprio inicial,
 singleton de texto e tabelas separadas de IDs das sugestões/referências. Operações
 parametrizadas em fila/transação exclusiva; ler resultado antes do commit,
