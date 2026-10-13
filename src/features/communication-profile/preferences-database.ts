@@ -1,5 +1,12 @@
 import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
 import { emptyPreferences, normalizedPreferences, type CommunicationPreferences } from './preferences';
+import { emptySupportPreferences, normalizedSupportPreferences, supportForPlan, type SupportField, type SupportPreferences } from './support-preferences';
+
+async function readSupport(db: SQLiteDatabase): Promise<SupportPreferences> {
+  const [row] = await db.getAllAsync<SupportPreferences>(`SELECT sound, light, touch, temperature, other,
+    helpful_strategies AS helpfulStrategies, avoid_strategies AS avoidStrategies FROM support_preferences WHERE id = 1`);
+  return row ? normalizedSupportPreferences(row) : { ...emptySupportPreferences };
+}
 
 async function readPreferences(db: SQLiteDatabase): Promise<CommunicationPreferences> {
   const [row] = await db.getAllAsync<{ communication: string; instructions: string; extra_time: number | null }>('SELECT communication, instructions, extra_time FROM communication_preferences WHERE id = 1');
@@ -10,11 +17,15 @@ export async function openPreferencesDatabase() {
   try {
     await db.withExclusiveTransactionAsync(async (tx) => {
       const [{ user_version: version }] = await tx.getAllAsync<{ user_version: number }>('PRAGMA user_version');
-      if (version > 1) throw new Error('Unsupported profile schema.');
+      if (version > 2) throw new Error('Unsupported profile schema.');
       await tx.execAsync(`CREATE TABLE IF NOT EXISTS communication_preferences (
         id INTEGER PRIMARY KEY CHECK(id = 1), communication TEXT NOT NULL,
         instructions TEXT NOT NULL, extra_time INTEGER CHECK(extra_time IS NULL OR extra_time IN (0, 1))
-      ); PRAGMA user_version = 1;`);
+      ); CREATE TABLE IF NOT EXISTS support_preferences (
+        id INTEGER PRIMARY KEY CHECK(id = 1), sound TEXT NOT NULL, light TEXT NOT NULL,
+        touch TEXT NOT NULL, temperature TEXT NOT NULL, other TEXT NOT NULL,
+        helpful_strategies TEXT NOT NULL, avoid_strategies TEXT NOT NULL
+      ); PRAGMA user_version = 2;`);
     });
   } catch {
     await db.closeAsync(); throw new Error('Profile storage unavailable.');
@@ -24,6 +35,21 @@ export async function openPreferencesDatabase() {
     const next = pending.then(operation); pending = next.catch(() => undefined); return next;
   }
   return {
+    readSupport: () => enqueue(() => readSupport(db)),
+    readSupportForPlan: (selected: readonly SupportField[] = []) => enqueue(async () => supportForPlan(await readSupport(db), selected)),
+    saveSupport: (input: SupportPreferences) => enqueue(async () => {
+      const draft = normalizedSupportPreferences(input);
+      let saved = { ...emptySupportPreferences };
+      await db.withExclusiveTransactionAsync(async (tx) => {
+        await tx.runAsync(`INSERT INTO support_preferences (id, sound, light, touch, temperature, other, helpful_strategies, avoid_strategies)
+          VALUES (1, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET sound = excluded.sound,
+          light = excluded.light, touch = excluded.touch, temperature = excluded.temperature, other = excluded.other,
+          helpful_strategies = excluded.helpful_strategies, avoid_strategies = excluded.avoid_strategies`,
+        draft.sound, draft.light, draft.touch, draft.temperature, draft.other, draft.helpfulStrategies, draft.avoidStrategies);
+        saved = await readSupport(tx);
+      });
+      return saved;
+    }),
     read: () => enqueue(() => readPreferences(db)),
     save: (input: CommunicationPreferences) => enqueue(async () => {
       const draft = normalizedPreferences(input);

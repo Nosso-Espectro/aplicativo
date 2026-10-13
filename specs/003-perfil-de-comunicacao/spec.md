@@ -3,7 +3,7 @@ milestone: 13
 priority: P0
 tag: m003-perfil-de-comunicacao
 status: draft
-ready_stories: ["US-014"]
+ready_stories: ["US-014", "US-015"]
 source_checked: 2026-10-13
 ---
 
@@ -11,7 +11,7 @@ source_checked: 2026-10-13
 
 Milestone GitHub: [P0 — Perfil de Comunicação](https://github.com/Nosso-Espectro/aplicativo/milestone/13) (número 13).
 
-Estado consultado: aberta; todas as histórias abaixo estão abertas. Especificação em revisão, não implementação concluída.
+Milestone aberta; US-014 integrada pelo PR #60, US-015 em implementação e US-016 ainda pendente. A milestone não está concluída.
 
 ## Contexto
 
@@ -108,7 +108,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Implementações de outras milestones e requisitos não rastreados. Esta branch implementa somente US-014; sensibilidades/estratégias e resumo para terceiros permanecem nas histórias próprias #15/#16.
+Implementações de outras milestones e requisitos não rastreados. A branch US-015 implementa somente sensibilidades/estratégias e seu contrato local de leitura; o editor do plano fica na #11 e o resumo para terceiros na #16.
 
 ## Dependências funcionais
 
@@ -128,7 +128,7 @@ não informado/preciso/não preciso; salvar/cancelar explícitos, remoção inte
 confirmada e falha preservando formulário/versão salva. SQLite privado local,
 sem compartilhamento ou campos das US-015/US-016. Prontidão revisada na base real.
 
-- Q-PERFIL-01 — Reutilização no Plano de Apoio (#15) ocorre por cópia ou referência? Mudanças posteriores devem propagar? Alinhar com Q-APOIO-01.
+- Q-PERFIL-01 — Resolvida na #15 e registrada na #11 sob delegação do usuário: referência local aos campos estáveis escolhidos explicitamente no plano, seleção inicial vazia. Leitura seguinte reflete edição/remoção no perfil, sem cópia antiga, transmissão externa ou dependência circular entre editores. Tela do plano permanece #11.
 - Q-PERFIL-02 — Quais campos e formas de apresentação/compartilhamento são permitidos em #16? Não presumir exportação ou envio.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
