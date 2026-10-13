@@ -18,6 +18,8 @@ export default function RoutinesScreen() {
       <Text accessibilityRole="header" style={styles.label}>{routine.name}</Text>
       <Text style={styles.text}>{routine.steps.length === 0 ? 'Sem etapas' : `${routine.steps.length} etapa${routine.steps.length === 1 ? '' : 's'}`}</Text>
       <RoutineCommand icon="edit" label={`Abrir rotina: ${routine.name}`} onPress={() => router.push({ pathname: '/routines/[id]', params: { id: routine.id } })} />
+      <RoutineCommand icon="play-arrow" label={`Executar rotina: ${routine.name}`} disabled={context.loading || Boolean(context.error) || routine.steps.length === 0}
+        onPress={() => router.push({ pathname: '/routines/play/[id]', params: { id: routine.id } })} />
     </View>)}
   </RoutinePage>;
 }

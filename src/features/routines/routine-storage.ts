@@ -6,6 +6,7 @@ export const routineImages = createLocalImageStorage('routine-images');
 export function createRoutineStorage(db: RoutineDatabase, images = routineImages) {
   return {
     list: db.list,
+    progress: db.progress,
     async save(input: RoutineDraft, previous?: Routine): Promise<Routine[]> {
       const draft = normalizedRoutine(input);
       const copied: string[] = [];

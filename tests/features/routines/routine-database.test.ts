@@ -119,3 +119,54 @@ it('refuses a future schema without downgrading or modifying its records', async
   expect(connections[0].prepare('PRAGMA user_version').get()).toEqual({ user_version: 3 });
   expect(await db.list()).toEqual(saved);
 });
+it('persists completion and reopens progress, returns to prior step, finishes and explicitly restarts — RF-009/RF-010/RF-011', async () => {
+  const db = await openRoutineDatabase();
+  const first = (await db.save({ name: 'Teste', steps: [{ id: 'a', title: 'Uma', imageUri: null }, { id: 'b', title: 'Duas', imageUri: null }] }))[0];
+  const advanced = await db.progress(first.id, 'complete', 'a');
+  expect(advanced[0].steps.map((step) => step.completed)).toEqual([true, false]);
+  const reopened = await openRoutineDatabase();
+  expect(await reopened.list()).toEqual(advanced);
+  expect((await reopened.progress(first.id, 'previous', 'b'))[0].steps.map((step) => step.completed)).toEqual([false, false]);
+  await reopened.progress(first.id, 'complete', 'a');
+  await reopened.progress(first.id, 'complete', 'b');
+  expect((await reopened.list())[0].steps.every((step) => step.completed)).toBe(true);
+  expect((await reopened.progress(first.id, 'previous', null))[0].steps.map((step) => step.completed)).toEqual([true, false]);
+  await reopened.progress(first.id, 'complete', 'b');
+  expect((await reopened.progress(first.id, 'restart', null))[0].steps.map((step) => step.completed)).toEqual([false, false]);
+});
+it('rolls back progress when reading the committed result fails and permits retry', async () => {
+  const db = await openRoutineDatabase();
+  const first = (await db.save({ name: 'Teste', steps: [{ id: 'a', title: 'Uma', imageUri: null }] }))[0];
+  const original = connections[0].prepare('SELECT completed FROM routine_steps WHERE id = ?').get('a');
+  // Fail only the second routine read, after the status mutation inside the transaction.
+  const sql = connections[0]; const prepare = sql.prepare.bind(sql); let reads = 0;
+  const spy = jest.spyOn(sql, 'prepare').mockImplementation((statement) => {
+    if (statement === 'SELECT id, name FROM routines ORDER BY rowid' && ++reads === 2) throw new Error('synthetic result failure');
+    return prepare(statement);
+  });
+  await expect(db.progress(first.id, 'complete', 'a')).rejects.toThrow();
+  spy.mockRestore();
+  expect(sql.prepare('SELECT completed FROM routine_steps WHERE id = ?').get('a')).toEqual(original);
+  expect((await db.progress(first.id, 'complete', 'a'))[0].steps[0].completed).toBe(true);
+});
+it('rejects duplicate/stale completion, missing/empty routines and invalid limits without changing progress', async () => {
+  const db = await openRoutineDatabase();
+  const first = (await db.save({ name: 'Teste', steps: [{ id: 'a', title: 'Uma', imageUri: null }, { id: 'b', title: 'Duas', imageUri: null }] }))[0];
+  await expect(db.progress(first.id, 'previous', 'a')).rejects.toThrow();
+  await expect(db.progress(first.id, 'restart', 'a')).rejects.toThrow();
+  const advanced = await db.progress(first.id, 'complete', 'a');
+  await expect(db.progress(first.id, 'complete', 'a')).rejects.toThrow('Routine changed.');
+  expect(await db.list()).toEqual(advanced);
+  await expect(db.progress('missing', 'complete', null)).rejects.toThrow();
+  const empty = (await db.save({ name: 'Vazia', steps: [] }))[1];
+  await expect(db.progress(empty.id, 'complete', null)).rejects.toThrow();
+});
+it('resumes the current saved order after editing/removing stages without losing retained completion', async () => {
+  const db = await openRoutineDatabase();
+  const first = (await db.save({ name: 'Teste', steps: [{ id: 'a', title: 'Uma', imageUri: null }, { id: 'b', title: 'Duas', imageUri: null }, { id: 'c', title: 'Três', imageUri: null }] }))[0];
+  await db.progress(first.id, 'complete', 'a');
+  const changed = await db.save({ name: 'Teste', steps: [first.steps[2], first.steps[0]] }, first.id);
+  expect(changed[0].steps.map((step) => [step.id, step.completed])).toEqual([['c', false], ['a', true]]);
+  await expect(db.progress(first.id, 'complete', 'b')).rejects.toThrow();
+  expect((await db.progress(first.id, 'complete', 'c'))[0].steps.every((step) => step.completed)).toBe(true);
+});

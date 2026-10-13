@@ -36,7 +36,7 @@ beforeEach(() => {
     routines = id ? routines.map((value) => value.id === id ? routine : value) : [...routines, routine];
     return [...routines];
   });
-  jest.mocked(openRoutineDatabase).mockResolvedValue({ list, save });
+  jest.mocked(openRoutineDatabase).mockResolvedValue({ list, save, progress: jest.fn() });
   jest.mocked(pickCardImage).mockResolvedValue({});
 });
 async function openNew() {

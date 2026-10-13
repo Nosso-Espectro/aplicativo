@@ -3,7 +3,7 @@ import type { RoutineDatabase } from '../../../src/features/routines/routine-dat
 import type { Routine } from '../../../src/features/routines/routine-model';
 jest.mock('expo-file-system', () => ({ Directory: jest.fn(), File: jest.fn(), Paths: { document: 'file:///private/' } }));
 const images = { copy: jest.fn(), remove: jest.fn(), prune: jest.fn() };
-const db: RoutineDatabase = { list: jest.fn(), save: jest.fn() };
+const db: RoutineDatabase = { list: jest.fn(), save: jest.fn(), progress: jest.fn() };
 beforeEach(() => { jest.clearAllMocks(); images.copy.mockResolvedValue('file:///private/routine-images/copied.png'); images.remove.mockResolvedValue(undefined); });
 it('copies only changed images and retains unchanged private references', async () => {
   const previous: Routine = { id: 'routine-a', name: 'Teste', steps: [{ id: 'a', title: 'Uma', imageUri: 'file:///private/routine-images/existing.png' }] };

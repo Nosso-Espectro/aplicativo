@@ -36,9 +36,13 @@ offline no binário ainda pendentes; testes do host não substituem essas evidê
 
 ## US-008 — Issue #8
 
-- [ ] T012 [US-008] Em `src/features/routines/routine-player`, atender RF-008 (critério 1 de #8): Durante a execução devem existir indicações claras de Agora e Depois. Verificar com o cenário correspondente no PR.
-- [ ] T013 [US-008] Em `src/features/routines/routine-player`, atender RF-009 (critério 2 de #8): Ao concluir a etapa atual, a próxima deve assumir o estado de Agora. Verificar com o cenário correspondente no PR.
-- [ ] T014 [US-008] Em `src/features/routines/routine-player`, atender RF-010 (critério 3 de #8): O usuário deve poder voltar para uma etapa anterior quando necessário. Verificar com o cenário correspondente no PR.
-- [ ] T015 [US-008] Em `src/features/routines/routine-player`, atender RF-011 (critério 4 de #8): O progresso deve permanecer salvo caso o aplicativo seja fechado. Verificar com o cenário correspondente no PR.
-- [ ] T016 [US-008] Adicionar testes de comportamento de RF-008, RF-009, RF-010, RF-011 em `tests/features/routines/routine-player`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
+- [x] T012 [US-008] Em `src/features/routines/RoutinePlayer.tsx`, atender RF-008: indicações claras de Agora e Depois, somente duas etapas pendentes, verificadas por testes de componentes/lógica.
+- [x] T013 [US-008] Em `src/features/routines/routine-database.ts`, atender RF-009: concluir persiste antes de avançar; testes cobrem ausência de sucesso otimista, duplicatas e falha/rollback/retry.
+- [x] T014 [US-008] Em `src/features/routines/RoutinePlayer.tsx` e banco, atender RF-010: voltar reabre a anterior e as posteriores, inclusive após terminar; limite inicial desabilitado e fim/reinício explícitos testados.
+- [x] T015 [US-008] Em banco/provider, atender RF-011: progresso retomado após reabertura do SQLite real e nova sessão do provider, sem cursor órfão após edição/remoção.
+- [x] T016 [US-008] Adicionar testes em `tests/features/routines/routine-player.test.tsx`, `routine-execution.test.ts` e banco: seis componentes, três lógica e quatro SQLite real; suíte total de 124 testes/22 suítes aprovada.
 - [ ] T017 [US-008] Revisar RNF-001 a RNF-004 na interface/dados de #8, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+
+T017: revisão estática de contraste, nomes, texto escalável, alvos 48dp, estados
+vazios/erros e nenhuma transmissão de conteúdo realizada. Leitor de tela, foco,
+offline e interrupção/reabertura do binário permanecem pendentes. Nenhum build local.

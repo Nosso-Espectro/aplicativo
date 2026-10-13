@@ -3,8 +3,9 @@ import { Platform } from 'react-native';
 import { openRoutineDatabase } from './routine-database';
 import { createRoutineStorage } from './routine-storage';
 import type { Routine, RoutineDraft } from './routine-model';
+import { routineExecution, type ProgressAction } from './routine-execution';
 
-type ContextValue = { routines: Routine[]; loading: boolean; error: string | null; retry(): void; save(draft: RoutineDraft, id?: string): Promise<void> };
+type ContextValue = { routines: Routine[]; loading: boolean; error: string | null; retry(): void; save(draft: RoutineDraft, id?: string): Promise<void>; progress(id: string, action: ProgressAction): Promise<void> };
 const Context = createContext<ContextValue | null>(null);
 export function RoutineProvider({ children }: { children: ReactNode }) {
   const [routines, setRoutines] = useState<Routine[]>([]);
@@ -34,6 +35,14 @@ export function RoutineProvider({ children }: { children: ReactNode }) {
   }, [attempt]);
   return <Context.Provider value={{ routines, loading, error,
     retry: () => { initialization.current = null; setLoading(true); setAttempt((value) => value + 1); },
+    async progress(id, action) {
+      if (!storage.current || loading || error) throw new Error('Routine storage unavailable.');
+      const routine = routines.find((item) => item.id === id);
+      if (!routine) throw new Error('Routine unavailable.');
+      const currentId = routineExecution(routine.steps).current?.id ?? null;
+      const saved = await storage.current.progress(id, action, currentId);
+      setRoutines(saved);
+    },
     async save(draft, id) {
       if (!storage.current || loading || error) throw new Error('Routine storage unavailable.');
       const previous = routines.find((routine) => routine.id === id);

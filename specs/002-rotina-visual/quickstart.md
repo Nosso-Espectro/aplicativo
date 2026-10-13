@@ -55,3 +55,24 @@ pendentes; nenhuma alteração global de acessibilidade/rede do aparelho necess�
 para instalar o APK. Build remoto e atualização preservando dados após integração.
 Expo Doctor 21/21, validador estrutural e diff check aprovados. Revisão do diff
 não identificou regressão bloqueante; nenhum build local executado.
+
+## US-008 — Agora e Depois
+
+Executar uma rotina com três etapas: somente primeira e segunda aparecem; concluir
+deve gravar antes de avançar. Fechar/abrir mantém progresso; voltar reabre anterior
+e seguintes. Fim informa conclusão e não reinicia automaticamente; reinício
+depende de confirmação. Rotina vazia oferece edição, ausente informa erro.
+Após editar/remover/reordenar, a ordem/status dos IDs salvos determina Agora/Depois.
+Falha preserva último progresso confirmado, sem detalhes pessoais, e permite retry.
+
+124 testes Jest/22 suítes aprovados, incluindo reabertura/rollback de SQLite real,
+ações obsoletas/duplicadas, conclusão/retorno/reinício e recuperação de erros.
+Testes de componentes aguardam a chamada de gravação antes de verificar remoção
+do texto anterior, evitando a corrida de atualização do renderer observada na
+primeira execução. Nenhum teste desabilitado ou timeout aumentado.
+Persistência offline nativa, voz/imagens reais e revisão assistiva permanecem
+pendentes; instalação não equivale a validação completa. Sem novo schema,
+dependência, permissão, servidor ou build local.
+Lint/typecheck, Expo Doctor 21/21, 47 testes tooling, validador e diff check aprovados.
+Revisão do diff incluiu cancelamento da intenção de reinício após falha e confirmação
+de manter a rotina concluída; comportamento coberto por teste específico.
