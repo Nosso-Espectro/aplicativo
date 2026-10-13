@@ -40,6 +40,12 @@ Pausa/retomada/cancelamento dependem do estado atual confirmado; término passad
 
 ## Persistência
 
+Andamento inicial US-017: `visual-timer.ts` contém validação de duração/sessão e
+cálculos de deadline, pausa/retomada e proporção/segundos restantes. Sete testes
+relacionados, lint e typecheck aprovados. Provider, tela/rota, barra real, SQLite,
+cancelamento confirmado e testes de integração ainda faltam; nenhuma task desta
+história foi concluída pelo modelo isolado.
+
 SQLite privado separado tear-transition-timer.db v1 para somente a sessão atual,
 fila de operações, transação/readback/rollback e versão futura recusada. Escritas
 ao iniciar/pausar/retomar/cancelar, não a cada tick. Estado confirmado só após
