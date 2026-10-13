@@ -3,15 +3,15 @@ milestone: 12
 priority: P0
 tag: m004-plano-de-apoio-crise
 status: draft
-ready_stories: []
-source_checked: 2026-09-23
+ready_stories: ["US-011"]
+source_checked: 2026-10-13
 ---
 
 # Plano de Apoio / Crise
 
 Milestone GitHub: [P0 — Plano de Apoio / Crise](https://github.com/Nosso-Espectro/aplicativo/milestone/12) (número 12).
 
-Estado consultado: aberta; todas as histórias abaixo estão abertas. Especificação em revisão, não implementação concluída.
+Milestone e Issues #11/#12/#13 abertas. US-011 refinada no GitHub e pronta para implementação; #12/#13 conservam questões próprias pendentes. Nenhuma entrega desta milestone concluída.
 
 ## Contexto
 
@@ -110,7 +110,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Implementações de outras milestones, requisitos não rastreados e decisões funcionais listadas como pendentes. Nesta execução apenas documentação e ferramentas de engenharia; nenhuma funcionalidade é implementada.
+US-011 implementa somente o editor local do plano e referências voluntárias ao perfil. Cartão em tela cheia/painel/contato/WhatsApp pertencem a #12/#10/#13; nenhuma exportação, transmissão, diagnóstico, IA ou backend nesta branch.
 
 ## Dependências funcionais
 
@@ -119,16 +119,25 @@ Implementações de outras milestones, requisitos não rastreados e decisões fu
 
 ## Casos de erro
 
-Plano vazio, contato inválido e WhatsApp ausente; #13 exige informar indisponibilidade sem falhar. Tratamento de validação detalhado em Q-APOIO-03.
+US-011: plano vazio, falha de abertura/salvamento e referência a campo removido do perfil. Vazio é válido; falha preserva versão confirmada/rascunho com feedback genérico e retry/cancelar, sem sucesso antes do commit. Referências exibem apenas dados atuais escolhidos e preenchidos, sem snapshot. Contato inválido e WhatsApp ausente pertencem a #13 (Q-APOIO-03).
 
 São cenários derivados dos critérios e da DoD, não novas funcionalidades. As respostas ainda indefinidas devem ser acordadas antes da implementação correspondente.
 
 ## Questões em aberto
 
-- Q-APOIO-01 — Definir integração com sensibilidades do perfil (#15) sem criar dependência circular entre editores.
+- Q-APOIO-01 — Resolvida nas #15/#11: referências aos sete IDs estáveis de sensibilidades/estratégias explicitamente escolhidos no editor, seleção inicial vazia; ler valores atuais ao reabrir, sem cópia antiga, alteração do perfil, envio ou dependência circular. Campo removido/vazio é omitido.
 - Q-APOIO-02 — A milestone menciona compartilhar o plano, mas #12 cobre exibição e #13 mensagem ao contato. Falta definir formato/destino do compartilhamento e sua Issue.
 - Q-APOIO-03 — Qual “mecanismo compatível” em #13? Como validar contato e mensagem? Não enviar automaticamente.
 - Q-APOIO-04 — #12 depende do painel #10 para acesso direto; #10 depende do plano/contato. Implementar editores antes e validar os atalhos em conjunto, sem fundir branches.
+
+US-011 refinada na [Issue #11](https://github.com/Nosso-Espectro/aplicativo/issues/11#issuecomment-6153657288)
+sob delegação do usuário: um plano pessoal local, inicialmente vazio, orientações
+livres opcionais e checkboxes das quatro sugestões originais (Não me toque;
+Fale pouco; Preciso de silêncio; Dê-me tempo para responder), sem marcação padrão.
+Salvar/cancelar explícitos; editar/limpar escolhas e texto, remoção integral
+confirmada apenas do plano, erros/duplicatas tratados sem apagar o perfil.
+Acesso ao editor pelo quadro. Q-APOIO-02/03/04 não bloqueiam esse editor local e
+permanecem para suas histórias; não substituir os critérios originais de #12/#13.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 

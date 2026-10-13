@@ -1,6 +1,6 @@
 # Tasks — Plano de Apoio / Crise
 
-Milestone #12: [spec.md](spec.md) e [plan.md](plan.md). Todas pendentes; não executadas nesta preparação.
+Milestone #12: [spec.md](spec.md) e [plan.md](plan.md). US-011 Ready após refinamento na Issue #11; todas as tasks de entrega continuam pendentes até validação.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
