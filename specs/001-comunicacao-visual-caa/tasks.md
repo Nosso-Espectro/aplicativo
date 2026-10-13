@@ -158,6 +158,12 @@ aprovados antes de incorporar US-052, lint/typecheck e Expo Doctor 21/21.
 T036 permanece pendente de binário offline, TalkBack/VoiceOver e foco em aparelho.
 Os testes SQLite do host e fronteiras Expo simuladas não substituem essa evidência.
 
+## Identidade visual solicitada — US-052 / Issue #52
+
+- [x] T040 [US-052] Gerar e salvar o ícone raster aprovado em `assets/branding/tear-icon.png`, registrar referência/prompt e preservar exatamente a imagem aprovada. Evidência: PNG RGB 1254x1254 copiado sem edição, aprovado expressamente pelo usuário e documentado em README.
+- [x] T041 [US-052] Implementar RF-020: configurar ícone Android/iOS, favicon e tela de inicialização nativa via Expo SplashScreen, usando o asset local sem áudio, animação ou timer artificial. Evidência: teste de configuração/PNG, fonte local e padrão automático Expo Router, sem timers ou alteração da comunicação.
+- [ ] T042 [US-052] Testar configuração/asset e regressões do quadro; executar checks leves, acionar build remoto e atualizar o app por USB com `adb install -r`, sem apagar dados; registrar evidências e limitações em quickstart.
+
 ## Fase 8: Polish e verificações transversais
 
 **Objetivo**: verificar coerência entre histórias implementadas e Definition of Done, sem antecipar

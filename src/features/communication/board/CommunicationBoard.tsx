@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import appIcon from '../../../../assets/branding/tear-icon.png';
 
 import {
   categories,
@@ -58,7 +59,10 @@ export function CommunicationBoard({ cards = initialCards, onSelectCard, sentenc
   return (
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text accessibilityRole="header" style={styles.brand}>TEAr</Text>
+        <View style={styles.brandRow}>
+          <Image source={appIcon} accessible={false} resizeMode="contain" style={styles.appIcon} />
+          <Text accessibilityRole="header" style={styles.brand}>TEAr</Text>
+        </View>
         <Text accessibilityRole="header" style={styles.heading}>{heading}</Text>
         {navigation}
         {sentence}
@@ -198,6 +202,8 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#FFFFFF' },
   content: { padding: 20, gap: 20, maxWidth: 720, width: '100%', alignSelf: 'center' },
   brand: { color: '#16634D', fontSize: 24, fontWeight: '700' },
+  brandRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  appIcon: { width: 48, height: 48 },
   newCard: { minHeight: 48, padding: 12, flexDirection: 'row', gap: 8, alignItems: 'center' },
   heading: { color: '#202124', fontSize: 26, fontWeight: '600' },
   categories: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

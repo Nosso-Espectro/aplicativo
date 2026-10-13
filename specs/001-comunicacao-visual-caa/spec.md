@@ -3,7 +3,7 @@ milestone: 9
 priority: P0
 tag: m001-comunicacao-visual-caa
 status: draft
-ready_stories: ["US-041", "US-001", "US-002", "US-003", "US-004", "US-005"]
+ready_stories: ["US-041", "US-001", "US-002", "US-003", "US-004", "US-005", "US-052"]
 source_checked: 2026-09-23
 ---
 
@@ -264,6 +264,27 @@ Como usuário de CAA, quero marcar cartões frequentes como favoritos, para aces
 3. **Given** favoritos em uma ordem estabelecida, **When** fechar e reabrir o aplicativo, **Then** essa ordem permanece salva localmente na sequência em que os cartões foram favoritados; um cartão favoritado novamente vai para o final (Clarify, rodada 2). (#5, critério 3.)
 
 
+### US-052 — Criar identidade visual e tela de inicialização do TEAr (Priority: P0)
+
+GitHub Issue: [#52](https://github.com/Nosso-Espectro/aplicativo/issues/52)
+
+Como usuário do TEAr, quero reconhecer o aplicativo pelo ícone inspirado na capa e pela tela de inicialização, para identificar o comunicador ao abri-lo.
+Solicitação e aprovação da imagem pelo usuário em 2026-10-13; referência fornecida
+diretamente na conversa. Ready: conteúdo aprovado, base integrada e critérios claros.
+
+#### Critérios de aceite
+
+- [ ] A imagem gerada a partir da capa e aprovada pelo usuário deve ser o ícone do aplicativo.
+- [ ] A tela de inicialização deve usar essa imagem localmente, sem consulta remota.
+- [ ] A inicialização deve seguir para o quadro existente, sem áudio, animação inesperada ou atraso artificial.
+- [ ] Não mudar o comportamento do comunicador nem remover acessibilidade ou texto escalável.
+- [ ] Executar checks leves, build remoto e atualizar o APK no Android autorizado sem limpar dados.
+
+**Teste independente**: abertura a frio da versão Release instalada no Android,
+ícone no launcher, imagem nativa durante inicialização e retorno ao quadro.
+Os limites de máscara de ícone e splash do Android/iOS devem ser verificados
+em binário real; prévia web não comprova a inicialização nativa.
+
 ### Definition of Done original (comum às Issues #1, #2, #3, #4, #5)
 
 - Critérios de aceite atendidos.
@@ -328,6 +349,7 @@ Os IDs RF existentes são preservados para não romper o vínculo com plano e ta
 - **RF-017** — Qualquer cartão deve poder ser marcado ou desmarcado como favorito. (#5, critério 1.)
 - **RF-018** — Deve existir uma área de favoritos acessível diretamente no módulo. (#5, critério 2.)
 - **RF-019** — A ordem dos favoritos deve ser persistida localmente. (#5, critério 3.)
+- **RF-020** — Usar a imagem aprovada pelo usuário como ícone e na inicialização nativa, disponível localmente, abrindo o quadro sem áudio ou atraso artificial. (#52, critérios 1–4.)
 
 Detalhamento de RF-008 aprovado em Clarify (2026-09-23, US-002/#2): a composição
 permanece durante a sessão, inclusive em segundo plano sem encerramento. Após encerramento
@@ -518,6 +540,7 @@ Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma
 | RF-017 | [#5](https://github.com/Nosso-Espectro/aplicativo/issues/5) | US-005 | T034 |
 | RF-018 | [#5](https://github.com/Nosso-Espectro/aplicativo/issues/5) | US-005 | T035 |
 | RF-019 | [#5](https://github.com/Nosso-Espectro/aplicativo/issues/5) | US-005 | T034 |
+| RF-020 | [#52](https://github.com/Nosso-Espectro/aplicativo/issues/52) | US-052 | T041 |
 | RNF-001 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |
 | RNF-002 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |
 | RNF-003 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |
