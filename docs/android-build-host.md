@@ -10,6 +10,9 @@ consulta limitada do kernel não encontrou OOM/MCE no intervalo analisado.
 Isso não é uma auditoria completa do host nem exclui instabilidade da VM/KVM.
 
 O wrapper usa JDK verificado, `--no-daemon`, dois workers e Kotlin in-process.
+O diagnóstico avisou pressão de metaspace nos limites padrão 2GiB/512MiB;
+para o host dedicado de31GiB o wrapper foi ajustado para heap4GiB/metaspace1GiB.
+Esse aviso não comprova a causa dos crashes fatais anteriores.
 Relatórios fatais por SHA ficam em `/srv/tear-build/diagnostics`, modo700, fora
 do checkout limpo; não publicar logs brutos em artefatos do GitHub. Hash/mode do
 wrapper instalado foram conferidos e comando inválido foi rejeitado.

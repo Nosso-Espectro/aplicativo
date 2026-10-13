@@ -63,6 +63,7 @@ class SSHBuildTests(unittest.TestCase):
         self.assertIn('chmod 700 "$base/diagnostics"', wrapper)
         self.assertIn("-XX:ErrorFile=$base/diagnostics/$sha-hs_err_pid%p.log", wrapper)
         self.assertIn("--no-daemon --max-workers=2 -Pkotlin.compiler.execution.strategy=in-process", wrapper)
+        self.assertIn("-Xmx4g -XX:MaxMetaspaceSize=1g", wrapper)
         self.assertIn("3808d1d15e3ec6bd5b84057fb5d84c33d8a1536a258146bcea2e603fc726e08e", installer)
         self.assertIn("sha256sum -c -", installer)
         self.assertIn("refusing to overwrite", installer)

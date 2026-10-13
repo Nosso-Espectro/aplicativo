@@ -52,7 +52,8 @@ cd "$checkout"
 npm ci --include=dev
 npx --no-install expo prebuild --platform android --no-install
 cd android
-./gradlew --no-daemon --max-workers=2 -Pkotlin.compiler.execution.strategy=in-process assembleRelease
+./gradlew --no-daemon --max-workers=2 -Pkotlin.compiler.execution.strategy=in-process \
+  '-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8' assembleRelease
 cd "$checkout"
 mkdir -p "$(dirname "$artifact")"
 install -m 600 android/app/build/outputs/apk/release/app-release.apk "$artifact"
