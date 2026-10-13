@@ -9,6 +9,10 @@ grep -Eq '^ssh-ed25519 [A-Za-z0-9+/=]+( .*)?$' "$key_file" || exit 65
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y ca-certificates curl unzip zip git openjdk-17-jdk-headless build-essential ninja-build python3
+build_java=/opt/tear-build/jdk-17.0.20.1+1
+if [[ ! -x "$build_java/bin/java" ]]; then
+  bash "$(dirname "$wrapper")/install-build-jdk.sh"
+fi
 if ! id tear-build >/dev/null 2>&1; then
   useradd --create-home --shell /bin/bash tear-build
 fi
@@ -48,12 +52,12 @@ if [[ ! -x "$sdk/cmdline-tools/latest/bin/sdkmanager" ]]; then
   rm -rf "$temporary_sdk"
 fi
 chown -R tear-build:tear-build "$sdk"
-runuser -u tear-build -- env HOME=/srv/tear-build/home JAVA_TOOL_OPTIONS=-Duser.home=/srv/tear-build/home ANDROID_USER_HOME=/srv/tear-build/home/.android JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 ANDROID_HOME="$sdk" ANDROID_SDK_ROOT="$sdk" bash -c '
+runuser -u tear-build -- env HOME=/srv/tear-build/home JAVA_TOOL_OPTIONS=-Duser.home=/srv/tear-build/home ANDROID_USER_HOME=/srv/tear-build/home/.android JAVA_HOME="$build_java" ANDROID_HOME="$sdk" ANDROID_SDK_ROOT="$sdk" bash -c '
   cd "$HOME"
   mkdir -p "$HOME/.android/cache"
   printf "y\n%.0s" {1..100} | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null
   "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;27.1.12297006"
 '
 runuser -u tear-build -- /opt/tear-build/node/bin/node --version
-java -version
+"$build_java/bin/java" -version
 printf 'Android build host provisioned; no runner, root build or Docker membership.\n'
