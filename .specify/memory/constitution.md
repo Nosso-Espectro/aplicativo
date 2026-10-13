@@ -1,23 +1,3 @@
-<!--
-Sync Impact Report — material temporário de revisão; remover antes do commit.
-Versão: 1.0.0 → 1.1.0 (MINOR: ampliação dos princípios e da governança).
-Princípios anteriores reorganizados e ampliados:
-- 1. GitHub como fonte de verdade → I. Produto orientado pelo GitHub e pelos critérios de aceite.
-- 2. Milestone/spec e Issue/história/branch → I, VII e VIII.
-- 3. Main, integração e rastreabilidade → VII. Trunk-based e VIII. Entrega por Milestone.
-- 4. Diretriz React Native e ausência de backend → Restrições de escopo e tecnologia.
-- 5. Controle, acessibilidade, privacidade e saúde → II, III, IV e IX.
-- 6. Ready, Done e quality gate → VI e Fluxo de desenvolvimento e Definition of Done.
-- 7. Revisão de documentos e princípios → Governance.
-Seções adicionadas: Core Principles (nove princípios explícitos), Restrições de escopo e
-tecnologia, Fluxo de desenvolvimento e Definition of Done, Governance.
-Regras explicitadas: WCAG 2.2 AA aplicável, neuroinclusão, armazenamento local, offline-first,
-simplicidade, testes automatizados e aplicação em todas as etapas do Spec Kit.
-Seções removidas: nenhuma regra vigente removida; lista anterior incorporada à nova estrutura.
-Ratificação: 2026-09-23, nesta solicitação de adoção; versão anterior era proposta da mesma data.
-TODOs ou placeholders pendentes: nenhum.
-Artefatos dependentes: não modificados; devem consultar esta constituição em tempo de execução.
--->
 # TEAr — Múltiplas Formas de Existir Constitution
 
 ## Core Principles
@@ -92,8 +72,13 @@ Testes NÃO DEVEM apenas reproduzir a implementação nem criar cobertura artifi
 Verificações manuais de design e acessibilidade DEVEM complementar a automação quando ela
 não comprovar o comportamento necessário.
 
-Antes de concluir uma Issue, DEVEM ser executados testes relacionados, lint, build,
-typecheck quando aplicável e demais checks existentes exigidos pelo projeto. Evidências
+Antes de concluir uma Issue, DEVEM ser executados testes relacionados, lint,
+typecheck quando aplicável e demais checks leves existentes exigidos pelo projeto.
+Builds NÃO DEVEM ser disparados automaticamente por tarefa, Issue ou execução do
+agente nesta máquina. Builds e verificações dependentes de binário DEVEM ocorrer
+no gate da milestone em ambiente dedicado, ou por solicitação explícita do usuário.
+Enquanto a máquina SSH não estiver configurada, NÃO DEVE ser presumida disponibilidade
+remota; registrar a pendência sem substituir o build por sucesso artificial. Evidências
 DEVEM registrar resultados reais e limitações. Ausência de ferramentas ou falha de execução
 NÃO equivale a aprovação. Tasks só DEVEM ser marcadas como concluídas após a validação.
 
@@ -171,8 +156,10 @@ Todas as etapas posteriores DEVEM ler esta constituição e registrar conformida
 A Definition of Done DEVE incluir, obrigatoriamente:
 
 - Critérios de aceite atendidos, tasks verificadas e rastreabilidade preservada.
-- Testes automatizados pertinentes aprovados, lint e build aprovados, typecheck quando
-  aplicável e checks obrigatórios aprovados.
+- Testes automatizados pertinentes aprovados, lint aprovado, typecheck quando
+  aplicável e checks leves obrigatórios aprovados.
+- Builds e verificações dependentes de binário rastreados como pendências para
+  o gate da milestone; sua execução não é condição para concluir cada Issue.
 - Acessibilidade e design revisados, incluindo neuroinclusão, baixa carga cognitiva,
   previsibilidade e controle do usuário nas interfaces afetadas.
 - Segurança e privacidade revisadas, incluindo minimização, permissões, logs, dependências
@@ -216,4 +203,8 @@ solicitação de adoção dos princípios nessa mesma data. A preparação inici
 backlog, documentação, Skills, scripts e validação local; ela não representa implementação
 ou release do aplicativo. A autorização de cada tarefa futura DEVE continuar sendo respeitada.
 
-**Version**: 1.1.0 | **Ratified**: 2026-09-23 | **Last Amended**: 2026-09-23
+A emenda 2.0.0 foi aprovada pelo usuário em 2026-10-13 para retirar builds por
+tarefa nesta máquina com capacidade de processamento insuficiente. Checks leves
+continuam por Issue; builds reais permanecem obrigatórios no gate dedicado.
+
+**Version**: 2.0.0 | **Ratified**: 2026-09-23 | **Last Amended**: 2026-10-13

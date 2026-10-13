@@ -54,11 +54,16 @@ npx expo-doctor
 
 `npm run lint` inclui testes e configurações, além das rotas verificadas por `npx expo lint`.
 O workflow [mobile-quality.yml](../.github/workflows/mobile-quality.yml) configura esses checks
-e build Android com bundle embutido. Sua execução remota ainda não foi comprovada.
+e build Android com bundle embutido somente por `workflow_dispatch`.
+PRs e pushes executam os checks leves. A execução remota ainda não foi comprovada.
 Android requer JDK 17, Android SDK/API 36, build-tools 36.0.0 e NDK 27.1.12297006;
 iOS requer macOS, Xcode e CocoaPods compatíveis com SDK 57. Os mínimos de execução são
 Android 7/API 24 e iOS 16.4; geração de projetos e bundles não prova execução nessas versões.
-Use `npm run build:android` e, no macOS, `npm run build:ios`. Consulte os comandos de
+Esses comandos não fazem parte da execução local de cada tarefa ou Issue.
+Builds ficam para o gate da milestone em máquina dedicada, ou solicitação explícita.
+A futura execução via SSH ainda não foi configurada; não presumir acesso remoto.
+Para execução autorizada nesse ambiente, use `npm run build:android` e, no macOS,
+`npm run build:ios`. Consulte os comandos de
 instalação/offline e os resultados em [quickstart](../specs/001-comunicacao-visual-caa/quickstart.md)
 e a [revisão do bootstrap](bootstrap-tecnico.md).
 
@@ -125,7 +130,9 @@ Cada branch de Issue gera um PR contra main, quando solicitado/autorizado. Títu
 Uma Issue só está pronta para merge quando:
 
 - Critérios atendidos e tasks relevantes concluídas.
-- Testes, lint e build verdes; typecheck quando aplicável e demais checks obrigatórios atendidos.
+- Testes e lint verdes; typecheck quando aplicável e demais checks leves obrigatórios atendidos.
+- Builds e verificações dependentes de binário registrados para o gate da milestone;
+  não são obrigatórios por Issue nem devem ser disparados automaticamente nesta máquina.
 - Acessibilidade revisada para UI e privacidade revisada para dados.
 - Documentação/spec atualizadas e nenhuma regressão conhecida impeditiva.
 - PR vinculado à Issue e review concluída.

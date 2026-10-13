@@ -123,7 +123,7 @@ novamente, reiniciar em modo avião; testar lista vazia e falha de gravação/re
 **Objetivo**: verificar coerência entre histórias implementadas e Definition of Done, sem antecipar
 funcionalidades fora das Issues.
 
-- [ ] T037 Executar `npm ci`, `npx expo lint`, `npx tsc --noEmit`, `npm test -- --ci`, `npx expo-doctor`, builds Android/iOS disponíveis e cenários aplicáveis de `specs/001-comunicacao-visual-caa/quickstart.md`; registrar resultados reais, limitações e gates pendentes no PR da Issue correspondente.
+- [ ] T037 Executar os checks leves por Issue: `npm ci`, `npx expo lint`, `npx tsc --noEmit`, `npm test -- --ci`, `npx expo-doctor` e cenários aplicáveis de `specs/001-comunicacao-visual-caa/quickstart.md`; registrar resultados reais e limitações. Builds Android/iOS e cenários dependentes de binário ficam para o gate da milestone em ambiente dedicado, conforme emenda de 2026-10-13; não executar build local automaticamente.
 - [ ] T038 Revisar acessibilidade, design neuroinclusivo, baixa carga cognitiva, previsibilidade, privacidade, segurança, permissões, rede, logs e dependências nas histórias entregues; registrar evidências ou justificativas de não aplicabilidade em `specs/001-comunicacao-visual-caa/quickstart.md` e nos respectivos PRs.
 - [ ] T039 Conferir rastreabilidade de RF-001 a RF-019 e RNF da spec para Issues #1–#5, atualizar `specs/001-comunicacao-visual-caa/tasks.md` somente após verificar critérios e comportamento, e registrar lacunas não especificadas como pendências no backlog de origem.
 

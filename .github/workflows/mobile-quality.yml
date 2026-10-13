@@ -42,6 +42,7 @@ jobs:
         run: npx expo-doctor
 
   android-build:
+    if: github.event_name == 'workflow_dispatch'
     name: Android release build (local test signing)
     runs-on: ubuntu-latest
     needs: quality
