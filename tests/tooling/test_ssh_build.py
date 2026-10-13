@@ -52,9 +52,20 @@ class SSHBuildTests(unittest.TestCase):
                 self.assertEqual(result.stdout, "")
 
     def test_shell_syntax(self):
-        for script in (WRAPPER, ROOT / "scripts/build/provision-android-host.sh"):
+        for script in (WRAPPER, ROOT / "scripts/build/provision-android-host.sh", ROOT / "scripts/build/install-build-jdk.sh"):
             result = subprocess.run(["bash", "-n", str(script)], capture_output=True)
             self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_dedicated_host_uses_verified_jdk_and_retains_crash_reports(self):
+        wrapper = WRAPPER.read_text()
+        installer = (ROOT / "scripts/build/install-build-jdk.sh").read_text()
+        self.assertIn("JAVA_HOME=/opt/tear-build/jdk-17.0.20.1+1", wrapper)
+        self.assertIn('chmod 700 "$base/diagnostics"', wrapper)
+        self.assertIn("-XX:ErrorFile=$base/diagnostics/$sha-hs_err_pid%p.log", wrapper)
+        self.assertIn("--no-daemon --max-workers=2 -Pkotlin.compiler.execution.strategy=in-process", wrapper)
+        self.assertIn("3808d1d15e3ec6bd5b84057fb5d84c33d8a1536a258146bcea2e603fc726e08e", installer)
+        self.assertIn("sha256sum -c -", installer)
+        self.assertIn("refusing to overwrite", installer)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,30 @@
 # Android Build Host
 
+## Recuperação técnica do host — Issue #61
+
+Após o usuário priorizar a correção do servidor, foi instalado Temurin17.0.20.1+1
+em caminho próprio root-owned, por archive oficial com SHA256 confirmado.
+Java global/serviços não foram alterados. JVMs antigas somente da conta dedicada
+foram encerradas. `dpkg -V` dos pacotes JDK/SSH não relatou divergências, e a
+consulta limitada do kernel não encontrou OOM/MCE no intervalo analisado.
+Isso não é uma auditoria completa do host nem exclui instabilidade da VM/KVM.
+
+O wrapper usa JDK verificado, `--no-daemon`, dois workers e Kotlin in-process.
+Relatórios fatais por SHA ficam em `/srv/tear-build/diagnostics`, modo700, fora
+do checkout limpo; não publicar logs brutos em artefatos do GitHub. Hash/mode do
+wrapper instalado foram conferidos e comando inválido foi rejeitado.
+
+`scripts/build/install-build-jdk.sh` valida checksum fixo da versão oficial,
+recusa sobrescrever destino existente e não altera alternatives do sistema.
+O provisionamento espera esse script ao lado do wrapper. Para recuperar somente
+o JDK/wrapper, instalar o JDK como root e copiar o wrapper com root:root/mode755;
+não executar provisionamento completo em host com serviços/dados desconhecidos.
+
+Compilação diagnóstica do SHA `d54ad611bb20dd52109789e4c8991c1e926726ef`
+iniciada em 2026-10-13 no usuário restrito; resultado ainda pendente nesta revisão.
+Nenhum APK dessa investigação liberado/instalado e nenhum retorno automático
+do workflow ao SSH. Correção das ferramentas não comprova saneamento do servidor.
+
 ## Suspensão temporária do host — Issue #61
 
 Em 2026-10-13 os builds Android das US-008/US-014 falharam por encerramento
@@ -41,7 +66,7 @@ Nenhum build é executado automaticamente na máquina de desenvolvimento.
 
 ## Provisionamento
 
-Copiar `scripts/build/provision-android-host.sh`, `scripts/build/tear-android-ci`
+Copiar `scripts/build/provision-android-host.sh`, `scripts/build/install-build-jdk.sh`, `scripts/build/tear-android-ci`
 e a chave **pública** dedicada para o servidor e executar como root:
 
 ```bash
