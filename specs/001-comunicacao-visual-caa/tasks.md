@@ -81,10 +81,14 @@ categorias e em segundo plano; encerrar o app inicia frase vazia.
 um, limpar toda a frase, navegar/suspender e retornar; encerrar e abrir novamente para verificar
 frase vazia.
 
-- [ ] T016 [US-002] Adicionar testes de composição, ordem, remoção individual, limpeza e ciclo de sessão em `tests/features/communication/sentence/sentence-state.test.ts`.
-- [ ] T017 [US-002] Implementar estado volátil da frase e entradas com snapshot do conteúdo selecionado para RF-005 e RF-008 em `src/features/communication/sentence/sentence-state.ts`, sem persistir a frase após encerramento e sem impor limite funcional novo.
-- [ ] T018 [US-002] Implementar área de frase, remoção individual para RF-006 e ação de limpar para RF-007 em `src/features/communication/sentence/` e integrar navegação de categorias em `src/app/_layout.tsx`.
+- [x] T016 [US-002] Adicionar testes de composição, ordem, remoção individual, limpeza e ciclo de sessão em `tests/features/communication/sentence/sentence-state.test.ts`. Evidência: testes unitários e de composição aprovados em 2026-10-13, incluindo duplicatas, snapshots e ciclo do provider; suíte total com 25 testes.
+- [x] T017 [US-002] Implementar estado volátil da frase e entradas com snapshot do conteúdo selecionado para RF-005 e RF-008 em `src/features/communication/sentence/sentence-state.ts`, sem persistir a frase após encerramento e sem impor limite funcional novo. Evidência: reducer, provider na raiz, 1000 seleções sem máximo fixo e nova sessão vazia.
+- [x] T018 [US-002] Implementar área de frase, remoção individual para RF-006 e ação de limpar para RF-007 em `src/features/communication/sentence/` e integrar navegação de categorias em `src/app/_layout.tsx`. Evidência: testes de seleção entre categorias, remoção, limpeza, detalhe do cartão e retorno, sem abrir links automaticamente.
 - [ ] T019 [US-002] Revisar a composição com leitor de tela, ordem de foco, rótulos, ampliação, previsibilidade e baixa estimulação em `src/features/communication/sentence/`; registrar evidência no PR.
+
+T019: rótulos, ordem e alvos de toque revisados estaticamente; testes de componentes
+aprovados. Leitor de tela, foco e ampliação em dispositivo permanecem para o gate.
+Prévia web configurada a pedido do usuário; não equivale a validação Android/iOS.
 
 ## Fase 5: US-003 — Text-to-Speech (Priority: P0, Issue #3)
 

@@ -3,7 +3,7 @@ milestone: 9
 priority: P0
 tag: m001-comunicacao-visual-caa
 status: draft
-ready_stories: ["US-041", "US-001"]
+ready_stories: ["US-041", "US-001", "US-002"]
 source_checked: 2026-09-23
 ---
 
@@ -160,10 +160,16 @@ Como usuário de CAA, quero selecionar vários cartões em sequência, para mont
 
 #### Critérios de aceite
 
-- Os cartões selecionados devem aparecer em uma área de frase na ordem escolhida.
-- Deve ser possível remover um cartão individual sem apagar toda a frase.
-- Deve existir ação para limpar toda a frase.
-- A frase montada deve permanecer disponível enquanto o usuário navega entre categorias.
+- [ ] Os cartões selecionados devem aparecer em uma área de frase na ordem escolhida.
+- [ ] Deve ser possível remover um cartão individual sem apagar toda a frase.
+- [ ] Deve existir ação para limpar toda a frase.
+- [ ] A frase montada deve permanecer disponível enquanto o usuário navega entre categorias.
+
+Prontidão da US-002 conferida em 2026-10-13: critérios e esclarecimentos da
+Issue #2 preservados; catálogo/quadro da #1 integrados pelo PR #43 no commit
+b1d008aa458da21a634cacd6e01423d173c146d5. Sem ambiguidade funcional bloqueante.
+Frase somente em memória, sem limite funcional, sem fala automática e com
+snapshot por seleção. Verificações dependentes de binário ficam no gate remoto.
 
 **Why this priority**: prioridade P0 da Issue e da milestone; valor expresso na história original.
 

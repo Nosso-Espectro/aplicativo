@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   Image,
   Alert,
@@ -21,9 +21,13 @@ import {
   type CommunicationCard,
 } from './initial-cards';
 
-type BoardProps = { cards?: readonly CommunicationCard[] };
+type BoardProps = {
+  cards?: readonly CommunicationCard[];
+  onSelectCard?: (card: CommunicationCard) => void;
+  sentence?: ReactNode;
+};
 
-export function CommunicationBoard({ cards = initialCards }: BoardProps) {
+export function CommunicationBoard({ cards = initialCards, onSelectCard, sentence }: BoardProps) {
   const [category, setCategory] = useState<CategoryId | 'all'>('all');
   const [selectedCard, setSelectedCard] = useState<CommunicationCard | null>(null);
   const { width, fontScale } = useWindowDimensions();
@@ -41,6 +45,7 @@ export function CommunicationBoard({ cards = initialCards }: BoardProps) {
       <ScrollView contentContainerStyle={styles.content}>
         <Text accessibilityRole="header" style={styles.brand}>TEAr</Text>
         <Text accessibilityRole="header" style={styles.heading}>Comunicação</Text>
+        {sentence}
         <View style={styles.categories}>
           {[{ id: 'all' as const, title: 'Todos' }, ...categories].map((item) => (
             <Pressable
@@ -64,18 +69,17 @@ export function CommunicationBoard({ cards = initialCards }: BoardProps) {
         </View>
         <View style={styles.grid}>
           {visibleCards.map((card) => (
-            <Pressable
+            <View
               key={card.id}
-              accessibilityRole="button"
-              accessibilityLabel={card.title}
-              accessibilityHint="Mostrar cartão"
-              onPress={() => setSelectedCard(card)}
-              style={({ pressed }) => [
-                styles.card,
-                { width: singleColumn ? '100%' : '48%' },
-                pressed && styles.pressed,
-              ]}
+              style={[styles.card, { width: singleColumn ? '100%' : '48%' }]}
             >
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={card.title}
+                accessibilityHint={onSelectCard ? 'Adicionar à frase' : 'Mostrar cartão'}
+                onPress={() => onSelectCard ? onSelectCard(card) : setSelectedCard(card)}
+                style={({ pressed }) => [styles.cardContent, pressed && styles.pressed]}
+              >
               {card.pictogram && (
                 <Image
                   accessible={false}
@@ -85,7 +89,18 @@ export function CommunicationBoard({ cards = initialCards }: BoardProps) {
                 />
               )}
               <Text style={styles.cardLabel}>{card.title}</Text>
-            </Pressable>
+              </Pressable>
+              {onSelectCard && (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Mostrar cartão: ${card.title}`}
+                  onPress={() => setSelectedCard(card)}
+                  style={({ pressed }) => [styles.preview, pressed && styles.pressed]}
+                >
+                  <Text style={styles.creditLabel}>Ver cartão</Text>
+                </Pressable>
+              )}
+            </View>
           ))}
         </View>
         {visibleCards.length === 0 && (
@@ -156,10 +171,12 @@ const styles = StyleSheet.create({
   activeCategoryLabel: { color: '#16634D' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12 },
   card: {
-    minHeight: 132, padding: 16, alignItems: 'center', justifyContent: 'center',
+    minHeight: 132, alignItems: 'center', justifyContent: 'center',
     gap: 12, backgroundColor: '#F7F8FA', borderColor: '#72777D',
     borderWidth: 1, borderRadius: 8,
   },
+  cardContent: { minHeight: 132, width: '100%', padding: 16, gap: 12, alignItems: 'center', justifyContent: 'center' },
+  preview: { minHeight: 48, width: '100%', padding: 12, alignItems: 'center', justifyContent: 'center' },
   cardLabel: { color: '#202124', fontSize: 22, fontWeight: '600', textAlign: 'center' },
   pictogram: { width: 72, height: 72 },
   pressed: { opacity: 0.7 },
