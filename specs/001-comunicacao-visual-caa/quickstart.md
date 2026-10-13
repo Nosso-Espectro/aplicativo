@@ -246,3 +246,37 @@ Registrar comandos e resultados reais de testes, lint, typecheck quando aplicáv
 separar resultados simulados dos testes nativos. Não marcar gate verde quando a ferramenta
 estiver ausente. Revisões de acessibilidade, privacidade e design incluem evidências ou
 limitações concretas no PR. O aplicativo não está validado por este documento.
+
+## US-004 — Cartões próprios (2026-10-13)
+
+Implementação de criar/editar/excluir com título, categoria existente e imagem
+opcional. Rotas `/custom-card/new` e `/custom-card/[id]`; banco privado `tear.db`
+via expo-sqlite, SQL parametrizado e transações exclusivas. Frase em memória
+preserva snapshots ao editar e remove ocorrências do cartão após excluir com
+sucesso. Chave estrangeira remove favoritos associados, sem antecipar a UI da #5.
+
+Picker somente por ação explícita, câmera contextual e sem permissão de microfone
+ou biblioteca ampla. `shouldDownloadFromNetwork: false`, sem base64/EXIF em JS;
+URIs remotas rejeitadas. Imagens aceitas são copiadas via FileSystem para documentos
+privados. Cópia é removida após falha do commit; imagens antigas sobrevivem durante
+a sessão para preservar snapshots e são limpas na próxima abertura.
+
+Erros mantêm formulário/estado salvo, permitem retry/cancelamento e não expõem
+detalhes nativos. Exclusão exige confirmação explícita. Texto escalável, conteúdo
+rolável, sem corte por número de linhas, controles com mínimo 48dp, rótulos,
+grupos de rádio, mensagens acessíveis e nenhuma fala automática. Revisão qualitativa
+estática de consistência/baixa estimulação realizada; revisão visual e assistiva
+em aparelhos permanece pendente. A automação visual do navegador não foi realizada.
+
+Evidências locais: 76 testes Jest/14 suítes, lint e typecheck aprovados; Expo Doctor
+21/21, 44 testes de tooling e validador do workflow aprovados. Testes SQL usam
+SQLite real do Node 24, inclusive reabertura de arquivo, rollback e cascata, mas
+não comprovam o módulo Expo, permissões e persistência em Android/iOS.
+Prévia web em localhost:8082 mantém quadro/frases; armazenamento nativo e voz
+não estão disponíveis no navegador. Não há falsa persistência em memória na web.
+
+Auditoria atual: 65 ocorrências (15 moderadas, 49 altas, uma crítica em
+shell-quote), também presentes na branch US-003 anterior à instalação dos novos
+módulos. O registro anterior de 13 moderadas é histórico, não o estado atual.
+Não aplicado `audit fix --force` nem downgrade do Expo; revisão de dependências
+continua necessária antes de release. Nenhum build local executado.

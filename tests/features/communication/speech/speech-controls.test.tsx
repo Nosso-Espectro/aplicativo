@@ -3,6 +3,10 @@ import { SpeechControls } from '../../../../src/features/communication/speech/Sp
 import { localSpeech } from '../../../../src/features/communication/speech/local-speech';
 import StartupScreen from '../../../../src/app';
 import { SentenceProvider } from '../../../../src/features/communication/sentence/SentenceProvider';
+jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
+jest.mock('../../../../src/features/communication/custom-cards/CustomCardsProvider', () => ({
+  useCustomCards: () => ({ cards: [], loading: false, error: null }),
+}));
 
 jest.mock('../../../../src/features/communication/speech/local-speech', () => ({
   localSpeech: {

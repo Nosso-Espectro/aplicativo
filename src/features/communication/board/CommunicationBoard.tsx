@@ -12,6 +12,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import {
   categories,
@@ -25,9 +26,14 @@ type BoardProps = {
   cards?: readonly CommunicationCard[];
   onSelectCard?: (card: CommunicationCard) => void;
   sentence?: ReactNode;
+  customCardIds?: readonly string[];
+  onNewCard?: () => void;
+  onEditCard?: (id: string) => void;
+  storageStatus?: string | null;
+  onRetryStorage?: () => void;
 };
 
-export function CommunicationBoard({ cards = initialCards, onSelectCard, sentence }: BoardProps) {
+export function CommunicationBoard({ cards = initialCards, onSelectCard, sentence, customCardIds = [], onNewCard, onEditCard, storageStatus, onRetryStorage }: BoardProps) {
   const [category, setCategory] = useState<CategoryId | 'all'>('all');
   const [selectedCard, setSelectedCard] = useState<CommunicationCard | null>(null);
   const { width, fontScale } = useWindowDimensions();
@@ -46,6 +52,14 @@ export function CommunicationBoard({ cards = initialCards, onSelectCard, sentenc
         <Text accessibilityRole="header" style={styles.brand}>TEAr</Text>
         <Text accessibilityRole="header" style={styles.heading}>Comunicação</Text>
         {sentence}
+        {onNewCard && <Pressable accessibilityRole="button" accessibilityLabel="Novo cartão" onPress={onNewCard} style={styles.newCard}>
+          <MaterialIcons name="add" size={24} color="#16634D" accessible={false} />
+          <Text style={styles.categoryLabel}>Novo cartão</Text>
+        </Pressable>}
+        {storageStatus && <Text accessibilityLiveRegion="polite" style={styles.empty}>{storageStatus}</Text>}
+        {onRetryStorage && <Pressable accessibilityRole="button" onPress={onRetryStorage} style={styles.back}>
+          <Text style={styles.categoryLabel}>Tentar abrir cartões novamente</Text>
+        </Pressable>}
         <View style={styles.categories}>
           {[{ id: 'all' as const, title: 'Todos' }, ...categories].map((item) => (
             <Pressable
@@ -100,6 +114,11 @@ export function CommunicationBoard({ cards = initialCards, onSelectCard, sentenc
                   <Text style={styles.creditLabel}>Ver cartão</Text>
                 </Pressable>
               )}
+              {customCardIds.includes(card.id) && onEditCard && <Pressable accessibilityRole="button" accessibilityLabel={`Editar cartão: ${card.title}`}
+                onPress={() => onEditCard(card.id)} style={styles.preview}>
+                <MaterialIcons name="edit" size={24} color="#16634D" accessible={false} />
+                <Text style={styles.creditLabel}>Editar</Text>
+              </Pressable>}
             </View>
           ))}
         </View>
@@ -160,6 +179,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#FFFFFF' },
   content: { padding: 20, gap: 20, maxWidth: 720, width: '100%', alignSelf: 'center' },
   brand: { color: '#16634D', fontSize: 24, fontWeight: '700' },
+  newCard: { minHeight: 48, padding: 12, flexDirection: 'row', gap: 8, alignItems: 'center' },
   heading: { color: '#202124', fontSize: 26, fontWeight: '600' },
   categories: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   category: {

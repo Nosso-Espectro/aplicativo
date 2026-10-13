@@ -4,11 +4,16 @@
     "slug": "tear-aplicativo",
     "scheme": "tear",
     "version": "1.0.0",
-    "platforms": ["android", "ios", "web"],
+    "platforms": [
+      "android",
+      "ios",
+      "web"
+    ],
     "android": {
       "package": "org.nossoespectro.tear",
       "allowBackup": false,
       "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.SYSTEM_ALERT_WINDOW",
@@ -19,6 +24,18 @@
       "bundleIdentifier": "org.nossoespectro.tear",
       "deploymentTarget": "16.4"
     },
-    "plugins": ["expo-router"]
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      [
+        "expo-image-picker",
+        {
+          "microphonePermission": false,
+          "photosPermission": false,
+          "cameraPermission": "Permitir que o TEAr use a câmera para a imagem de um cartão escolhido por você."
+        }
+      ],
+      "expo-font"
+    ]
   }
 }

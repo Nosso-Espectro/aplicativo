@@ -2,6 +2,10 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { Linking } from 'react-native';
 import StartupScreen from '../../../../src/app';
 import { SentenceProvider } from '../../../../src/features/communication/sentence/SentenceProvider';
+jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
+jest.mock('../../../../src/features/communication/custom-cards/CustomCardsProvider', () => ({
+  useCustomCards: () => ({ cards: [], loading: false, error: null }),
+}));
 
 function App() {
   return <SentenceProvider><StartupScreen /></SentenceProvider>;

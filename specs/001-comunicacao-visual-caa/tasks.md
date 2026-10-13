@@ -117,15 +117,25 @@ local e mensagens acessíveis em erros de validação, picker ou gravação.
 **Teste independente**: criar/editar/excluir com e sem imagem, verificar validação de título/categoria,
 negação/indisponibilidade de câmera, falha de gravação e recuperação após reinício sem rede.
 
-- [ ] T025 [US-004] Adicionar testes de validação para título vazio/só espaços, categoria ausente/inexistente e preservação dos campos em `tests/features/communication/custom-cards/custom-card-validation.test.ts`.
-- [ ] T026 [US-004] Implementar validação e formulário de criar/editar cartão para RF-013 em `src/features/communication/custom-cards/`, exigindo título não vazio após remover espaços externos e categoria existente; erro deve identificar campo, preservar preenchimento e impedir salvar.
-- [ ] T027 [US-004] Adicionar testes do picker, cópia de imagem e falha de persistência em `tests/features/communication/custom-cards/custom-card-media.test.ts` e `tests/features/communication/custom-cards/custom-card-storage.test.ts`, cobrindo imagem omitida, câmera negada/indisponível e retry/cancelamento.
+- [x] T025 [US-004] Adicionar testes de validação para título vazio/só espaços, categoria ausente/inexistente e preservação dos campos em `tests/features/communication/custom-cards/custom-card-validation.test.ts`.
+- [x] T026 [US-004] Implementar validação e formulário de criar/editar cartão para RF-013 em `src/features/communication/custom-cards/`, exigindo título não vazio após remover espaços externos e categoria existente; erro deve identificar campo, preservar preenchimento e impedir salvar.
+- [x] T027 [US-004] Adicionar testes do picker, cópia de imagem e falha de persistência em `tests/features/communication/custom-cards/custom-card-media.test.ts` e `tests/features/communication/custom-cards/custom-card-storage.test.ts`, cobrindo imagem omitida, câmera negada/indisponível e retry/cancelamento.
 - [ ] T028 [US-004] Integrar `expo-image-picker` para RF-014 em `src/features/communication/custom-cards/media-picker.ts` e configuração mínima em `app.json`; selecionar arquivo ou câmera a pedido, remover permissão de microfone e permitir salvar sem imagem quando câmera falhar.
 - [ ] T029 [US-004] Integrar `expo-file-system` para copiar imagem selecionada ao diretório privado persistente em `src/features/communication/custom-cards/local-image-storage.ts`; manter somente URI local no modelo e não baixar mídia remota.
-- [ ] T030 [US-004] Implementar RF-015/RF-016: criar, editar, excluir e persistir cartão personalizado em `src/features/communication/custom-cards/`, integrando `expo-sqlite` em `src/features/communication/storage/`; preservar edição em falha, oferecer retry/cancelamento, atualizar favoritos editados e remover cartão excluído da frase/favoritos sem alterar ordem restante.
+- [x] T030 [US-004] Implementar RF-015/RF-016: criar, editar, excluir e persistir cartão personalizado em `src/features/communication/custom-cards/`, integrando `expo-sqlite` em `src/features/communication/storage/`; preservar edição em falha, oferecer retry/cancelamento, atualizar favoritos editados e remover cartão excluído da frase/favoritos sem alterar ordem restante.
 - [ ] T031 [US-004] Revisar formulário, permissões, mensagens de erro e conteúdo de cartão com leitor de tela, ampliação, foco e contraste em Android/iOS; registrar privacidade, operação offline, evidências e limitações em `specs/001-comunicacao-visual-caa/quickstart.md` e no PR.
 
 ## Fase 7: US-005 — Favoritos (Priority: P0, Issue #5)
+
+**Evidência US-004 (2026-10-13)**: T025–T027 e T030 verificadas por testes
+de validação, formulário, picker simulado, recuperação de falha, sessão e SQL real
+via SQLite do Node 24: criar/editar, reabrir arquivo, parametrização, rollback e
+exclusão em cascata. Suíte total: 76 testes, lint e typecheck aprovados.
+T028/T029 implementadas e testadas com fronteiras nativas simuladas, mas aguardam
+build e uso em Android/iOS. T031 continua pendente de revisão assistiva e offline
+em dispositivo. Não confundir SQLite do host com validação do módulo Expo nativo.
+Favoritos ainda não possuem interface; a tabela apenas prepara a integridade das
+referências e sua exclusão em cascata exigida pela #4.
 
 **Objetivo**: marcar/desmarcar qualquer cartão, acessar área própria e persistir localmente a
 ordem, preservando último estado confirmado em falha.
