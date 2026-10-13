@@ -43,12 +43,7 @@ do sistema, não as altera. Ícone/splash native permanecem fora desse controle.
 
 ## Persistência
 
-Andamento inicial US-009: `low-stimulation.ts` implementa validação da preferência
-e regras de apresentação/movimento, com seis testes aprovados, lint/tipos verdes.
-Provider/switch, persistência e integração real dos quadros/Stack ainda faltam;
-nenhuma task de entrega concluída pelo modelo isolado.
-
-US-009 planeja SQLite privado `tear-display-preferences.db` versão1, singleton
+US-009 implementa SQLite privado `tear-display-preferences.db` versão1, singleton
 enabled INTEGER0/1, fila/transação/rollback/schema futuro recusado. Publicar modo
 confirmado somente após commit; falha mantém confirmado, erro e retry explícito,
 switch bloqueado em operação duplicada. Não alterar tabelas/dados de outros
@@ -58,6 +53,26 @@ disponíveis, apenas imagem decorativa é omitida no quadro/favoritos e transiç
 do Stack são reduzidas. Painel #10 não exige banco próprio e continua pendente.
 
 ## Fluxos principais
+
+`LowStimulationProvider` restaura a preferência e lê/subscreve somente a redução
+de movimento do sistema. A resposta inicial atrasada não sobrescreve um evento
+mais recente; consulta indisponível mantém transições calmas. O Switch global só
+aparece quando a preferência é conhecida, não anuncia "desligado" durante leitura
+ou falha. Operação pendente bloqueia duplicatas; escrita falha mantém confirmado
+e retry usa a escolha tentada, inclusive `false`. RootLayout e Stack das rotinas
+aplicam a mesma regra, sem remontar os providers de dados/frases.
+
+Rótulo e Switch se empilham abaixo de 340dp ou em fontScale>=1.5. Texto continua
+escalável; alvo mínimo48dp. Revisão local dos pares sobre branco: #202124 16.10:1,
+#303438 12.54:1, #16634D 7.18:1 e #72777D 4.52:1; não é declaração de conformidade
+assistiva completa. Imagem decorativa é a única imagem retirada de Comunicação
+e Favoritos; preview/modal e todas as ações/voz voluntária permanecem disponíveis.
+O hook de apresentação permite renderizar o quadro isoladamente com a aparência
+padrão; o controle da aplicação exige o provider real, verificado no RootLayout.
+
+API primária: [AccessibilityInfo RN0.86](https://reactnative.dev/docs/0.86/accessibilityinfo)
+e [Switch](https://reactnative.dev/docs/0.86/switch). Sem alteração de configuração
+global, permissão, dependência, transmissão ou dados de outros módulos.
 
 Sequência de capacidades: Ativar modo de baixa estimulação → Acessar painel rápido de regulação.
 

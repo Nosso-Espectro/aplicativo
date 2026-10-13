@@ -11,7 +11,7 @@ source_checked: 2026-10-13
 
 Milestone GitHub: [P0 — Regulação Sensorial](https://github.com/Nosso-Espectro/aplicativo/milestone/11) (número 11).
 
-Milestone e Issues #9/#10 abertas. US-009 refinada e Ready na base real; #10 conserva dependências de destinos/painel ainda pendentes. Nenhuma entrega desta milestone concluída.
+US-009 implementada e verificada nos checks leves, com revisão nativa/assistiva e build remoto pendentes do gate. US-010 conserva dependências de destinos/painel ainda pendentes; a milestone não está concluída.
 
 ## Contexto
 
@@ -39,10 +39,10 @@ Como pessoa em sobrecarga sensorial, quero ativar uma interface visual simplific
 
 #### Critérios de aceite
 
-- [ ] O modo deve reduzir animações e elementos não essenciais.
-- [ ] A interface deve manter contraste suficiente e legibilidade.
-- [ ] O usuário deve conseguir ativar e desativar o modo rapidamente.
-- [ ] A preferência deve persistir entre sessões.
+- [x] O modo deve reduzir animações e elementos não essenciais.
+- [x] A interface deve manter contraste suficiente e legibilidade.
+- [x] O usuário deve conseguir ativar e desativar o modo rapidamente.
+- [x] A preferência deve persistir entre sessões.
 
 ### US-010 — Acessar painel rápido de regulação
 
