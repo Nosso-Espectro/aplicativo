@@ -1,16 +1,67 @@
 # Quickstart de Validação — Comunicação Visual / CAA
 
-Este guia distingue a base implementada na US-041/#41 das funcionalidades futuras #1–#5.
-A base mostra somente o título TEAr. Builds e abertura instalada em Android/iOS ainda não
-foram validados; os resultados reais e as limitações estão abaixo.
+Este guia conserva o histórico do bootstrap US-041/#41 e registra a implementação
+parcial da US-001/#1. A rota inicial apresenta o quadro e os dez PNGs fornecidos
+pelo usuário; a verificação individual de licença permanece pendente.
+
+## US-001 — Evidências de 2026-10-13
+
+- Branch: `feat/us-001-exibir-quadro-basico-de-comunicacao`, worktree isolada já
+  existente e inicialmente limpa, baseada na main 44737e42fce67f103ad22c3fbfea9ea38a1df9d9.
+- Catálogo: dez mensagens e categorias conforme tabela da Issue #1; filtro,
+  exibição individual e retorno, sem som, logs de conteúdo ou persistência.
+  Pictogramas importados localmente com os nomes originais enviados pelo usuário.
+  Crédito Flaticon por cartão usa a busca solicitada pelo usuário e só abre
+  navegador por ação explícita; a tela não depende desse acesso.
+- `npm test -- --ci --runInBand`: 3 suítes, 17 testes aprovados com Node 24.21.0
+  após incorporar PNGs, links e falha de abertura do crédito.
+  Cobertura: catálogo aprovado, primeira renderização sem fetch, dez caminhos
+  de até dois toques, filtro/retorno e ausência de dados. Não prova execução nativa.
+- `npm run lint` e `npm run typecheck`: aprovados.
+- `python3 scripts/validate-workflow.py`, 40 testes de tooling e
+  `./scripts/github/check-issue.sh 1`: aprovados; critérios originais e Ready reconciliados.
+- Expo Doctor 1.20.4: 20/21 checks; falha por patches recomendados mais recentes
+  para expo, expo-constants, expo-linking, expo-router e jest-expo. Antes da
+  integração, esses cinco patches foram alinhados e Expo Doctor passou 21/21.
+  Execução no sandbox não conseguiu
+  ler JSON do subprocesso; execução fora do sandbox produziu o resultado acima.
+- Privacidade/revisão estática: catálogo importado localmente, sem chamadas
+  automáticas de rede, coleta, banco, permissões ou dependências adicionais.
+  Link externo de crédito transmite somente o termo público de busca a pedido.
+  Seleção apenas
+  abre cartão; não inicia voz ou animação.
+- Acessibilidade projetada: rótulos e estados de seleção, texto ampliável,
+  rolagem, alvos de pelo menos 48 unidades; uma coluna para largura abaixo de
+  340 ou fontScale >= 1.5. Texto #202124 em branco; categorias #16634D em
+  #EEF6F2. Não há cor como única informação. Revisão nativa de foco, contraste,
+  ampliação, TalkBack/VoiceOver e uso offline instalado permanece pendente.
+- Pictogramas: acesso direto ao Flaticon bloqueado por preferência salva do
+  navegador, inclusive após autorização explícita do usuário. Usuário forneceu
+  os dez PNGs e solicitou os links de busca como atribuição. Licenças/autores
+  específicos não identificados; não presumidos. Associação e referências em
+  [ATTRIBUTIONS.md](../../assets/communication/pictograms/ATTRIBUTIONS.md).
+- Dependências inicialmente compartilhadas por link local `node_modules`;
+  antes da integração, instaladas na worktree com manifesto e lockfile alinhados
+  aos cinco patches recomendados pelo Expo Doctor.
+- Build Android iniciado sob a regra anterior: `assembleRelease` aprovado
+  em 18m12s, 571 tasks Gradle; bundle e dez PNGs locais empacotados.
+  APK em `android/app/build/outputs/apk/release/app-release.apk`.
+  Esse resultado não comprova abertura, uso offline ou acessibilidade nativa.
+- Decisão de 2026-10-13: retirar builds automáticos por tarefa/Issue/execução
+  nesta máquina. Gate da milestone em ambiente dedicado, ou execução explícita;
+  SSH ainda não configurado. Não foi iniciado outro build após essa decisão.
+- Decisão posterior: usar GitHub Actions em lugar do SSH planejado, com builds
+  Android/iOS manuais e gate remoto no SHA integrado da main.
+- `adb devices`: nenhum dispositivo; SDK local sem emulador instalado.
+  Abertura/offline, TalkBack/VoiceOver e build iOS ficam para o gate dedicado.
 
 ## Estado atual e pré-requisitos
 
 - Feature: [spec.md](spec.md), Issues #1–#5 e US-041/#41 da milestone #9.
 - Comportamento: [contrato de interação](contracts/user-interaction.md).
 - Modelo lógico: [data-model.md](data-model.md).
-- Stack instalada: Expo 57.0.24, RN 0.86.3, React 19.2.3, Node.js 24.21.0/npm 11.19.0,
-  `package-lock.json`, TypeScript 6.0.3 strict, Expo Router 57.0.22 e Hermes.
+- Stack instalada: Expo 57.0.28, RN 0.86.3, React 19.2.3, Node.js 24.21.0/npm 11.19.0,
+  `package-lock.json`, TypeScript 6.0.3 strict, Expo Router 57.0.26 e Hermes.
 - Branch existente: `chore/us-041-bootstrap-react-native`; DoR da #41 conferida via gh.
   Não recriar a base ao retomar. Verificar tasks e evidências; nenhuma história funcional
   foi implementada. O fallback Node 22.23.3/npm 10.9.9 não foi necessário.

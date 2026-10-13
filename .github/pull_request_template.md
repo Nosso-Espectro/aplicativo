@@ -14,6 +14,10 @@ Copie o checklist original da Issue e marque apenas os itens verificados.
 
 Comandos, resultados e cenários; indique limitações concretas.
 
+Build não é obrigatório por Issue. Registre builds e validações dependentes de
+binário para o gate da milestone; os builds são manuais no GitHub Actions.
+Não execute build local automaticamente.
+
 ## Acessibilidade
 
 Fluxos, dispositivos/recursos assistivos e resultados, ou justificativa de não aplicabilidade.

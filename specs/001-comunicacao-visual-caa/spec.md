@@ -3,7 +3,7 @@ milestone: 9
 priority: P0
 tag: m001-comunicacao-visual-caa
 status: draft
-ready_stories: ["US-041"]
+ready_stories: ["US-041", "US-001"]
 source_checked: 2026-09-23
 ---
 
@@ -15,7 +15,7 @@ Estado consultado: aberta; todas as histórias abaixo estão abertas. Especifica
 
 **Feature Branch**: não se aplica uma branch à milestone; cada Issue terá sua branch curta.
 **Created**: 2026-09-23
-**Status**: Draft — US-041 revisada e pronta para início; histórias funcionais ainda sem prontidão registrada; `ready_stories: ["US-041"]`.
+**Status**: Draft — US-041 integrada pelo PR #42; US-001 Ready conforme revisão registrada na Issue #1. Outras histórias não receberam aprovação de prontidão.
 **Input**: especificar a milestone inteira como uma única feature, usando as Issues do GitHub,
 preservando requisitos e deixando ambiguidades explícitas sem inventar comportamentos.
 **Feature directory**: `specs/001-comunicacao-visual-caa` (feature existente reutilizada).
@@ -121,10 +121,24 @@ Como pessoa autista não falante, com fala limitada ou em situação de sobrecar
 
 #### Critérios de aceite
 
-- Ao abrir o módulo, devo visualizar categorias e cartões essenciais sem necessidade de internet.
-- Devem existir cartões iniciais para sim, não, ajuda, água, banheiro, fome, dor, silêncio, sair daqui e preciso de tempo.
-- Cada cartão deve apresentar pictograma ou imagem, texto legível segundo as orientações aplicáveis da WCAG 2.2 AA e ampliação de texto do sistema sem perda de conteúdo ou função (Clarify, rodada 3), e área de toque ampla.
-- O usuário deve conseguir navegar do quadro inicial até um cartão com até dois toques após abrir o quadro (Clarify, rodada 3).
+- [ ] Ao abrir o módulo, devo visualizar categorias e cartões essenciais sem necessidade de internet.
+- [ ] Devem existir cartões iniciais para sim, não, ajuda, água, banheiro, fome, dor, silêncio, sair daqui e preciso de tempo.
+- [ ] Cada cartão deve apresentar pictograma ou imagem, texto legível e área de toque ampla.
+- [ ] O usuário deve conseguir navegar pelo quadro com poucos toques.
+
+Detalhamento aprovado na Issue #1: texto ampliável sem perda de conteúdo/função,
+orientações aplicáveis da WCAG 2.2 AA e acesso ao cartão em até dois toques.
+
+Mapeamento aprovado no backlog: necessidades = água, banheiro, fome;
+sentimentos = dor; solicitações = sim, não, ajuda, silêncio, sair daqui,
+preciso de tempo. Uma categoria principal por mensagem. A seleção e licença
+dos pictogramas Flaticon são trabalho do agente durante a implementação.
+
+Prontidão conferida em 2026-10-13: Issue #1 aberta e Ready; dependência #41
+fechada e integrada pelo PR #42 no commit 44737e42fce67f103ad22c3fbfea9ea38a1df9d9.
+As quatro exigências retiradas do bootstrap no backlog (abertura/offline instalado,
+acessibilidade nativa, build/abertura iOS e CI Android corrigido) não foram
+executadas nem aprovadas. Os critérios funcionais da #1 permanecem vigentes.
 
 **Why this priority**: prioridade P0 da Issue e da milestone; valor expresso na história original.
 
@@ -460,8 +474,9 @@ Q-CAA-03 foi resolvida em várias rodadas e decisões complementares: ordenaçã
 - **Q-CAA-03 — Resolvida: comportamentos e condições de uso** (US-002/#2, US-003/#3, US-004/#4, US-005/#5): Edição de cartão já selecionado: a frase aberta preserva o conteúdo da seleção; favoritos mostram a versão atualizada (Clarify, rodada 5). Composição sem limite funcional predefinido de cartões por frase foi aprovada pelo usuário. Título obrigatório e não vazio após remover espaços nas extremidades, categoria existente obrigatória e preservação do preenchimento com indicação do campo inválido foram aprovados pelo usuário; impedir salvamento até a correção, conforme RF-013/RF-015. A disponibilidade efetiva de voz pt-BR nas versões suportadas de Android e iOS deve ser investigada no plano técnico, respeitando o comportamento já aprovado em RF-010 para ausência de voz; não constitui nova decisão funcional. Ordenação de favoritos, efeitos de edição/exclusão, frase vazia após encerrar, uso offline desde primeira abertura, continuidade visual sem voz, Android e iOS, idioma pt-BR, leitura apenas por ação explícita, erros de câmera, falha ao salvar cartão personalizado/favoritos e estados vazios já foram resolvidos nesta spec.
 
 As decisões funcionais acima estão registradas em Clarifications e nos requisitos correspondentes.
-Permanecem pendentes a aprovação no backlog do mapeamento das dez mensagens e do conjunto
-visual licenciado e a revisão de prontidão. Os refinamentos aprovados já foram sincronizados
+O mapeamento e a prontidão da US-001 estão aprovados na Issue #1.
+Permanecem pendentes a seleção, obtenção e documentação do conjunto visual licenciado.
+Os refinamentos aprovados já foram sincronizados
 com as Issues #1–#5 e a milestone #9. A pesquisa de suporte à voz local pt-BR pertence ao plano técnico.
 A sincronização alterou somente os corpos das Issues #1–#5 e a descrição da milestone #9; naquela sincronização, nenhuma história havia sido registrada como Ready.
 
@@ -501,7 +516,7 @@ As tasks de testes cobrem os RFs da respectiva história. Branches previstas, co
 
 O agente responsável pela US-001 deve buscar e selecionar no Flaticon o pictograma adequado para cada uma das dez mensagens iniciais. A seleção deve priorizar correspondência com o significado da mensagem, clareza, legibilidade, consistência visual e baixa estimulação. Registrar por mensagem o ícone escolhido, a justificativa, a URL de origem, o autor, a licença e a atribuição aplicável; preparar os recursos para uso local offline conforme a licença. A escolha dos ícones é responsabilidade do agente, não uma decisão que deva ser devolvida ao usuário para cada recurso. Se não encontrar uma opção adequada ou não conseguir verificar a licença, registrar a lacuna específica, sem presumir adequação ou permissão.
 
-A ausência dos arquivos selecionados é trabalho a executar na US-001, não uma ambiguidade sobre quem escolhe. A revisão da entrega verifica o conjunto escolhido; não se exige aprovação individual prévia de cada ícone. O mapeamento das mensagens entre categorias permanece uma pendência distinta.
+A ausência dos arquivos selecionados é trabalho a executar na US-001, não uma ambiguidade sobre quem escolhe. A revisão da entrega verifica o conjunto escolhido; não se exige aprovação individual prévia de cada ícone. O mapeamento das mensagens entre categorias está aprovado na Issue #1.
 
 ## História técnica de bootstrap vinculada
 

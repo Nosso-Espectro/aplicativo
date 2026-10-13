@@ -149,6 +149,8 @@ def validate_local():
     for directory in ("specs", "docs", ".specify", ".codex", ".github"):
         documents.extend((ROOT / directory).rglob("*.md"))
     for path in documents:
+        if any(part in {"node_modules", ".git", "android", "ios"} for part in path.relative_to(ROOT).parts):
+            continue
         text = path.read_text()
         ensure(text.endswith("\n"), f"Sem newline final: {path}.")
         ensure(not any(line.rstrip() != line for line in text.splitlines()), f"Whitespace final em {path}.")

@@ -2,7 +2,7 @@
   "tests": ["npm", "test", "--", "--ci"],
   "lint": ["npm", "run", "lint"],
   "typecheck": ["npm", "run", "typecheck"],
-  "build": ["npm", "run", "build"],
+  "build": ["python3", "scripts/github/check-native-build.py"],
   "e2e": {
     "not_applicable": "A US-041 entrega somente a base técnica e não define fluxos de produto para E2E."
   }

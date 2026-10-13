@@ -2,7 +2,7 @@
 
 **Branch**: uma branch curta por Issue (`feat/us-xxx-slug`, `fix/...` ou `chore/...`); não há branch de milestone. **Date**: 2026-09-23. **Spec**: [spec.md](spec.md)
 
-**Input**: Milestone #9, Issues funcionais #1–#5 e história técnica US-041/#41, com critérios e esclarecimentos registrados em [spec.md](spec.md). Bootstrap autorizado exclusivamente para T001–T008; comportamentos das Issues #1–#5 permanecem planejados.
+**Input**: Milestone #9, Issues funcionais #1–#5 e história técnica US-041/#41. US-041 integrada pelo PR #42; implementação atual restrita à US-001/#1, Ready conforme backlog consultado em 2026-10-13.
 
 ## Summary
 
@@ -12,7 +12,7 @@ Na inspeção inicial não havia aplicativo. A [Issue #41](https://github.com/No
 
 ## Stack
 
-**Framework e runtime**: Expo SDK 57 (`expo` 57.0.24), React Native 0.86.3 e React 19.2.3; TypeScript 6.0.3 strict; Hermes padrão confirmado nos projetos gerados por CNG e nos bundles `.hbc` exportados. Expo Router 57.0.22. SDK 58 não faz parte deste bootstrap; upgrades exigem avaliação própria.
+**Framework e runtime**: Expo SDK 57 (`expo` 57.0.28), React Native 0.86.3 e React 19.2.3; TypeScript 6.0.3 strict; Hermes padrão confirmado nos projetos gerados por CNG e nos bundles `.hbc` exportados. Expo Router 57.0.26. Os cinco patches Expo/Jest foram alinhados com Expo Doctor antes da integração da US-001; SDK 58 permanece fora do escopo.
 
 **Ambiente**: Node.js 24.21.0 LTS e npm 11.19.0 (bundled), fixados em `.nvmrc`/CI; usar `package-lock.json` e `npm ci`. Node 24 excede o mínimo 22.13.x publicado pelo Expo SDK 57; validar Expo Doctor e builds no bootstrap. Se houver incompatibilidade comprovada com a cadeia RN/Expo, fallback técnico Node 22.23.3 LTS com npm 10.9.9. `npx expo install` alinha módulos ao SDK.
 
@@ -28,7 +28,14 @@ Na inspeção inicial não havia aplicativo. A [Issue #41](https://github.com/No
 
 **Build e CI configurados**: `npm ci`, `npm run lint` (`expo lint .`), `npx tsc --noEmit`, `npm test -- --ci` e `npx expo-doctor`. `npm run build:android` usa CNG/Gradle `assembleRelease`; `npm run build:ios` usa `expo run:ios --configuration Release --no-bundler`. O script `build` exige ambos, e é o comando do quality gate. GitHub Actions configura checks JavaScript e build Android; execução remota pendente. iOS exige macOS/Xcode. Builds locais de teste, sem EAS/publicação; comandos e limitações em [quickstart.md](quickstart.md).
 
-**Escopo**: cinco histórias de produto P0 (US-001/#1 a US-005/#5, 19 RFs e quatro RNFs) e a história técnica de bootstrap US-041/#41. O mapeamento das dez mensagens e a seleção/licença dos pictogramas ainda devem ser registrados no backlog #1 antes da implementação do quadro.
+**Escopo**: cinco histórias de produto P0 (US-001/#1 a US-005/#5, 19 RFs e quatro RNFs) e bootstrap US-041/#41. O mapeamento da #1 está aprovado: necessidades (água, banheiro, fome), sentimentos (dor), solicitações (sim, não, ajuda, silêncio, sair daqui, preciso de tempo). Seleção/licença de pictogramas Flaticon é trabalho do agente, sem aprovação individual prévia.
+
+**Incremento US-001**: catálogo estático local, filtro de categoria e exibição do cartão
+em modal, com retorno à categoria anterior e sem som. Não requer dependências novas
+nem armazenamento. Grade de uma coluna em largura inferior a 340 ou escala de fonte
+a partir de 1,5; rolagem e texto sem limite de linhas. Falta de dados informa ausência
+de cartões. Imagem ausente mantém o texto utilizável, mas não satisfaz RF-003:
+os assets licenciados permanecem obrigatórios para concluir a Issue.
 
 ## Estratégia
 
