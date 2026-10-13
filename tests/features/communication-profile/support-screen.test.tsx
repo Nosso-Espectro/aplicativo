@@ -9,7 +9,8 @@ const saveSupport = jest.fn(); const onClose = jest.fn();
 beforeEach(() => {
   jest.clearAllMocks(); saved = { ...emptySupportPreferences }; saveSupport.mockReset();
   saveSupport.mockImplementation(async (value) => { saved = normalizedSupportPreferences(value); return saved; });
-  jest.mocked(openPreferencesDatabase).mockResolvedValue({ read: jest.fn(), save: jest.fn(), readSupportForPlan: jest.fn(), readSupport: async () => saved, saveSupport });
+  jest.mocked(openPreferencesDatabase).mockResolvedValue({ read: jest.fn(), save: jest.fn(), readSupportForPlan: jest.fn(), readSupport: async () => saved, saveSupport,
+    readSummarySelection: jest.fn(), saveSummarySelection: jest.fn(), readProfileSummary: jest.fn() });
 });
 async function ready() { await waitFor(() => expect(screen.getByRole('button', { name: 'Salvar sensibilidades e estratégias' })).toBeEnabled()); }
 it('shows named optional fields, saves all and restores them after reopening', async () => {

@@ -11,7 +11,7 @@ source_checked: 2026-10-13
 
 Milestone GitHub: [P0 — Perfil de Comunicação](https://github.com/Nosso-Espectro/aplicativo/milestone/13) (número 13).
 
-Milestone aberta; US-014 integrada pelo PR #60, US-015 integrada pelo PR #62 e US-016 em implementação. A milestone não está concluída.
+Milestone aberta; US-014 integrada pelo PR #60 e US-015 pelo PR #62. US-016 possui seleção persistida e apresentação testadas; builds e verificações nativas/assistivas continuam pendentes no gate. A milestone não está concluída.
 
 ## Contexto
 

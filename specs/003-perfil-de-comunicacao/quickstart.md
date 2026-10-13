@@ -45,3 +45,32 @@ de backups em dispositivo. Mocks/SQLite do host não equivalem a essas validaç�
 
 Evidência em 2026-10-13: 151 testes Jest/26 suítes, lint/typecheck, Doctor21/21,
 47 testes de tooling e validador de workflow aprovados na branch US-015.
+
+## US-016 — Resumo voluntário do perfil
+
+Perfil de comunicação → Resumo do perfil: inicialmente nenhum campo marcado.
+Marcar os campos desejados, salvar seleção e só então apresentar. Salvar não
+abre o resumo automaticamente; cancelar não grava o rascunho. Desmarcar tudo e
+salvar limpa apenas a seleção, preservando preferências e estratégias. Resumo
+em rota própria de tela cheia, rolável e com fechar/voltar, apresenta somente
+informações escolhidas, atuais e preenchidas. Tempo adicional não preciso é
+informação explícita; não informado é omitido. Editar/remover dados no perfil e
+reabrir o resumo reflete a mudança, sem snapshot antigo nem campo não autorizado.
+
+Erro de gravação mantém rascunho e escolhas confirmadas, permitindo retry/cancelar.
+Enquanto grava, não permite duplicatas ou apresentação; nenhuma mensagem de sucesso
+antes do commit. Erro de leitura do resumo apresenta somente feedback genérico e
+retry, sem conteúdo antigo/parcial. Banco versão3 migra v1/v2 preservando os dados,
+armazena somente IDs na seleção, lê resumo em transação e recusa schema futuro.
+Testes SQL reais no Node, componentes e rotas cobrem esses cenários e a navegação
+sem salvar automaticamente o formulário do perfil. Nenhuma exportação/envio/rede.
+
+Evidência em 2026-10-13: 173 testes Jest/29 suítes aprovados, lint/typecheck,
+Doctor21/21, 49 testes de tooling e validador de workflow. Review do diff sem
+regressão impeditiva identificada; os limites nativos abaixo não foram simulados
+como evidência de aprovação.
+
+Pendências T016: revisão assistiva nativa/foco, texto ampliado em dispositivo,
+reabertura offline do SQLite Expo e backups. Sem autorização de release. Builds
+somente remotos no SHA integrado; gerar APK no servidor não comprova integridade
+do host (#61). Instalação no celular aguarda a decisão explícita sobre essa pendência.

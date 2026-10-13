@@ -32,13 +32,20 @@ US-014: banco privado `tear-profile.db` versão1, tabela singleton `communicatio
 
 ## Persistência
 
-US-016 em início: seleção independente de IDs estáveis dos campos das #14/#15,
-padrão vazio, ordem canônica previsível. Modelo filtra apenas valores atuais
-escolhidos/não vazios; false no tempo adicional não é ausência. A seleção deverá
-persistir localmente em estrutura própria sem snapshot do conteúdo, com migração
-que preserve comunicação/suporte; apresentação em tela cheia somente por ação
-explícita. UI/persistência da seleção ainda não implementadas; nenhuma task US-016
-marcada como concluída. Refinamento correspondente registrado na Issue #16.
+US-016: rotas `/profile-summary` (seleção) e `/profile-summary-view` (apresentação)
+acessadas pelo perfil, com checkboxes nomeados e gravação explícita. Banco
+`tear-profile.db` versão3 acrescenta `summary_selection(field)` sem copiar texto
+pessoal nem alterar comunicação/suporte. Migrações v1/v2 preservam dados e começam
+sem seleção. IDs validados, deduplicados e ordenados pelo modelo; schema futuro
+recusado sem downgrade. Salvamento substitui somente a seleção, em transação com
+rollback e publicação após commit. Resumo lê seleção e valores atuais na mesma
+transação, retorna somente campos escolhidos/não vazios; false no tempo adicional
+é informação explícita e null é omitido. Falha de leitura não apresenta dados
+antigos/parciais; retry refaz a leitura. Falha de gravação mantém rascunho e seleção
+confirmada. Alterar seleção desabilita apresentação até salvar; cancelar não grava.
+Tela cheia rolável sem exportação/envio/rede ou apresentação automática ao salvar.
+Refinamento registrado na Issue #16; interface/persistência e navegação testadas,
+com revisão nativa/assistiva ainda pendente em T016.
 
 US-015: rota `/support-preferences` acessada pelo perfil, sete campos opcionais
 livres com IDs estáveis, salvar/cancelar explícitos e remoção integral confirmada
