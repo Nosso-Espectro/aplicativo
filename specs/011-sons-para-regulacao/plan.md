@@ -49,9 +49,19 @@ sem início tardio. Não implementar prazo/término #28 neste modelo.
 Andamento inicial US-027: `sound-settings.ts` define quatro escolhas com labels
 honestos e valida somente seleção/volume/opção, sem inventar status de reprodução.
 Seis testes relacionados e suíte completa316 testes/49 suítes, lint/tipos verdes.
-Assets reais, instalação/revisão das dependências, engine/provider, UI/slider,
-opção confirmada de background e coordenação/regressão TTS ainda faltam; nenhuma
-task concluída pelo modelo isolado, nenhum som alegado como reproduzível.
+Quatro assets reais agora em `assets/regulation-sounds/`: PCM16 mono24kHz/23s,
+seeds/filtros/checksums/licença e versão FFmpeg6.1.1 registrados no manifesto.
+Gerador versionado recusa destino existente/symlink, publicação usa criação
+exclusiva, sem sobrescrever arquivos pessoais. Validação somente leitura confere
+integridade/formato/duração, sinais distintos, RMS/pico/DC/silêncio e fronteira.
+Regeneração em diretório temporário produziu manifesto e hashes idênticos; sete
+testes tooling exercitam integridade/ausência/duplicação/níveis e preservação.
+Suíte tooling56 verde, lint/tipos e validador verdes. Escuta e loop imperceptível
+não alegados; documentação de origem/limites no README junto aos arquivos.
+
+Instalação/revisão das dependências, engine/provider, UI/slider, opção confirmada
+de background e coordenação/regressão TTS ainda faltam. Nenhuma task concluída
+pelo modelo/assets isolados, nenhum fluxo de reprodução alegado como entregue.
 
 Assets locais essenciais, sem banco novo ou restauração de autoplay. Seleção,
 volume e opção não persistidos nesta história; retomada de processo exige nova
@@ -110,7 +120,8 @@ gravação/microfone explícitos desabilitados, sem requests de recording. Rever
 manifest/plist/permissões efetivas, não assumir defaults do pacote. Sessão de
 áudio configurada segundo flag confirmada, não mudar ajustes globais. Instalar
 somente dependências justificadas e preservar licenças na distribuição; nenhuma
-dependência nova ou asset de áudio foi instalada/criado nesta preparação.
+dependência nova foi instalada nesta etapa; assets de síntese já gerados e
+verificados, mas ainda sem player/empacotamento nativo validado.
 
 ## Riscos
 
@@ -125,5 +136,5 @@ pendentes, não autorizam instalação no celular. Ver [auditoria](../../docs/ba
 
 - Diretriz confirmada: React Native; MVP sem backend.
 - US-027: TypeScript, assets locais procedurais declarados, engine/slider SDK recomendados, escolhas voláteis e coordenação mínima com TTS existente.
-- Pendente: instalação/revisão de dependências/lifecycle, geração de assets e implementação; política própria de término #28.
+- Pendente: instalação/revisão de dependências/lifecycle e implementação do player/UI/TTS; escuta nativa dos assets e política própria de término #28.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.

@@ -1,0 +1,68 @@
+{
+  "license": "Apache-2.0",
+  "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "recipes": {
+    "white": {
+      "color": "white",
+      "seed": 2701,
+      "filter": "anull"
+    },
+    "brown": {
+      "color": "brown",
+      "seed": 2702,
+      "filter": "highpass=f=25,lowpass=f=3500"
+    },
+    "rain": {
+      "color": "pink",
+      "seed": 2703,
+      "filter": "highpass=f=450,lowpass=f=8500,aeval=val(0)*(0.85+0.15*sin(2*PI*t/3.7))"
+    },
+    "ocean": {
+      "color": "pink",
+      "seed": 2704,
+      "filter": "highpass=f=45,lowpass=f=1800,aeval=val(0)*(0.65+0.35*sin(2*PI*t/7.5))"
+    }
+  },
+  "assets": {
+    "white": {
+      "sha256": "eb6eafff2d004458172bd3671736049194cae8c18826e70e90a2ab8b7ae3b923",
+      "bytes": 1104078,
+      "rms": 0.07499999796513888,
+      "peak": 0.18255615234375,
+      "mean": -9.380887902301291e-05,
+      "minimum_100ms_rms": 0.07322440877877473,
+      "loop_step": 0.01104736328125,
+      "maximum_internal_step": 0.326995849609375
+    },
+    "brown": {
+      "sha256": "e8d8089bc624af2d9f92da9da95b2c140d7cf0d16d646e7eabada53d17252e2b",
+      "bytes": 1104078,
+      "rms": 0.06480375699523142,
+      "peak": 0.279998779296875,
+      "mean": -1.2328659278759059e-08,
+      "minimum_100ms_rms": 0.0496624359566772,
+      "loop_step": 0.0074462890625,
+      "maximum_internal_step": 0.028656005859375
+    },
+    "rain": {
+      "sha256": "b3bf6bffe1059064167e4d842b08ac0b802b1cb0b47ea28e6c2c8b6a1bcfe450",
+      "bytes": 1104078,
+      "rms": 0.06760282394942178,
+      "peak": 0.279998779296875,
+      "mean": 2.941186877264493e-08,
+      "minimum_100ms_rms": 0.05392039030839675,
+      "loop_step": 0.00140380859375,
+      "maximum_internal_step": 0.22021484375
+    },
+    "ocean": {
+      "sha256": "d3fe4d64b674668360860cfcc975dcf9c7067a93358b14615626831ca31421d8",
+      "bytes": 1104078,
+      "rms": 0.05268355650419187,
+      "peak": 0.279998779296875,
+      "mean": 3.720711970674819e-08,
+      "minimum_100ms_rms": 0.020774139810860487,
+      "loop_step": 0.0260009765625,
+      "maximum_internal_step": 0.0576171875
+    }
+  }
+}
