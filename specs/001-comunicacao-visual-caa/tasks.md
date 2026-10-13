@@ -2,7 +2,11 @@
 
 **Milestone**: #9 — [spec](spec.md)
 **Plano técnico**: [plan](plan.md)
-**Estado**: T001–T006 concluídas localmente na US-041/#41, com evidências em [quickstart](quickstart.md). T007 e T008 permanecem pendentes; nenhuma plataforma nativa nem a Issue foi declarada concluída. T009 em diante não foram executadas.
+**Estado consultado em 2026-10-13**: US-041/#41 fechada e integrada pelo PR #42.
+T007/T008 aceitas no escopo reduzido registrado no GitHub, sem aprovação das
+verificações retiradas. T009 aprovada no backlog. US-001 em implementação parcial:
+catálogo, navegação, PNGs fornecidos pelo usuário e testes locais;
+verificação de licenças/créditos e validações nativas pendentes.
 
 Os IDs T são locais à feature. Cada grupo US corresponde a uma Issue e deve ser executado em
 sua própria branch curta, criada da `main` atualizada e integrada por PR. Não executar tasks de
@@ -41,7 +45,7 @@ os bloqueios de conteúdo da US-001/#1 terem origem aprovada no backlog.
 **Teste independente**: confirme PR integrado, comandos reais do bootstrap verdes e mapeamento
 das dez mensagens/categorias registrado na Issue #1 antes de criar catálogo inicial.
 
-- [ ] T009 Registrar no backlog da Issue #1 o mapeamento aprovado das dez mensagens para necessidades, sentimentos e solicitações antes de semear `src/features/communication/board/initial-cards.ts`; não presumir a distribuição.
+- [x] T009 Registrar no backlog da Issue #1 o mapeamento aprovado das dez mensagens para necessidades, sentimentos e solicitações antes de semear `src/features/communication/board/initial-cards.ts`; não presumir a distribuição. Evidência: tabela aprovada e revisão Ready na Issue #1, consultadas em 2026-10-13.
 
 ## Fase 3: US-001 — Quadro básico de comunicação (Priority: P0, Issue #1)
 
@@ -52,12 +56,21 @@ cognitiva e navegação acessível.
 categorias e dez mensagens, acesso em até dois toques após abrir o quadro, ampliação sem perda,
 leitor de tela, contraste e alvos de toque.
 
-- [ ] T010 [US-001] Adicionar testes para RF-001/RF-002 em `tests/features/communication/board/initial-cards.test.ts`, cobrindo primeira abertura sem rede e presença de sim, não, ajuda, água, banheiro, fome, dor, silêncio, sair daqui e preciso de tempo.
+- [x] T010 [US-001] Adicionar testes para RF-001/RF-002 em `tests/features/communication/board/initial-cards.test.ts`, cobrindo primeira abertura sem rede e presença de sim, não, ajuda, água, banheiro, fome, dor, silêncio, sair daqui e preciso de tempo. Catálogo e abertura sem fetch verificados nas suítes do quadro; 15 testes JS aprovados em 2026-10-13. Teste do binário offline permanece separado em T015.
 - [ ] T011 [US-001] Selecionar para cada mensagem um pictograma Flaticon adequado e de baixa estimulação; registrar URL, autor, licença, atribuição e justificativa em `assets/communication/pictograms/ATTRIBUTIONS.md` e salvar recursos licenciados em `assets/communication/pictograms/`.
 - [ ] T012 [US-001] Implementar categorias e cartões iniciais para RF-002 conforme o mapeamento aprovado da Issue #1 em `src/features/communication/board/initial-cards.ts`, com recursos locais e sem consulta de rede.
 - [ ] T013 [US-001] Implementar quadro e navegação até cada cartão para RF-001, RF-003 e RF-004 em `src/features/communication/board/` e `src/app/index.tsx`, mantendo até dois toques após abrir o quadro.
 - [ ] T014 [US-001] Adicionar testes de apresentação e navegação para RF-003/RF-004 em `tests/features/communication/board/board-accessibility.test.tsx`, cobrindo rótulos acessíveis, conteúdo visual/textual e caminho máximo de toques.
 - [ ] T015 [US-001] Revisar quadro em Android/iOS com leitor de tela, ampliação de texto, contraste, foco e alvos de toque; documentar verificações aplicáveis, exceções justificadas e baixa carga cognitiva em `specs/001-comunicacao-visual-caa/quickstart.md` e no PR.
+
+**Registro de execução da US-001 (2026-10-13)**: T010/T012–T014 têm código e
+testes do catálogo, imagens locais, filtro, seleção e retorno, sem rede automática.
+Usuário forneceu os dez PNGs e solicitou busca Flaticon como link de atribuição.
+T011 permanece pendente de autores/licenças específicos: acesso direto bloqueado
+pela preferência salva do navegador, inclusive após autorização do usuário.
+T012–T014 não são declaradas concluídas sem conteúdo visual licenciado e revisão.
+T015 permanece pendente: testes simulados não comprovam TalkBack/VoiceOver,
+texto ampliado, foco real ou funcionamento do binário instalado offline.
 
 ## Fase 4: US-002 — Compor frases (Priority: P0, Issue #2)
 
@@ -123,7 +136,7 @@ novamente, reiniciar em modo avião; testar lista vazia e falha de gravação/re
 **Objetivo**: verificar coerência entre histórias implementadas e Definition of Done, sem antecipar
 funcionalidades fora das Issues.
 
-- [ ] T037 Executar `npm ci`, `npx expo lint`, `npx tsc --noEmit`, `npm test -- --ci`, `npx expo-doctor`, builds Android/iOS disponíveis e cenários aplicáveis de `specs/001-comunicacao-visual-caa/quickstart.md`; registrar resultados reais, limitações e gates pendentes no PR da Issue correspondente.
+- [ ] T037 Executar os checks leves por Issue: `npm ci`, `npx expo lint`, `npx tsc --noEmit`, `npm test -- --ci`, `npx expo-doctor` e cenários aplicáveis de `specs/001-comunicacao-visual-caa/quickstart.md`; registrar resultados reais e limitações. Builds Android/iOS e cenários dependentes de binário ficam para o gate da milestone em ambiente dedicado, conforme emenda de 2026-10-13; não executar build local automaticamente.
 - [ ] T038 Revisar acessibilidade, design neuroinclusivo, baixa carga cognitiva, previsibilidade, privacidade, segurança, permissões, rede, logs e dependências nas histórias entregues; registrar evidências ou justificativas de não aplicabilidade em `specs/001-comunicacao-visual-caa/quickstart.md` e nos respectivos PRs.
 - [ ] T039 Conferir rastreabilidade de RF-001 a RF-019 e RNF da spec para Issues #1–#5, atualizar `specs/001-comunicacao-visual-caa/tasks.md` somente após verificar critérios e comportamento, e registrar lacunas não especificadas como pendências no backlog de origem.
 

@@ -2,7 +2,7 @@
 
 **Branch**: uma branch curta por Issue (`feat/us-xxx-slug`, `fix/...` ou `chore/...`); não há branch de milestone. **Date**: 2026-09-23. **Spec**: [spec.md](spec.md)
 
-**Input**: Milestone #9, Issues funcionais #1–#5 e história técnica US-041/#41, com critérios e esclarecimentos registrados em [spec.md](spec.md). Bootstrap autorizado exclusivamente para T001–T008; comportamentos das Issues #1–#5 permanecem planejados.
+**Input**: Milestone #9, Issues funcionais #1–#5 e história técnica US-041/#41. US-041 integrada pelo PR #42; implementação atual restrita à US-001/#1, Ready conforme backlog consultado em 2026-10-13.
 
 ## Summary
 
@@ -28,7 +28,14 @@ Na inspeção inicial não havia aplicativo. A [Issue #41](https://github.com/No
 
 **Build e CI configurados**: `npm ci`, `npm run lint` (`expo lint .`), `npx tsc --noEmit`, `npm test -- --ci` e `npx expo-doctor`. `npm run build:android` usa CNG/Gradle `assembleRelease`; `npm run build:ios` usa `expo run:ios --configuration Release --no-bundler`. O script `build` exige ambos, e é o comando do quality gate. GitHub Actions configura checks JavaScript e build Android; execução remota pendente. iOS exige macOS/Xcode. Builds locais de teste, sem EAS/publicação; comandos e limitações em [quickstart.md](quickstart.md).
 
-**Escopo**: cinco histórias de produto P0 (US-001/#1 a US-005/#5, 19 RFs e quatro RNFs) e a história técnica de bootstrap US-041/#41. O mapeamento das dez mensagens e a seleção/licença dos pictogramas ainda devem ser registrados no backlog #1 antes da implementação do quadro.
+**Escopo**: cinco histórias de produto P0 (US-001/#1 a US-005/#5, 19 RFs e quatro RNFs) e bootstrap US-041/#41. O mapeamento da #1 está aprovado: necessidades (água, banheiro, fome), sentimentos (dor), solicitações (sim, não, ajuda, silêncio, sair daqui, preciso de tempo). Seleção/licença de pictogramas Flaticon é trabalho do agente, sem aprovação individual prévia.
+
+**Incremento US-001**: catálogo estático local, filtro de categoria e exibição do cartão
+em modal, com retorno à categoria anterior e sem som. Não requer dependências novas
+nem armazenamento. Grade de uma coluna em largura inferior a 340 ou escala de fonte
+a partir de 1,5; rolagem e texto sem limite de linhas. Falta de dados informa ausência
+de cartões. Imagem ausente mantém o texto utilizável, mas não satisfaz RF-003:
+os assets licenciados permanecem obrigatórios para concluir a Issue.
 
 ## Estratégia
 
