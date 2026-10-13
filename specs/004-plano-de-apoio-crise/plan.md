@@ -39,6 +39,21 @@ inicialmente vazias, validadas, deduplicadas e em ordem previsível; texto com t
 externo, sem interpretação clínica. Valores referenciados no perfil são lidos
 atuais, não copiados. Contato/mensagem e visualização em cartão ficam nas #13/#12.
 
+US-013 Ready: contato separado com nome opcional, telefone internacional com
+código do país explícito e mensagem livre; sem valores iniciais ou leitura de
+agenda. Nome é apenas rótulo local, não compõe mensagem enviada. Configuração
+válida exige telefone/mensagem; remoção integral confirmada pode salvar vazio.
+Nenhuma verificação de existência da pessoa/conta WhatsApp.
+
+Validação planeja `libphonenumber-js` versão1.13.15, importação `/max` para
+metadados completos, parser estrito `extract:false`, formato internacional
+normalizado e rejeição de ramal. Biblioteca de domínio evita implementar parser
+telefônico próprio; metadados embarcados operam offline, sem API. Versão fixada no
+lockfile; licença/impacto de dependência revisados na implementação. Referências:
+[biblioteca](https://github.com/catamphetamine/libphonenumber-js),
+[WhatsApp](https://faq.whatsapp.com/5913398998672934) e
+[Linking RN0.86](https://reactnative.dev/docs/0.86/linking).
+
 ## Persistência
 
 US-011 implementada em `SupportPlanScreen.tsx`, `support-plan.ts` e
@@ -55,6 +70,18 @@ publicar somente após sucesso, rollback preserva versão confirmada. Schema fut
 recusado sem downgrade. Salvar vazio é permitido; remoção integral confirmada
 limpa apenas o plano. Sem snapshot de texto do perfil, rede, log pessoal ou backup
 externo do aplicativo. Política de backup do sistema permanece revisão nativa.
+
+US-013 planeja SQLite privado `tear-trusted-contact.db` versão1 com singleton de
+nome/telefone/mensagem, fila/transação parametrizada/rollback e publicação após
+commit. Independente de plano/perfil; salvar/cancelar não abrem outros apps.
+Editor/acionamento em rota própria pelo quadro. Antes de handoff, mostrar destino
+e mensagem salvos para revisão e confirmar explicitamente. Formar link oficial
+`wa.me` com telefone/mensagem codificados, verificar disponibilidade com Linking e
+consultas nativas mínimas; informar falha/ausência e manter configurações, sem
+fallback, cópia automática de plano/perfil, envio ou leitura de agenda. Fluxo
+externo usa rede/app somente por ação autorizada; operação local fica offline.
+Testes de URI/Linking usam mocks e fixtures sintéticas, não aplicativos/dados
+pessoais do aparelho; handoff nativo continua pendência real do gate.
 
 ## Fluxos principais
 
@@ -112,13 +139,14 @@ framework ou integração externa. Segurança do host de build continua pendente
 
 Plano vazio, contato inválido e WhatsApp ausente; #13 exige informar indisponibilidade sem falhar. Tratamento de validação detalhado em Q-APOIO-03.
 
-US-011 está Ready após refinamento no GitHub e confirmação da stack. Questões
-Q-APOIO-02/03/04 continuam nas histórias dependentes; não aprovar milestone/release
-por implementar somente o editor. Ver [auditoria](../../docs/backlog-audit.md).
+US-011 entregue pelo PR67, US-013 Ready após refinamento no GitHub e confirmação
+da stack. US-012 aguarda painel #10 para cumprir acesso direto, não simulá-lo nem
+fechar a Issue. Q-APOIO-02/04 continuam nas histórias dependentes; não aprovar
+milestone/release por implementar somente editores. Ver [auditoria](../../docs/backlog-audit.md).
 
 ## Decisões arquiteturais
 
 - Diretriz confirmada: React Native; MVP sem backend.
 - US-011: TypeScript, módulo por capacidade, formulário local em rota Router e SQLite próprio; sem novas dependências ou estado global para esse editor.
-- #12/#13: decisões de cartão/compartilhamento/contato continuam pendentes e não integram esta branch.
+- #12: cartão/integração com painel ainda pendentes. #13: contato/handoff refinados, com biblioteca de validação justificada e sem backend ou permissão de agenda.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.
