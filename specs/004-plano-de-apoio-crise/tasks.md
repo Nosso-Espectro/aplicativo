@@ -1,6 +1,6 @@
 # Tasks — Plano de Apoio / Crise
 
-Milestone #12: [spec.md](spec.md) e [plan.md](plan.md). Todas pendentes; não executadas nesta preparação.
+Milestone #12: [spec.md](spec.md) e [plan.md](plan.md). Progresso US-011 marcado após verificações; revisões nativas/assistivas pendentes no gate. #12/#13 ainda não implementadas.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -8,12 +8,19 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 
 ## US-011 — Issue #11
 
-- [ ] T001 [US-011] Em `src/features/support-plan/plan-editor`, atender RF-001 (critério 1 de #11): O usuário deve poder cadastrar orientações livres e selecionar orientações sugeridas. Verificar com o cenário correspondente no PR.
-- [ ] T002 [US-011] Em `src/features/support-plan/plan-editor`, atender RF-002 (critério 2 de #11): Devem existir exemplos como não me toque, fale pouco, preciso de silêncio e dê-me tempo para responder. Verificar com o cenário correspondente no PR.
-- [ ] T003 [US-011] Em `src/features/support-plan/plan-editor`, atender RF-003 (critério 3 de #11): O plano deve poder ser editado a qualquer momento. Verificar com o cenário correspondente no PR.
-- [ ] T004 [US-011] Em `src/features/support-plan/plan-editor`, atender RF-004 (critério 4 de #11): O conteúdo deve ficar salvo localmente por padrão. Verificar com o cenário correspondente no PR.
-- [ ] T005 [US-011] Adicionar testes de comportamento de RF-001, RF-002, RF-003, RF-004 em `tests/features/support-plan/plan-editor`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
+- [x] T001 [US-011] RF-001: `SupportPlanScreen.tsx` permite texto livre opcional e checkboxes de orientações, inicialmente vazios, gravação explícita. Componentes/rotas verificam abrir, editar, cancelar e reabrir.
+- [x] T002 [US-011] RF-002: `support-plan.ts` e editor disponibilizam Não me toque, Fale pouco, Preciso de silêncio e Dê-me tempo para responder, sem escolha ou inferência automática; modelo e componentes verificam os exemplos originais.
+- [x] T003 [US-011] RF-003: editar/limpar texto e escolhas, remover plano com confirmação, cancelar, preservar draft/confirmado em falha e retry. Referências usam dados atuais, sem snapshot ou alteração do perfil; resultados obsoletos descartados e duplicatas bloqueadas, testes aprovados.
+- [x] T004 [US-011] RF-004: `support-plan-database.ts` usa SQLite privado versão1, singleton de texto e IDs separados, fila/transação parametrizada/rollback e publicação após commit. Reabertura, falha parcial/commit, isolamento e schema futuro verificados no SQLite real do Node.
+- [x] T005 [US-011] 27 testes específicos em `tests/features/support-plan/`: seis de modelo, oito de banco, onze de componentes e duas rotas, usando fixtures sintéticas. Cobrem RF-001–RF-004, vazio/erro/retry/cancelamento/reabertura e integração com o contrato atual do perfil.
 - [ ] T006 [US-011] Revisar RNF-001 a RNF-004 na interface/dados de #11, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+
+T006: revisão estática de contraste, rótulos e estado dos checkboxes, alvos48dp,
+texto escalável, scroll/teclado e feedback acessível realizada. Sem novas
+dependências/permissões, rede, log pessoal, mídia inesperada ou inferência clínica.
+TalkBack/VoiceOver, foco real/ampliação/teclado, reabertura offline SQLite Expo e
+política de backups do sistema ainda pendentes no gate. Mocks/SQLite do host não
+comprovam essas verificações em aparelho.
 
 ## US-012 — Issue #12
 

@@ -4,11 +4,18 @@ Spec: [spec.md](spec.md). Milestone #12; Issues #11, #12, #13. Plano proposto, s
 
 ## Stack
 
-Inspeção em 2026-09-23: repositório sem código de aplicação, package.json, dependências ou ferramentas de build/teste. React Native e primeira versão sem backend são diretrizes explícitas do projeto, ainda não implementadas. Expo, linguagem, navegação e biblioteca de persistência não foram escolhidos. Não assumir stack web, banco ou servidor.
+Inspeção em 2026-10-13: Expo SDK57.0.28, RN0.86.3, React19.2.3, TypeScript strict,
+Expo Router e expo-sqlite já integrados. Node24.21.0/npm11.19.0, Jest/RNTL,
+SQLite real do Node, lint/typecheck/Doctor e tooling existentes. Sem novas
+dependências/permissões para US-011; builds nativos somente remotos.
 
 ## Arquitetura atual
 
-Somente README e licença antes desta preparação. Não há componentes, modelos ou serviços existentes para reutilizar. Os caminhos abaixo são propostas de organização e não arquivos já criados.
+Comunicação, rotinas e perfil integrados. US-011 reutiliza os padrões de formulário
+local, salvar/cancelar e erro genérico, em `src/features/support-plan/`, com rota
+`/support-plan` acessada por comando no quadro. O contrato do perfil
+`readSupportForPlan(selected)` já retorna somente dados atuais explicitamente
+escolhidos; sem dependência circular ou mudança em comunicação/rotinas/perfil.
 
 ## Estratégia
 
@@ -26,13 +33,28 @@ Módulo proposto: `src/features/support-plan/`.
 
 ## Modelo de dados
 
-Plano com orientações livres/sugeridas; contato de confiança e mensagem padrão. Relação com sensibilidades do perfil depende de Q-APOIO-01.
-
-Representação física, tipos e migrações serão definidos após a escolha técnica; não instalar banco por antecipação.
+US-011: um plano pessoal com `instructions` livre opcional, IDs das quatro sugestões
+predefinidas e IDs dos campos de suporte escolhidos voluntariamente. Seleções
+inicialmente vazias, validadas, deduplicadas e em ordem previsível; texto com trim
+externo, sem interpretação clínica. Valores referenciados no perfil são lidos
+atuais, não copiados. Contato/mensagem e visualização em cartão ficam nas #13/#12.
 
 ## Persistência
 
-Plano local por padrão (#11). Contato e mensagem precisam de configuração; duração da retenção e remoção precisam ser detalhadas com produto (#13).
+US-011 implementada em `SupportPlanScreen.tsx`, `support-plan.ts` e
+`support-plan-database.ts`: texto livre, quatro sugestões originais e referências
+opcionais aos campos atuais do perfil. Rota `/support-plan` acessada pelo quadro,
+salvar/cancelar explícitos e remoção integral confirmada apenas do plano. Modelo,
+SQLite real do Node, componentes e rotas verificam os fluxos; validações
+nativas/assistivas e de backup permanecem pendentes em T006.
+
+US-011 usa banco privado `tear-support-plan.db`, schema próprio versão1,
+singleton de texto e tabelas separadas de IDs das sugestões/referências. Operações
+parametrizadas em fila/transação exclusiva; ler resultado antes do commit,
+publicar somente após sucesso, rollback preserva versão confirmada. Schema futuro
+recusado sem downgrade. Salvar vazio é permitido; remoção integral confirmada
+limpa apenas o plano. Sem snapshot de texto do perfil, rede, log pessoal ou backup
+externo do aplicativo. Política de backup do sistema permanece revisão nativa.
 
 ## Fluxos principais
 
@@ -42,7 +64,18 @@ Validar cada critério no seu fluxo e as integrações indicadas em spec.md; a s
 
 ## Offline
 
-Plano local por padrão (#11). Contato e mensagem precisam de configuração; duração da retenção e remoção precisam ser detalhadas com produto (#13).
+Editor e reabertura do plano devem operar com SQLite local sem rede. Erro mantém
+draft/confirmado e permite retry/cancelar; abertura falha não habilita gravação.
+Se leitura de referências do perfil falhar, não publicar conteúdo antigo nem
+substituir orientações salvas. Recuperação/interrupção e política de backups
+exigem evidência no SQLite Expo antes do gate. A prévia web informa indisponibilidade
+do armazenamento nativo, sem substituir persistência por dados simulados.
+
+No editor, a leitura do perfil usa inicialização compartilhada, resultados ligados
+à seleção exata e descarte de requisições obsoletas. Desmarcar um campo não exibe
+resultado que chegaria depois; alterar seleção oculta o conteúdo anterior até a
+leitura atual. Retry é independente e uma falha do perfil não impede editar ou
+salvar as próprias orientações/IDs; nenhum dado antigo é publicado no erro.
 
 Recursos locais não devem depender de autenticação ou API. Capacidades externas explicitamente solicitadas devem informar indisponibilidade sem impedir os recursos locais; não confundir falta de backend próprio com ausência de qualquer serviço externo futuro.
 
@@ -60,23 +93,32 @@ Aplicar RNF-002 e RNF-004. Usar dados sintéticos nos testes; evitar dados pesso
 - Usar testes unitários para transformações de estado/dados; componentes para interação e acessibilidade; integração para persistência/capacidades nativas quando pertinentes.
 - Exercitar os casos de erro do spec e regressões das dependências reais.
 - Verificar em dispositivo/simulador os fluxos que dependem de voz, áudio, permissões ou notificações; mocks isolados não comprovam suporte nativo.
-- Selecionar E2E para fluxos críticos quando a infraestrutura existir. Executar testes, lint, typecheck quando aplicável e build antes de concluir.
+- Selecionar E2E para fluxos críticos quando a infraestrutura existir. Executar testes, lint, typecheck quando aplicável e checks leves; builds somente remotos no SHA integrado da main.
 
-Hoje não existem runner, scripts de qualidade ou build do aplicativo. A validação da documentação não equivale a testes do produto e não habilita release.
+US-011: testar modelo/seleção, SQLite real para reabertura/rollback/isolamento,
+componentes e navegação para sugestões, edição, remover/cancelar, vazio, erro e
+duplicatas; integração com referências atuais do perfil. Checks existentes: Jest
+serial, lint, typecheck, Doctor, unittest tooling e validador. Mocks/SQLite do host
+não equivalem a TalkBack/VoiceOver, foco, ampliação e abertura offline nativa.
 
 ## Dependências técnicas
 
-Base React Native ainda a inicializar. Selecionar somente as bibliotecas necessárias aos critérios da história, documentando suporte offline, plataformas e permissões. Integrações funcionais estão em spec.md; reuso de temporizador/áudio pode ser avaliado quando houver código, sem criar framework antecipado.
+Base React Native existente, contrato de leitura de suporte da US-015. US-011 não
+depende de implementar cartão, painel, áudio, timer ou WhatsApp. Sem antecipar
+framework ou integração externa. Segurança do host de build continua pendente na
+#61, sem interferir no modelo local ou autorizar instalação arriscada no celular.
 
 ## Riscos
 
 Plano vazio, contato inválido e WhatsApp ausente; #13 exige informar indisponibilidade sem falhar. Tratamento de validação detalhado em Q-APOIO-03.
 
-As questões em aberto da spec, a ausência de plataforma-alvo definida e a falta de comandos de qualidade impedem afirmar prontidão de implementação/release. Ver [auditoria](../../docs/backlog-audit.md).
+US-011 está Ready após refinamento no GitHub e confirmação da stack. Questões
+Q-APOIO-02/03/04 continuam nas histórias dependentes; não aprovar milestone/release
+por implementar somente o editor. Ver [auditoria](../../docs/backlog-audit.md).
 
 ## Decisões arquiteturais
 
 - Diretriz confirmada: React Native; MVP sem backend.
-- Proposta: módulos por capacidade em `src/features/`, sem fixar extensão/linguagem nem arquitetura de estado.
-- Pendente: plataformas e versões mínimas, bootstrap, navegação, persistência e ferramentas de qualidade.
+- US-011: TypeScript, módulo por capacidade, formulário local em rota Router e SQLite próprio; sem novas dependências ou estado global para esse editor.
+- #12/#13: decisões de cartão/compartilhamento/contato continuam pendentes e não integram esta branch.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.
