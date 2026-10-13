@@ -46,6 +46,13 @@ sem início tardio. Não implementar prazo/término #28 neste modelo.
 
 ## Persistência
 
+Andamento inicial US-027: `sound-settings.ts` define quatro escolhas com labels
+honestos e valida somente seleção/volume/opção, sem inventar status de reprodução.
+Seis testes relacionados e suíte completa316 testes/49 suítes, lint/tipos verdes.
+Assets reais, instalação/revisão das dependências, engine/provider, UI/slider,
+opção confirmada de background e coordenação/regressão TTS ainda faltam; nenhuma
+task concluída pelo modelo isolado, nenhum som alegado como reproduzível.
+
 Assets locais essenciais, sem banco novo ou restauração de autoplay. Seleção,
 volume e opção não persistidos nesta história; retomada de processo exige nova
 escolha/início. Gerador versionado deve recusar sobrescrita de arquivos alheios,
