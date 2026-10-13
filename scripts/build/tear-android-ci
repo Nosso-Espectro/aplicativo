@@ -21,13 +21,17 @@ if [[ "$operation" == artifact ]]; then
 fi
 
 export PATH=/opt/tear-build/node/bin:/opt/tear-build/android-sdk/cmdline-tools/latest/bin:/opt/tear-build/android-sdk/platform-tools:$PATH
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export JAVA_HOME=/opt/tear-build/jdk-17.0.20.1+1
+[[ -x "$JAVA_HOME/bin/java" ]] || { printf 'Verified build JDK unavailable.\n' >&2; exit 69; }
+export PATH="$JAVA_HOME/bin:$PATH"
 export ANDROID_HOME=/opt/tear-build/android-sdk
 export ANDROID_SDK_ROOT=$ANDROID_HOME
 export GRADLE_USER_HOME="$base/cache/gradle"
 export HOME="$base/home"
 export ANDROID_USER_HOME="$HOME/.android"
-export JAVA_TOOL_OPTIONS="-Duser.home=$HOME"
+mkdir -p "$base/diagnostics"
+chmod 700 "$base/diagnostics"
+export JAVA_TOOL_OPTIONS="-Duser.home=$HOME -XX:ErrorFile=$base/diagnostics/$sha-hs_err_pid%p.log"
 export EXPO_NO_TELEMETRY=1 CI=1
 export GIT_TERMINAL_PROMPT=0
 checkout="$base/checkout"
@@ -46,7 +50,11 @@ rm -f "$artifact"
 cd "$checkout"
 [[ "$(node --version)" == "v$(cat .nvmrc)" ]] || { printf 'Node version mismatch.\n' >&2; exit 69; }
 npm ci --include=dev
-npm run build:android
+npx --no-install expo prebuild --platform android --no-install
+cd android
+./gradlew --no-daemon --max-workers=2 -Pkotlin.compiler.execution.strategy=in-process \
+  '-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8' assembleRelease
+cd "$checkout"
 mkdir -p "$(dirname "$artifact")"
 install -m 600 android/app/build/outputs/apk/release/app-release.apk "$artifact"
 printf 'Android artifact ready for %s\n' "$sha"
