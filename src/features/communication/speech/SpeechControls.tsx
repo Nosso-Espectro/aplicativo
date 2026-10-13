@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { localSpeech } from './local-speech';
+import { useSoundSpeechGuard, type SpeechLease } from '../../regulation-sounds/RegulationSoundsProvider';
 
 type Phase = 'idle' | 'busy' | 'stopping';
 
@@ -12,6 +13,8 @@ export function SpeechControls({ text }: { text: string }) {
   const request = useRef(0);
   const cancelled = useRef(false);
   const finished = useRef(true);
+  const guardSpeech = useSoundSpeechGuard();
+  const reading = useRef<{ lease: SpeechLease; started: boolean } | null>(null);
 
   function updatePhase(next: Phase) {
     phaseRef.current = next;
@@ -28,7 +31,9 @@ export function SpeechControls({ text }: { text: string }) {
     return () => {
       active.current = false;
       inFlight.current++;
-      if (phaseRef.current !== 'idle') void localSpeech.stop().catch(() => {});
+      const current = reading.current;
+      if (!current?.started) current?.lease.release();
+      if (phaseRef.current !== 'idle') void localSpeech.stop().then(() => current?.lease.release()).catch(() => {});
     };
   }, []);
 
@@ -37,9 +42,12 @@ export function SpeechControls({ text }: { text: string }) {
     if (phaseRef.current === 'busy') {
       cancelled.current = true;
       const token = request.current;
+      const current = reading.current;
+      if (!current?.started) current?.lease.release();
       updatePhase('stopping');
       try {
         await localSpeech.stop();
+        current?.lease.release();
         if (active.current && token === request.current) updatePhase('idle');
       } catch {
         if (active.current && token === request.current) {
@@ -59,19 +67,26 @@ export function SpeechControls({ text }: { text: string }) {
     finished.current = false;
     setFeedback('');
     updatePhase('busy');
+    const current = { lease: guardSpeech(), started: false };
+    reading.current = current;
     try {
+      await current.lease.ready;
+      if (!active.current || token !== request.current || cancelled.current) return;
       const available = await localSpeech.isAvailable();
       if (!active.current || token !== request.current || cancelled.current) return;
       if (!available) {
         setFeedback('Não há voz local em português brasileiro disponível. A frase continua visível.');
         return;
       }
+      current.started = true;
       await localSpeech.speak(text);
     } catch {
       if (active.current && token === request.current && !cancelled.current) {
         setFeedback('Não foi possível ler a frase. A mensagem continua visível.');
       }
     } finally {
+      current.lease.release();
+      if (reading.current === current) reading.current = null;
       if (token === request.current) finished.current = true;
       if (active.current && token === request.current && currentPhase() !== 'stopping') {
         updatePhase('idle');

@@ -17,7 +17,7 @@ para gerar assets originais com DSP existente, não para compilar aplicativo.
 ## Arquitetura atual
 
 Main46b0268 integra CAA/voz, rotinas, perfil/apoio/contato, modo de baixa estimulação
-e timer visual. Reutilizar Native TTS existente, não reimplementar voz. Provider futuro
+e timer visual. Reutilizar Native TTS existente, não reimplementar voz. Provider
 restrito a um player de mídia/controle de escolhas, preservado entre rotas e
 coordenação com SpeechControls, sem exposição do texto da frase. Rota/tela próprias
 e acesso pelo quadro; painel #10 não pertence à branch. Falha da nova capacidade
@@ -62,8 +62,8 @@ testes tooling exercitam integridade/ausência/duplicação/níveis e preservaç
 Suíte tooling56 verde, lint/tipos e validador verdes. Escuta e loop imperceptível
 não alegados; documentação de origem/limites no README junto aos arquivos.
 
-Dependências/configuração e engine/controller isolados avaliados; provider,
-UI/slider, opção confirmada de background e integração/regressão real com o TTS
+Dependências/configuração, engine/controller e provider integrado à voz avaliados;
+UI/slider, rota/acesso, opção confirmada de background e revisão de interface
 ainda faltam. Nenhuma task concluída
 pelo modelo/assets isolados, nenhum fluxo de reprodução alegado como entregue.
 
@@ -165,16 +165,31 @@ de sessão anteriores, sem aguardar factory pendente já cancelada. Limite técn
 3s de ready em RPC sem resposta libera tentativa de voz e descarta ambiente em
 erro, sem liberar reprodução antiga. release idempotente cancela deadline,
 cancelamento/unmount limpa waits; nunca retoma ambiente automaticamente. Essas
-APIs ainda NÃO estão ligadas a SpeechControls/local-speech: próxima etapa deve
-adquirir/reter/liberar lease e verificar token ativo/cancelado novamente após
-await ready, antes de TTS, incluindo stop que falha, leitura que termina, erro e
-unmount. Foco/interação de sessão nativa e efeito de RPC muito tardio precisam do
+APIs agora ligadas a SpeechControls pelo provider global, sem reimplementar TTS:
+lease antes de ready, token ativo/cancelado verificado novamente após await,
+antes de disponibilidade/fala. Conclusão/indisponível/erro/stop confirmado liberam;
+stop que falha com fala viva mantém lease até a promise de leitura terminar,
+inclusive após unmount. Cancelar antes da fala libera ready e não inicia tarde.
+Foco/interação de sessão nativa e efeito de RPC muito tardio precisam do
 gate real; mocks não comprovam prioridade de áudio em aparelho.
 
 22 testes do controller e oito do adapter (36 com seis do modelo) exercitam
 cancelamento/duplicatas/estado observado/buffering/erros/gain0/background/leases,
-limites/readiness/lifecycle. Controller e adapter ainda não conectados às rotas;
-nenhum som emitido ou critério de fluxo marcado entregue nessa implementação.
+limites/readiness/lifecycle. Provider/adapter agora conectados ao RootLayout,
+mas a tela/rota de sons ainda ausentes; nenhum som emitido ou critério de fluxo
+marcado entregue nessa implementação.
+
+RegulationSoundsProvider cria controller no efeito e descarta no cleanup,
+seguro para replay StrictMode; assinatura de snapshots e AppState são removidas,
+trocar subview não recria player. Voz permanece utilizável sem provider ou antes
+da montagem, sem inicializar áudio de mídia só para ler. Child SpeechControls
+mantém request/cancel/finished e padrões originais; native local-speech intacto.
+Onze testes integrados com engine/TTS falsos: StrictMode, ordem pausa→voz,
+leases/bloqueio/sem autoresume, indisponível/query-error/speech-error, falha de
+stop vivo/montado e desmontado, cancelamento antes de ready, factory falhando,
+AppState/background e cleanup de voice-control sem descartar player global.
+Teste de consulta de voz pendente existente agora aguarda ready em microtask
+antes de cancelar, preservando o cenário de consulta efetivamente pendente.
 
 Licenças MIT expo-audio/expo-asset preservadas dos pacotes fixados; slider omite
 LICENSE no npm, texto obtido de LICENSE.md no tag v5.2.0 upstream,
@@ -187,8 +202,9 @@ apenas pelos textos npm. Audit antes/depois: mesmos66 apontamentos (16moderate,
 Oito testes relacionados/configuração/avisos, suíte321/50, tooling56, lint/tipos,
 Doctor21/21 e validador verdes nessa etapa anterior. Após controller/adapter:
 suíte351/52, tooling56, lint/tipos sem warnings, Doctor21/21 verdes. Assets,
-capacidades e controller/adapter preparados, mas sem provider/UI/TTS ou
-empacotamento nativo validado.
+capacidades/controller/adapter e provider/TTS preparados; após integração,
+suíte362/53, tooling56, lint/tipos, Doctor21/21 verdes. Tela de sons/slider/rota e
+empacotamento nativo ainda não validados.
 
 ## Riscos
 
@@ -203,5 +219,5 @@ pendentes, não autorizam instalação no celular. Ver [auditoria](../../docs/ba
 
 - Diretriz confirmada: React Native; MVP sem backend.
 - US-027: TypeScript, assets locais procedurais declarados, engine/slider SDK recomendados, escolhas voláteis e coordenação mínima com TTS existente.
-- Pendente: provider/UI/rotas e integração/regressão TTS; validação nativa de permissões/escuta/background/lifecycle e política própria de término #28.
+- Pendente: UI/rotas/slider/confirmação de background e revisão de interface; validação nativa de permissões/escuta/background/TTS/lifecycle e política própria de término #28.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.

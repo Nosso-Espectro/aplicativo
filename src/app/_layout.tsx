@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import { LowStimulationProvider, useLowStimulationPresentation } from '../features/regulation/LowStimulationProvider';
 import { LowStimulationControl } from '../features/regulation/LowStimulationControl';
 import { TransitionTimerProvider } from '../features/transition-timer/TransitionTimerProvider';
+import { RegulationSoundsProvider } from '../features/regulation-sounds/RegulationSoundsProvider';
 
 function ApplicationStack() {
   const { navigationAnimation } = useLowStimulationPresentation();
@@ -18,7 +19,7 @@ export default function RootLayout() {
   return (
     <LowStimulationProvider><SentenceProvider>
       <CustomCardsProvider>
-        <TransitionTimerProvider><ApplicationStack /></TransitionTimerProvider>
+        <RegulationSoundsProvider><TransitionTimerProvider><ApplicationStack /></TransitionTimerProvider></RegulationSoundsProvider>
       </CustomCardsProvider>
     </SentenceProvider></LowStimulationProvider>
   );
