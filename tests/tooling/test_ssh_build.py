@@ -8,21 +8,28 @@ WRAPPER = ROOT / "scripts/build/tear-android-ci"
 
 
 class SSHBuildTests(unittest.TestCase):
-    def test_android_isolated_from_quarantined_host_and_still_manual_on_main(self):
+    def test_android_backends_are_explicit_and_builds_still_manual_on_main(self):
         workflow = (ROOT / ".github/workflows/mobile-quality.yml").read_text()
         android = workflow.split("  android-build:\n", 1)[1].split("  ios-build:\n", 1)[0]
         self.assertIn("github.event_name == 'workflow_dispatch'", android)
         self.assertIn("github.ref == 'refs/heads/main'", android)
         self.assertIn("runs-on: ubuntu-24.04", android)
-        self.assertNotIn("TEAR_BUILD_", android)
-        self.assertNotIn("ssh ", android)
+        quality = workflow.split("  quality:\n", 1)[1].split("  android-build:\n", 1)[0]
+        self.assertNotIn("if: inputs.android_backend", quality)
+        github_steps, ssh_steps = android.split("      - name: Build Android over SSH and retrieve APK\n", 1)
+        self.assertNotIn("TEAR_BUILD_", github_steps)
+        self.assertIn("if: inputs.android_backend == 'github'", github_steps)
+        self.assertIn("if: inputs.android_backend == 'ssh'", ssh_steps)
+        self.assertIn("StrictHostKeyChecking=yes", ssh_steps)
+        self.assertIn('"build $GITHUB_SHA"', ssh_steps)
+        self.assertIn('"artifact $GITHUB_SHA"', ssh_steps)
         self.assertIn("node-version-file: .nvmrc", android)
         self.assertIn("distribution: temurin", android)
         self.assertIn("java-version: '17'", android)
         self.assertIn("packages: platform-tools", android)
         self.assertIn('"platforms;android-36" "build-tools;36.0.0" "ndk;27.1.12297006"', android)
         self.assertIn("./gradlew --no-daemon --max-workers=2 -Pkotlin.compiler.execution.strategy=in-process assembleRelease", android)
-        self.assertIn("path: android/app/build/outputs/apk/release/*.apk", android)
+        self.assertIn("path: build/android/*.apk", android)
         self.assertIn("name: tear-android-${{ github.sha }}", android)
 
     def test_manual_builds_have_sha_scoped_non_cancelling_concurrency(self):

@@ -1,5 +1,19 @@
 # Android Build Host
 
+## Retomada autorizada da geração — Issue #61
+
+Após a recuperação técnica, o usuário pediu explicitamente usar novamente o
+servidor para gerar o APK e retomar desenvolvimento. Nova checagem não encontrou
+executável/processo xmrig nem referências nas buscas limitadas; o caminho foi
+removido novamente sem apagar relatórios. Isso não comprova host íntegro.
+
+Actions oferece `android_backend=ssh` (padrão solicitado) ou `github` (alternativa
+isolada), ambos manuais/remotos na main. SSH mantém chave dedicada, host key
+obrigatória, usuário restrito e wrapper com JDK verificado/processo novo/memória
+ajustada. Dados do celular não são enviados ao servidor. SHA/digest/assinatura
+e resultado real devem ser verificados; não confundir build com saneamento do
+host ou teste no aparelho. Recriação/rotação continuam pendentes na #61.
+
 ## Recuperação técnica do host — Issue #61
 
 Após o usuário priorizar a correção do servidor, foi instalado Temurin17.0.20.1+1
