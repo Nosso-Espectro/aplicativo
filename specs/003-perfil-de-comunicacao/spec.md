@@ -3,8 +3,8 @@ milestone: 13
 priority: P0
 tag: m003-perfil-de-comunicacao
 status: draft
-ready_stories: []
-source_checked: 2026-09-23
+ready_stories: ["US-014"]
+source_checked: 2026-10-13
 ---
 
 # Perfil de Comunicação
@@ -108,7 +108,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Implementações de outras milestones, requisitos não rastreados e decisões funcionais listadas como pendentes. Nesta execução apenas documentação e ferramentas de engenharia; nenhuma funcionalidade é implementada.
+Implementações de outras milestones e requisitos não rastreados. Esta branch implementa somente US-014; sensibilidades/estratégias e resumo para terceiros permanecem nas histórias próprias #15/#16.
 
 ## Dependências funcionais
 
@@ -121,6 +121,12 @@ Campos ausentes, nenhuma informação selecionada e falha ao salvar; não inclui
 São cenários derivados dos critérios e da DoD, não novas funcionalidades. As respostas ainda indefinidas devem ser acordadas antes da implementação correspondente.
 
 ## Questões em aberto
+
+US-014 refinada na Issue #14 sob delegação explícita do usuário: campos opcionais
+de texto livre para comunicação/recebimento de informações; tempo adicional
+não informado/preciso/não preciso; salvar/cancelar explícitos, remoção integral
+confirmada e falha preservando formulário/versão salva. SQLite privado local,
+sem compartilhamento ou campos das US-015/US-016. Prontidão revisada na base real.
 
 - Q-PERFIL-01 — Reutilização no Plano de Apoio (#15) ocorre por cópia ou referência? Mudanças posteriores devem propagar? Alinhar com Q-APOIO-01.
 - Q-PERFIL-02 — Quais campos e formas de apresentação/compartilhamento são permitidos em #16? Não presumir exportação ou envio.
