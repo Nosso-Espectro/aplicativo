@@ -1,6 +1,6 @@
 # Tasks — Sons para Regulação
 
-Milestone #19: [spec.md](spec.md) e [plan.md](plan.md). Todas pendentes; não executadas nesta preparação.
+Milestone #19: [spec.md](spec.md) e [plan.md](plan.md). US-027 Ready após refinamento vivo; tasks permanecem pendentes até comportamento validado. US-028 não pertence à branch #27.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 

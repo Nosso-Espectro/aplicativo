@@ -4,11 +4,22 @@ Spec: [spec.md](spec.md). Milestone #19; Issues #27, #28. Plano proposto, sujeit
 
 ## Stack
 
-Inspeção em 2026-09-23: repositório sem código de aplicação, package.json, dependências ou ferramentas de build/teste. React Native e primeira versão sem backend são diretrizes explícitas do projeto, ainda não implementadas. Expo, linguagem, navegação e biblioteca de persistência não foram escolhidos. Não assumir stack web, banco ou servidor.
+Inspeção em 2026-10-13: Expo57.0.28/RN0.86.3/React19.2.3, TypeScript strict,
+Router e Node24.21.0/npm11.19.0, Jest/RNTL/checks leves existentes. Áudio de mídia
+e slider ainda não instalados. bundledNativeModules.json recomenda expo-audio
+~57.0.5 e @react-native-community/slider5.2.0; avaliar/installar versões fixadas,
+lockfile/licenças/audit e preservar avisos antes de entrega. FFmpeg já disponível
+para gerar assets originais com DSP existente, não para compilar aplicativo.
 
 ## Arquitetura atual
 
-Somente README e licença antes desta preparação. Não há componentes, modelos ou serviços existentes para reutilizar. Os caminhos abaixo são propostas de organização e não arquivos já criados.
+Main46b0268 integra CAA/voz, rotinas, perfil/apoio/contato, modo de baixa estimulação
+e timer visual. Reutilizar Native TTS existente, não reimplementar voz. Provider
+restrito a um player de mídia/controle de escolhas, preservado entre rotas e
+coordenação com SpeechControls, sem exposição do texto da frase. Rota/tela próprias
+e acesso pelo quadro; painel #10 não pertence à branch. Falha da nova capacidade
+não pode bloquear comunicação; criação tardia do engine e descarte/listeners
+devem ser verificados nas interfaces das versões instaladas.
 
 ## Estratégia
 
@@ -25,13 +36,21 @@ Módulo proposto: `src/features/regulation-sounds/`.
 
 ## Modelo de dados
 
-Catálogo de sons (identificador, recurso local); estado de reprodução, volume e término opcional. Cancelar término não equivale a pausar áudio.
-
-Representação física, tipos e migrações serão definidos após a escolha técnica; não instalar banco por antecipação.
+Catálogo fixo de quatro IDs e labels honestos de síntese, mapeados a quatro WAVs
+empacotados. Escolhas voláteis: selectedSoundId inicialmente null, volume0.25 e
+backgroundPlaybackfalse. Normalização estrita, sem coerção/diagnóstico ou valores
+inferidos do perfil. Estado do player separado das escolhas e observado na API
+nativa, não "playing" por intenção/chamada. Escolher/trocar/cancelar invalida
+pedidos antigos, pausar disponível em carregamento/reprodução, erros recuperáveis
+sem início tardio. Não implementar prazo/término #28 neste modelo.
 
 ## Persistência
 
-Sons essenciais locais (#27). Preferências e restauração de reprodução após fechamento não estão especificadas.
+Assets locais essenciais, sem banco novo ou restauração de autoplay. Seleção,
+volume e opção não persistidos nesta história; retomada de processo exige nova
+escolha/início. Gerador versionado deve recusar sobrescrita de arquivos alheios,
+registrar parâmetros/checksums/licença Apache2.0 e quatro sinais distintos. Validar
+WAV/PCM, duração, RMS/picos/silêncio e loop; a qualidade percebida fica no gate.
 
 ## Fluxos principais
 
@@ -41,7 +60,13 @@ Validar cada critério no seu fluxo e as integrações indicadas em spec.md; a s
 
 ## Offline
 
-Sons essenciais locais (#27). Preferências e restauração de reprodução após fechamento não estão especificadas.
+Sons empacotados e player nativo, sem URLs de streaming, download obrigatório ou
+serviço externo. Sem flag de segundo plano, pausar ao background e não retomar
+sozinho. Flag opcional confirmada permite sessão nativa/background/lockscreen,
+sem prometer força contra OS/force-stop. Metadados fixos/genéricos apenas. TTS
+pausa ambiente e impede novo início enquanto fala; liberar coordenação após
+conclusão/cancelamento/erro/unmount, sem auto-retomar o ambiente. Testar pedidos
+cancelados/tardios e interrupções; SDK/lifecycle reais exigem gate nativo.
 
 Recursos locais não devem depender de autenticação ou API. Capacidades externas explicitamente solicitadas devem informar indisponibilidade sem impedir os recursos locais; não confundir falta de backend próprio com ausência de qualquer serviço externo futuro.
 
@@ -59,23 +84,39 @@ Aplicar RNF-002 e RNF-004. Usar dados sintéticos nos testes; evitar dados pesso
 - Usar testes unitários para transformações de estado/dados; componentes para interação e acessibilidade; integração para persistência/capacidades nativas quando pertinentes.
 - Exercitar os casos de erro do spec e regressões das dependências reais.
 - Verificar em dispositivo/simulador os fluxos que dependem de voz, áudio, permissões ou notificações; mocks isolados não comprovam suporte nativo.
-- Selecionar E2E para fluxos críticos quando a infraestrutura existir. Executar testes, lint, typecheck quando aplicável e build antes de concluir.
+- Selecionar E2E para fluxos críticos quando a infraestrutura existir. Executar testes, lint, typecheck e checks leves; builds somente remotos no SHA integrado da main.
 
-Hoje não existem runner, scripts de qualidade ou build do aplicativo. A validação da documentação não equivale a testes do produto e não habilita release.
+Unitários de escolhas/catálogo/volume/opção, validação real dos assets, controlador
+com engine falso e cancelamento/lifecycle, componentes/rotas/slider/estados e
+regressão TTS. Suíte completa, lint/tipos/Doctor,49 tooling e validador. Gate deve
+validar escuta/loops/volume, offline, foco/silêncio/interrupções/desconexões,
+background/lockscreen/serviço, TTS e leitores de tela/foco/ampliação em Android/iOS;
+mocks/build não comprovam esses resultados nem segurança auditiva.
 
 ## Dependências técnicas
 
-Base React Native ainda a inicializar. Selecionar somente as bibliotecas necessárias aos critérios da história, documentando suporte offline, plataformas e permissões. Integrações funcionais estão em spec.md; reuso de temporizador/áudio pode ser avaliado quando houver código, sem criar framework antecipado.
+Planejar expo-audio e slider recomendados pelo SDK como engine/controle existentes,
+sem player nativo artesanal/framework de mídia. [Audio SDK57](https://docs.expo.dev/versions/v57.0.0/sdk/audio/)
+e [Slider](https://docs.expo.dev/versions/v57.0.0/sdk/slider/) são fontes primárias.
+Plugin de playback: capacidade audio iOS e foreground media playback Android;
+gravação/microfone explícitos desabilitados, sem requests de recording. Rever
+manifest/plist/permissões efetivas, não assumir defaults do pacote. Sessão de
+áudio configurada segundo flag confirmada, não mudar ajustes globais. Instalar
+somente dependências justificadas e preservar licenças na distribuição; nenhuma
+dependência nova ou asset de áudio foi instalada/criado nesta preparação.
 
 ## Riscos
 
 Arquivo indisponível, falha de reprodução e interrupção do áudio; cancelamento do timer separado do player (#27/#28).
 
-As questões em aberto da spec, a ausência de plataforma-alvo definida e a falta de comandos de qualidade impedem afirmar prontidão de implementação/release. Ver [auditoria](../../docs/backlog-audit.md).
+US-027 Ready após refinamento e confirmação de capacidades da stack; implementação
+e escuta nativa ainda faltam. Q-SOM-02 de término #28 não resolvida; não antecipar
+timer ou liberar milestone. Auditoria #51 e segurança do host #61 continuam
+pendentes, não autorizam instalação no celular. Ver [auditoria](../../docs/backlog-audit.md).
 
 ## Decisões arquiteturais
 
 - Diretriz confirmada: React Native; MVP sem backend.
-- Proposta: módulos por capacidade em `src/features/`, sem fixar extensão/linguagem nem arquitetura de estado.
-- Pendente: plataformas e versões mínimas, bootstrap, navegação, persistência e ferramentas de qualidade.
+- US-027: TypeScript, assets locais procedurais declarados, engine/slider SDK recomendados, escolhas voláteis e coordenação mínima com TTS existente.
+- Pendente: instalação/revisão de dependências/lifecycle, geração de assets e implementação; política própria de término #28.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.
