@@ -3,22 +3,27 @@ import { normalizedRoutine, type Routine, type RoutineDraft } from './routine-mo
 
 async function readRoutines(db: SQLiteDatabase): Promise<Routine[]> {
   const routines = await db.getAllAsync<{ id: string; name: string }>('SELECT id, name FROM routines ORDER BY rowid');
-  const steps = await db.getAllAsync<{ id: string; routine_id: string; title: string; image_uri: string | null }>('SELECT * FROM routine_steps ORDER BY position');
+  const steps = await db.getAllAsync<{ id: string; routine_id: string; title: string; image_uri: string | null; completed: number }>('SELECT * FROM routine_steps ORDER BY position');
   return routines.map((routine) => ({ ...routine, steps: steps.filter((step) => step.routine_id === routine.id)
-    .map((step) => ({ id: step.id, title: step.title, imageUri: step.image_uri })) }));
+    .map((step) => ({ id: step.id, title: step.title, imageUri: step.image_uri, completed: step.completed === 1 })) }));
 }
 export async function openRoutineDatabase() {
   const db = await openDatabaseAsync('tear-routines.db');
   try {
     await db.execAsync('PRAGMA foreign_keys = ON; PRAGMA journal_mode = WAL;');
     await db.withExclusiveTransactionAsync(async (tx) => {
+      const [{ user_version: version }] = await tx.getAllAsync<{ user_version: number }>('PRAGMA user_version');
+      if (version > 2) throw new Error('Unsupported routine schema.');
       await tx.execAsync(`
         CREATE TABLE IF NOT EXISTS routines (id TEXT PRIMARY KEY, name TEXT NOT NULL CHECK(length(trim(name)) > 0));
         CREATE TABLE IF NOT EXISTS routine_steps (
           id TEXT PRIMARY KEY, routine_id TEXT NOT NULL REFERENCES routines(id) ON DELETE CASCADE,
           title TEXT NOT NULL CHECK(length(trim(title)) > 0), image_uri TEXT,
           position INTEGER NOT NULL CHECK(position >= 0), UNIQUE(routine_id, position)
-        ); PRAGMA user_version = 1;`);
+        );`);
+      if (version < 2) {
+        await tx.execAsync('ALTER TABLE routine_steps ADD COLUMN completed INTEGER NOT NULL DEFAULT 0 CHECK(completed IN (0, 1)); PRAGMA user_version = 2;');
+      }
     });
   } catch {
     await db.closeAsync();
@@ -41,9 +46,12 @@ export async function openRoutineDatabase() {
           const result = await tx.runAsync('UPDATE routines SET name = ? WHERE id = ?', draft.name, id);
           if (result.changes !== 1) throw new Error('Routine unavailable.');
         } else await tx.runAsync('INSERT INTO routines (id, name) VALUES (?, ?)', routineId, draft.name);
+        const previous = await tx.getAllAsync<{ id: string; completed: number }>('SELECT id, completed FROM routine_steps WHERE routine_id = ?', routineId);
+        const statuses = new Map(previous.map((step) => [step.id, step.completed]));
+        // Status belongs to the stable ID, never the edited position or stale draft.
         await tx.runAsync('DELETE FROM routine_steps WHERE routine_id = ?', routineId);
         for (const [position, step] of draft.steps.entries()) {
-          await tx.runAsync('INSERT INTO routine_steps (id, routine_id, title, image_uri, position) VALUES (?, ?, ?, ?, ?)', step.id, routineId, step.title, step.imageUri, position);
+          await tx.runAsync('INSERT INTO routine_steps (id, routine_id, title, image_uri, position, completed) VALUES (?, ?, ?, ?, ?, ?)', step.id, routineId, step.title, step.imageUri, position, statuses.get(step.id) ?? 0);
         }
         saved = await readRoutines(tx);
       });

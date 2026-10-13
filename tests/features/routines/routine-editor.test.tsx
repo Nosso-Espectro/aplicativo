@@ -130,3 +130,51 @@ it('recovers storage initialization failure without exposing details', async () 
   fireEvent.press(screen.getByRole('button', { name: 'Tentar abrir rotinas novamente' }));
   expect(await screen.findByText('Ainda não há rotinas salvas.')).toBeOnTheScreen();
 });
+it('moves steps with accessible controls, disables boundaries, retains status/images and persists after reopening', async () => {
+  routines = [{ id: 'r', name: 'Teste', steps: [
+    { id: 'a', title: 'Primeira', imageUri: 'file:///private/routine-images/test.png', completed: true },
+    { id: 'b', title: 'Segunda', imageUri: null, completed: false },
+  ] }];
+  const view = render(<Session />);
+  fireEvent.press(await screen.findByRole('button', { name: 'Abrir rotina: Teste' }));
+  expect(screen.getByRole('button', { name: 'Subir etapa 1' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Descer etapa 2' })).toBeDisabled();
+  fireEvent.press(screen.getByRole('button', { name: 'Descer etapa 1' }));
+  expect(screen.getByLabelText('Título da etapa 1').props.value).toBe('Segunda');
+  expect(screen.getByLabelText('Título da etapa 2').props.value).toBe('Primeira');
+  expect(screen.getByText('Etapa movida para a posição 2.')).toBeOnTheScreen();
+  fireEvent.press(screen.getByRole('button', { name: 'Subir etapa 2' }));
+  fireEvent.press(screen.getByRole('button', { name: 'Subir etapa 2' }));
+  fireEvent.press(screen.getByRole('button', { name: 'Salvar rotina' }));
+  await screen.findByRole('button', { name: 'Abrir rotina: Teste' });
+  expect(routines[0].steps.map((step) => [step.id, step.completed, step.imageUri])).toEqual([
+    ['b', false, null], ['a', true, 'file:///private/routine-images/test.png'],
+  ]);
+  view.unmount(); render(<Session />);
+  fireEvent.press(await screen.findByRole('button', { name: 'Abrir rotina: Teste' }));
+  expect(screen.getByLabelText('Título da etapa 1').props.value).toBe('Segunda');
+});
+it('cancels reordered drafts without changing the saved sequence', async () => {
+  routines = [{ id: 'r', name: 'Teste', steps: [{ id: 'a', title: 'Uma', imageUri: null }, { id: 'b', title: 'Duas', imageUri: null }] }];
+  render(<Session />);
+  fireEvent.press(await screen.findByRole('button', { name: 'Abrir rotina: Teste' }));
+  fireEvent.press(screen.getByRole('button', { name: 'Descer etapa 1' }));
+  fireEvent.press(screen.getByRole('button', { name: 'Cancelar' }));
+  fireEvent.press(screen.getByRole('button', { name: 'Abrir rotina: Teste' }));
+  expect(screen.getByLabelText('Título da etapa 1').props.value).toBe('Uma');
+  expect(save).not.toHaveBeenCalled();
+});
+it('keeps reordered draft after save failure while stored order remains unchanged, then retries', async () => {
+  routines = [{ id: 'r', name: 'Teste', steps: [{ id: 'a', title: 'Uma', imageUri: null }, { id: 'b', title: 'Duas', imageUri: null }] }];
+  save.mockRejectedValueOnce(new Error('synthetic failure'));
+  render(<Session />);
+  fireEvent.press(await screen.findByRole('button', { name: 'Abrir rotina: Teste' }));
+  fireEvent.press(screen.getByRole('button', { name: 'Descer etapa 1' }));
+  fireEvent.press(screen.getByRole('button', { name: 'Salvar rotina' }));
+  await screen.findByText(/Seu preenchimento foi mantido/);
+  expect(screen.getByLabelText('Título da etapa 1').props.value).toBe('Duas');
+  expect(routines[0].steps[0].id).toBe('a');
+  fireEvent.press(screen.getByRole('button', { name: 'Salvar rotina' }));
+  await screen.findByRole('button', { name: 'Abrir rotina: Teste' });
+  expect(routines[0].steps[0].id).toBe('b');
+});

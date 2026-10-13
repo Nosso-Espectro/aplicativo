@@ -1,6 +1,6 @@
 # Plano de implementação — Rotina Visual
 
-Spec: [spec.md](spec.md). Milestone #10; Issues #6, #7, #8. Plano da US-006 atualizado em 2026-10-13; #7/#8 continuam sujeitos às questões em aberto.
+Spec: [spec.md](spec.md). Milestone #10; Issues #6, #7, #8. Plano da US-006/US-007 atualizado em 2026-10-13; #8 continua sujeita às questões em aberto.
 
 ## Stack
 
@@ -21,7 +21,7 @@ Não implementar a milestone inteira em uma branch. A inicialização técnica p
 Módulo: `src/features/routines/`. Rotas `/routines`, `/routines/new` e `/routines/[id]`; acesso direto pelo quadro de comunicação, lista com nome e quantidade de etapas e editor rolável.
 
 - `src/features/routines/RoutineEditor.tsx`, `RoutineProvider.tsx`, `routine-model.ts`, `routine-storage.ts`, `routine-database.ts` — [US-006] Criar uma rotina visual.
-- `src/features/routines/step-order` — [US-007] Reordenar etapas da rotina.
+- `src/features/routines/step-order.ts`, `RoutineEditor.tsx` e `routine-database.ts` — [US-007] Reordenar etapas da rotina.
 - `src/features/routines/routine-player` — [US-008] Executar rotina com Agora e Depois.
 
 ## Modelo de dados
@@ -31,6 +31,10 @@ Rotina (identificador, nome); etapa (identificador estável, título, imagem opc
 US-006: banco privado `tear-routines.db`, versão 1; `routines(id, name)` e `routine_steps(id, routine_id, title, image_uri, position)`, FK com cascata, posição única por rotina e títulos/nomes não vazios. Identificadores das etapas sobrevivem a edição. Sem estado de execução antecipado. SQLite separado preserva o schema de comunicação. Cada salvamento substitui as etapas da rotina dentro da mesma transação exclusiva; fila de operações e publicação somente após commit. SQL parametrizado, sem ORM. Imagens em `routine-images`, cópia antes do commit e remoção de cópias novas em falha; órfãs antigas limpas ao reabrir o módulo. Reordenação/status/progresso serão definidos nas Issues próprias.
 
 ## Persistência
+
+US-007: migração transacional v1→v2 adiciona `completed INTEGER NOT NULL DEFAULT 0 CHECK(completed IN (0,1))` sem mudar IDs/conteúdo/ordem. Bancos com versão futura são rejeitados sem downgrade. Status é lido por ID dentro da transação antes de substituir etapas, preservado na nova posição e ignorando status de rascunho possivelmente obsoleto. Etapas novas iniciam pendentes. Sem controles de conclusão/progresso antecipados; execução pertence à #8.
+
+Subir/descer transforma apenas a sequência do rascunho, mantendo objetos estáveis, imagem e status. Limites desabilitados, sem gesto obrigatório; feedback textual anuncia posição. Salvar reutiliza a transação da rotina; cancelamento mantém banco anterior, falha mantém edição e rollback conserva a versão salva. Reordenar imagens existentes não as copia novamente, pois o storage compara referências por ID.
 
 Persistir rotinas, ordem e progresso (#6–#8); operações devem preservar status ao reordenar e restaurar execução após fechamento.
 
@@ -72,7 +76,7 @@ Base integrada da US-041 e fronteiras locais de imagem da US-004 reutilizadas. S
 
 Rotina vazia, imagem ausente, falha de persistência e etapa removida durante edição; preservar ordem/status (#6–#8).
 
-Questões em aberto de #7/#8 impedem sua execução, não a US-006 refinada na Issue. Validação de imagens, persistência e acessibilidade em Android/iOS permanece necessária para o gate; a base/host não comprovam suporte em todas as versões mínimas. Ver [auditoria](../../docs/backlog-audit.md).
+Questões em aberto da #8 impedem sua execução, não a US-006/US-007 refinadas nas Issues. Validação de imagens, persistência e acessibilidade em Android/iOS permanece necessária para o gate; a base/host não comprovam suporte em todas as versões mínimas. Ver [auditoria](../../docs/backlog-audit.md).
 
 ## Decisões arquiteturais
 
