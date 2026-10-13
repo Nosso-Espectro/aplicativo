@@ -6,9 +6,10 @@ jest.mock('../../../../src/features/communication/custom-cards/CustomCardsProvid
 jest.mock('../../../../src/features/communication/custom-cards/media-picker', () => ({ pickCardImage: jest.fn() }));
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
 const save = jest.fn(); const remove = jest.fn(); const close = jest.fn();
+const favorites = { favoriteIds: [], favoriteBusy: false, favoriteError: false, setFavorite: jest.fn(), retryFavorite: jest.fn() };
 beforeEach(() => {
   jest.resetAllMocks(); save.mockResolvedValue(undefined); remove.mockResolvedValue(undefined);
-  jest.mocked(useCustomCards).mockReturnValue({ cards: [], loading: false, error: null, retry: jest.fn(), save, remove });
+  jest.mocked(useCustomCards).mockReturnValue({ ...favorites, cards: [], loading: false, error: null, retry: jest.fn(), save, remove });
 });
 function fill() {
   fireEvent.changeText(screen.getByLabelText('Título do cartão'), 'Teste');
@@ -55,7 +56,7 @@ it('does not save when canceled', () => {
   expect(close).toHaveBeenCalled(); expect(save).not.toHaveBeenCalled();
 });
 it('requires explicit confirmation for deletion and keeps card on failure', async () => {
-  jest.mocked(useCustomCards).mockReturnValue({ cards: [{ id: 'custom-test', title: 'Teste', categoryId: 'needs', imageUri: null }], loading: false, error: null, retry: jest.fn(), save, remove });
+  jest.mocked(useCustomCards).mockReturnValue({ ...favorites, cards: [{ id: 'custom-test', title: 'Teste', categoryId: 'needs', imageUri: null }], loading: false, error: null, retry: jest.fn(), save, remove });
   remove.mockRejectedValueOnce(new Error('private data'));
   render(<CustomCardEditor id="custom-test" onClose={close} />);
   fireEvent.press(screen.getByRole('button', { name: 'Excluir cartão' }));

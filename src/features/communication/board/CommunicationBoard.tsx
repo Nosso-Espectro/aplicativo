@@ -31,9 +31,18 @@ type BoardProps = {
   onEditCard?: (id: string) => void;
   storageStatus?: string | null;
   onRetryStorage?: () => void;
+  favoriteIds?: readonly string[];
+  onFavorite?: (id: string, selected: boolean) => void;
+  favoriteDisabled?: boolean;
+  heading?: string;
+  showCategories?: boolean;
+  emptyMessage?: string;
+  navigation?: ReactNode;
+  feedback?: ReactNode;
 };
 
-export function CommunicationBoard({ cards = initialCards, onSelectCard, sentence, customCardIds = [], onNewCard, onEditCard, storageStatus, onRetryStorage }: BoardProps) {
+export function CommunicationBoard({ cards = initialCards, onSelectCard, sentence, customCardIds = [], onNewCard, onEditCard, storageStatus, onRetryStorage,
+  favoriteIds = [], onFavorite, favoriteDisabled = false, heading = 'Comunicação', showCategories = true, emptyMessage = 'Nenhum cartão disponível.', navigation, feedback }: BoardProps) {
   const [category, setCategory] = useState<CategoryId | 'all'>('all');
   const [selectedCard, setSelectedCard] = useState<CommunicationCard | null>(null);
   const { width, fontScale } = useWindowDimensions();
@@ -50,8 +59,10 @@ export function CommunicationBoard({ cards = initialCards, onSelectCard, sentenc
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text accessibilityRole="header" style={styles.brand}>TEAr</Text>
-        <Text accessibilityRole="header" style={styles.heading}>Comunicação</Text>
+        <Text accessibilityRole="header" style={styles.heading}>{heading}</Text>
+        {navigation}
         {sentence}
+        {feedback}
         {onNewCard && <Pressable accessibilityRole="button" accessibilityLabel="Novo cartão" onPress={onNewCard} style={styles.newCard}>
           <MaterialIcons name="add" size={24} color="#16634D" accessible={false} />
           <Text style={styles.categoryLabel}>Novo cartão</Text>
@@ -60,7 +71,7 @@ export function CommunicationBoard({ cards = initialCards, onSelectCard, sentenc
         {onRetryStorage && <Pressable accessibilityRole="button" onPress={onRetryStorage} style={styles.back}>
           <Text style={styles.categoryLabel}>Tentar abrir cartões novamente</Text>
         </Pressable>}
-        <View style={styles.categories}>
+        {showCategories && <View style={styles.categories}>
           {[{ id: 'all' as const, title: 'Todos' }, ...categories].map((item) => (
             <Pressable
               key={item.id}
@@ -80,7 +91,7 @@ export function CommunicationBoard({ cards = initialCards, onSelectCard, sentenc
               ]}>{item.title}</Text>
             </Pressable>
           ))}
-        </View>
+        </View>}
         <View style={styles.grid}>
           {visibleCards.map((card) => (
             <View
@@ -119,12 +130,20 @@ export function CommunicationBoard({ cards = initialCards, onSelectCard, sentenc
                 <MaterialIcons name="edit" size={24} color="#16634D" accessible={false} />
                 <Text style={styles.creditLabel}>Editar</Text>
               </Pressable>}
+              {onFavorite && <Pressable accessibilityRole="checkbox"
+                accessibilityLabel={`Favorito: ${card.title}`}
+                accessibilityState={{ checked: favoriteIds.includes(card.id), disabled: favoriteDisabled }}
+                disabled={favoriteDisabled} onPress={() => onFavorite(card.id, !favoriteIds.includes(card.id))}
+                style={styles.preview}>
+                <MaterialIcons name={favoriteIds.includes(card.id) ? 'star' : 'star-border'} size={24} color="#16634D" accessible={false} />
+                <Text style={styles.creditLabel}>{favoriteIds.includes(card.id) ? 'Favoritado' : 'Favoritar'}</Text>
+              </Pressable>}
             </View>
           ))}
         </View>
-        {visibleCards.length === 0 && (
+        {visibleCards.length === 0 && emptyMessage && (
           <Text accessibilityRole="alert" style={styles.empty}>
-            Nenhum cartão disponível.
+            {emptyMessage}
           </Text>
         )}
       </ScrollView>

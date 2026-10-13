@@ -249,9 +249,9 @@ Como usuário de CAA, quero marcar cartões frequentes como favoritos, para aces
 
 #### Critérios de aceite
 
-- Qualquer cartão deve poder ser marcado ou desmarcado como favorito.
-- Deve existir uma área de favoritos acessível diretamente no módulo.
-- A ordem dos favoritos deve ser persistida localmente.
+- [ ] Qualquer cartão deve poder ser marcado ou desmarcado como favorito.
+- [ ] Deve existir uma área de favoritos acessível diretamente no módulo.
+- [ ] A ordem dos favoritos deve ser persistida localmente.
 
 **Why this priority**: prioridade P0 da Issue e da milestone; valor expresso na história original.
 

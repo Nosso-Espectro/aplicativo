@@ -5,6 +5,8 @@ import { localImages } from './local-image-storage';
 export function createCardStorage(db: CardDatabase, images = localImages) {
   return {
     list: () => db.list(),
+    listFavorites: () => db.listFavorites(),
+    setFavorite: (id: string, selected: boolean) => db.setFavorite(id, selected),
     async save(draft: CardDraft, id?: string, previousImage: string | null = null) {
       const card = validatedCard(draft);
       let copied: string | null = null;

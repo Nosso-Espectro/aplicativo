@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS favorites (
 PRAGMA user_version = 1;`;
 
 export interface CardDatabase {
+  listFavorites(): Promise<string[]>;
+  setFavorite(id: string, selected: boolean): Promise<string[]>;
   list(): Promise<CustomCard[]>;
   save(card: Omit<CustomCard, 'id'>, id?: string): Promise<CustomCard[]>;
   remove(id: string): Promise<CustomCard[]>;
@@ -24,6 +26,10 @@ type Row = { id: string; title: string; category_id: CustomCard['categoryId']; i
 async function readCards(db: SQLiteDatabase): Promise<CustomCard[]> {
   const rows = await db.getAllAsync<Row>("SELECT * FROM cards WHERE origin = 'custom' ORDER BY rowid");
   return rows.map((row) => ({ id: row.id, title: row.title, categoryId: row.category_id, imageUri: row.image_uri }));
+}
+async function readFavorites(db: SQLiteDatabase): Promise<string[]> {
+  const rows = await db.getAllAsync<{ card_id: string }>('SELECT card_id FROM favorites ORDER BY position');
+  return rows.map((row) => row.card_id);
 }
 
 export async function openCardDatabase(): Promise<CardDatabase> {
@@ -45,12 +51,25 @@ export async function openCardDatabase(): Promise<CardDatabase> {
   }
   // Serialize reads and mutations; only publish the rows from a committed transaction.
   let pending: Promise<unknown> = Promise.resolve();
-  const enqueue = (operation: () => Promise<CustomCard[]>) => {
+  function enqueue<T>(operation: () => Promise<T>): Promise<T> {
     const next = pending.then(operation);
     pending = next.catch(() => undefined);
     return next;
-  };
+  }
   return {
+    listFavorites: () => enqueue(() => readFavorites(db)),
+    setFavorite: (id, selected) => enqueue(async () => {
+      let ids: string[] = [];
+      await db.withExclusiveTransactionAsync(async (tx) => {
+        if (selected) {
+          await tx.runAsync('INSERT OR IGNORE INTO favorites (card_id, position) SELECT ?, COALESCE(MAX(position) + 1, 0) FROM favorites', id);
+        } else {
+          await tx.runAsync('DELETE FROM favorites WHERE card_id = ?', id);
+        }
+        ids = await readFavorites(tx);
+      });
+      return ids;
+    }),
     list: () => enqueue(() => readCards(db)),
     save: (card, id) => enqueue(async () => {
       let rows: CustomCard[] = [];

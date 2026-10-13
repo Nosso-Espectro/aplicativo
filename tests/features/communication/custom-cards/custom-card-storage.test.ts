@@ -3,7 +3,7 @@ import type { CustomCard } from '../../../../src/features/communication/custom-c
 jest.mock('../../../../src/features/communication/custom-cards/local-image-storage', () => ({ localImages: {} }));
 const draft = { title: '  Teste  ', categoryId: 'needs', imageUri: null };
 function setup() {
-  const db = { list: jest.fn<Promise<CustomCard[]>, []>().mockResolvedValue([]), save: jest.fn().mockResolvedValue([]), remove: jest.fn().mockResolvedValue([]) };
+  const db = { list: jest.fn<Promise<CustomCard[]>, []>().mockResolvedValue([]), save: jest.fn().mockResolvedValue([]), remove: jest.fn().mockResolvedValue([]), listFavorites: jest.fn().mockResolvedValue([]), setFavorite: jest.fn().mockResolvedValue([]) };
   const images = { copy: jest.fn().mockResolvedValue('file:///private/copy.jpg'), remove: jest.fn().mockResolvedValue(undefined), prune: jest.fn().mockResolvedValue(undefined) };
   return { db, images, storage: createCardStorage(db, images) };
 }

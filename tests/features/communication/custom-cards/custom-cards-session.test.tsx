@@ -23,6 +23,7 @@ beforeEach(() => {
   saved = [{ id: 'custom-test', title: 'Primeiro título', categoryId: 'needs', imageUri: null }];
   mockPush.mockReset();
   jest.mocked(openCardDatabase).mockResolvedValue({
+    listFavorites: async () => [], setFavorite: async () => [],
     list: async () => saved,
     save: async (card, id) => { saved = saved.map((item) => item.id === id ? { ...card, id } : item); return saved; },
     remove: async (id) => { saved = saved.filter((item) => item.id !== id); return saved; },
@@ -50,7 +51,7 @@ it('updates the board after edit without rewriting selected snapshots; delete re
 it('keeps initial cards usable after storage failure and recovers on retry', async () => {
   jest.mocked(openCardDatabase).mockRejectedValueOnce(new Error('private path'));
   render(<Session />);
-  await screen.findByText(/Não foi possível abrir os cartões salvos/);
+  await screen.findByText(/Não foi possível abrir os cartões e favoritos salvos/);
   fireEvent.press(screen.getByRole('button', { name: 'Sim' }));
   expect(screen.getByLabelText('1. Sim')).toBeOnTheScreen();
   fireEvent.press(screen.getByRole('button', { name: 'Tentar abrir cartões novamente' }));
