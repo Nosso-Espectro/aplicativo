@@ -30,8 +30,15 @@ pendentes em aparelho. Não marcar como validados pelos mocks/SQLite do host.
 
 ## US-016 — Issue #16
 
-- [ ] T012 [US-016] Em `src/features/communication-profile/profile-summary`, atender RF-008 (critério 1 de #16): A visualização deve selecionar apenas informações marcadas pelo usuário para compartilhamento. Verificar com o cenário correspondente no PR.
-- [ ] T013 [US-016] Em `src/features/communication-profile/profile-summary`, atender RF-009 (critério 2 de #16): O resumo deve ser legível em tela cheia. Verificar com o cenário correspondente no PR.
-- [ ] T014 [US-016] Em `src/features/communication-profile/profile-summary`, atender RF-010 (critério 3 de #16): Nenhuma informação deve ser compartilhada automaticamente. Verificar com o cenário correspondente no PR.
-- [ ] T015 [US-016] Adicionar testes de comportamento de RF-008, RF-009, RF-010 em `tests/features/communication-profile/profile-summary`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
+- [x] T012 [US-016] RF-008: checkboxes dos campos atuais em `ProfileSummaryScreen.tsx`, seleção inicial vazia e salvamento explícito em SQLite v3, somente IDs. Migração v1/v2, reabertura, limpeza isolada, validação, rollback e retry verificados; resumo omite campos não selecionados/vazios e reflete edição/remoção sem snapshot.
+- [x] T013 [US-016] RF-009: rota própria `/profile-summary-view`, SafeAreaView/ScrollView de tela cheia, cabeçalhos e texto 24/34 escalável, fechar/voltar. Testes de componentes/navegação cobrem apresentação, vazio e erro sem conteúdo antigo; legibilidade ampliada/foco assistivo em aparelho permanece T016.
+- [x] T014 [US-016] RF-010: apresentação somente por comando explícito, salvar não abre resumo, cancelar não grava; seleção alterada bloqueia apresentação até confirmação. Revisão sem APIs de envio/exportação/rede e testes de navegação sem salvamento implícito aprovados.
+- [x] T015 [US-016] Testes em `tests/features/communication-profile/`: modelo, SQLite real do Node, componentes e rotas verificam RF-008/RF-009/RF-010, ausência de dados, falhas, rollback, retry, cancelamento e duplicatas, usando somente fixtures sintéticas.
 - [ ] T016 [US-016] Revisar RNF-001 a RNF-004 na interface/dados de #16, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+
+T016: revisão estática dos alvos mínimos 48dp, checkboxes com estado/rótulo,
+cabeçalhos, texto escalável/rolável, contraste, feedback acessível e controle
+voluntário realizada. Nenhuma nova permissão/dependência, rede, telemetria, log
+pessoal, inferência clínica ou mídia automática. TalkBack/VoiceOver, foco real,
+ampliação/teclado, reabertura offline no SQLite Expo e backups do sistema continuam
+pendentes no gate. Testes do host não comprovam essas verificações nativas.

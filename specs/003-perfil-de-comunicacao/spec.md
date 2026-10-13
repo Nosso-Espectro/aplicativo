@@ -3,7 +3,7 @@ milestone: 13
 priority: P0
 tag: m003-perfil-de-comunicacao
 status: draft
-ready_stories: ["US-014", "US-015"]
+ready_stories: ["US-014", "US-015", "US-016"]
 source_checked: 2026-10-13
 ---
 
@@ -11,7 +11,7 @@ source_checked: 2026-10-13
 
 Milestone GitHub: [P0 — Perfil de Comunicação](https://github.com/Nosso-Espectro/aplicativo/milestone/13) (número 13).
 
-Milestone aberta; US-014 integrada pelo PR #60, US-015 em implementação e US-016 ainda pendente. A milestone não está concluída.
+Milestone aberta; US-014 integrada pelo PR #60 e US-015 pelo PR #62. US-016 possui seleção persistida e apresentação testadas; builds e verificações nativas/assistivas continuam pendentes no gate. A milestone não está concluída.
 
 ## Contexto
 
@@ -108,7 +108,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Implementações de outras milestones e requisitos não rastreados. A branch US-015 implementa somente sensibilidades/estratégias e seu contrato local de leitura; o editor do plano fica na #11 e o resumo para terceiros na #16.
+Implementações de outras milestones e requisitos não rastreados. A branch US-016 implementa somente seleção/apresentação voluntária do resumo; o editor do Plano de Apoio fica na #11, sem envio externo ou dependência circular.
 
 ## Dependências funcionais
 
@@ -129,7 +129,7 @@ confirmada e falha preservando formulário/versão salva. SQLite privado local,
 sem compartilhamento ou campos das US-015/US-016. Prontidão revisada na base real.
 
 - Q-PERFIL-01 — Resolvida na #15 e registrada na #11 sob delegação do usuário: referência local aos campos estáveis escolhidos explicitamente no plano, seleção inicial vazia. Leitura seguinte reflete edição/remoção no perfil, sem cópia antiga, transmissão externa ou dependência circular entre editores. Tela do plano permanece #11.
-- Q-PERFIL-02 — Quais campos e formas de apresentação/compartilhamento são permitidos em #16? Não presumir exportação ou envio.
+- Q-PERFIL-02 — Resolvida na #16: selecionar explicitamente os campos existentes das #14/#15, seleção inicial vazia e gravação local; apresentação voluntária em tela cheia, somente dados atuais escolhidos/não vazios, tempo false explícito/null omitido. Sem exportação, envio, WhatsApp ou rede. Falha preserva versão confirmada/rascunho, com retry/cancelamento.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 

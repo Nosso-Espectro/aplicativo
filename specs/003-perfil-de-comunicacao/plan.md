@@ -32,6 +32,21 @@ US-014: banco privado `tear-profile.db` versão1, tabela singleton `communicatio
 
 ## Persistência
 
+US-016: rotas `/profile-summary` (seleção) e `/profile-summary-view` (apresentação)
+acessadas pelo perfil, com checkboxes nomeados e gravação explícita. Banco
+`tear-profile.db` versão3 acrescenta `summary_selection(field)` sem copiar texto
+pessoal nem alterar comunicação/suporte. Migrações v1/v2 preservam dados e começam
+sem seleção. IDs validados, deduplicados e ordenados pelo modelo; schema futuro
+recusado sem downgrade. Salvamento substitui somente a seleção, em transação com
+rollback e publicação após commit. Resumo lê seleção e valores atuais na mesma
+transação, retorna somente campos escolhidos/não vazios; false no tempo adicional
+é informação explícita e null é omitido. Falha de leitura não apresenta dados
+antigos/parciais; retry refaz a leitura. Falha de gravação mantém rascunho e seleção
+confirmada. Alterar seleção desabilita apresentação até salvar; cancelar não grava.
+Tela cheia rolável sem exportação/envio/rede ou apresentação automática ao salvar.
+Refinamento registrado na Issue #16; interface/persistência e navegação testadas,
+com revisão nativa/assistiva ainda pendente em T016.
+
 US-015: rota `/support-preferences` acessada pelo perfil, sete campos opcionais
 livres com IDs estáveis, salvar/cancelar explícitos e remoção integral confirmada
 somente deste módulo. Banco `tear-profile.db` versão2 adiciona singleton

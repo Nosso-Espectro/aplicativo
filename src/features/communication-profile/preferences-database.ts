@@ -1,6 +1,12 @@
 import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
 import { emptyPreferences, normalizedPreferences, type CommunicationPreferences } from './preferences';
 import { emptySupportPreferences, normalizedSupportPreferences, supportForPlan, type SupportField, type SupportPreferences } from './support-preferences';
+import { buildProfileSummary, normalizedSummarySelection, type SummaryField } from './profile-summary';
+
+async function readSummarySelection(db: SQLiteDatabase): Promise<SummaryField[]> {
+  const rows = await db.getAllAsync<{ field: SummaryField }>('SELECT field FROM summary_selection');
+  return normalizedSummarySelection(rows.map((row) => row.field));
+}
 
 async function readSupport(db: SQLiteDatabase): Promise<SupportPreferences> {
   const [row] = await db.getAllAsync<SupportPreferences>(`SELECT sound, light, touch, temperature, other,
@@ -17,7 +23,7 @@ export async function openPreferencesDatabase() {
   try {
     await db.withExclusiveTransactionAsync(async (tx) => {
       const [{ user_version: version }] = await tx.getAllAsync<{ user_version: number }>('PRAGMA user_version');
-      if (version > 2) throw new Error('Unsupported profile schema.');
+      if (version > 3) throw new Error('Unsupported profile schema.');
       await tx.execAsync(`CREATE TABLE IF NOT EXISTS communication_preferences (
         id INTEGER PRIMARY KEY CHECK(id = 1), communication TEXT NOT NULL,
         instructions TEXT NOT NULL, extra_time INTEGER CHECK(extra_time IS NULL OR extra_time IN (0, 1))
@@ -25,7 +31,9 @@ export async function openPreferencesDatabase() {
         id INTEGER PRIMARY KEY CHECK(id = 1), sound TEXT NOT NULL, light TEXT NOT NULL,
         touch TEXT NOT NULL, temperature TEXT NOT NULL, other TEXT NOT NULL,
         helpful_strategies TEXT NOT NULL, avoid_strategies TEXT NOT NULL
-      ); PRAGMA user_version = 2;`);
+      ); CREATE TABLE IF NOT EXISTS summary_selection (
+        field TEXT PRIMARY KEY NOT NULL
+      ); PRAGMA user_version = 3;`);
     });
   } catch {
     await db.closeAsync(); throw new Error('Profile storage unavailable.');
@@ -35,6 +43,26 @@ export async function openPreferencesDatabase() {
     const next = pending.then(operation); pending = next.catch(() => undefined); return next;
   }
   return {
+    readSummarySelection: () => enqueue(() => readSummarySelection(db)),
+    saveSummarySelection: (input: readonly SummaryField[]) => enqueue(async () => {
+      const draft = normalizedSummarySelection(input);
+      let saved: SummaryField[] = [];
+      await db.withExclusiveTransactionAsync(async (tx) => {
+        await tx.runAsync('DELETE FROM summary_selection');
+        for (const field of draft) await tx.runAsync('INSERT INTO summary_selection (field) VALUES (?)', field);
+        saved = await readSummarySelection(tx);
+      });
+      return saved;
+    }),
+    readProfileSummary: () => enqueue(async () => {
+      let summary: ReturnType<typeof buildProfileSummary> = [];
+      // Selection and current values must belong to the same committed profile state.
+      await db.withExclusiveTransactionAsync(async (tx) => {
+        const selected = await readSummarySelection(tx);
+        summary = buildProfileSummary(await readPreferences(tx), await readSupport(tx), selected);
+      });
+      return summary;
+    }),
     readSupport: () => enqueue(() => readSupport(db)),
     readSupportForPlan: (selected: readonly SupportField[] = []) => enqueue(async () => supportForPlan(await readSupport(db), selected)),
     saveSupport: (input: SupportPreferences) => enqueue(async () => {

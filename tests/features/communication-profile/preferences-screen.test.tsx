@@ -9,9 +9,18 @@ const save = jest.fn(); const onClose = jest.fn();
 beforeEach(() => {
   jest.clearAllMocks(); saved = { ...emptyPreferences }; save.mockReset();
   save.mockImplementation(async (value) => { saved = normalizedPreferences(value); return saved; });
-  jest.mocked(openPreferencesDatabase).mockResolvedValue({ read: async () => saved, save, readSupport: jest.fn(), saveSupport: jest.fn(), readSupportForPlan: jest.fn() });
+  jest.mocked(openPreferencesDatabase).mockResolvedValue({ read: async () => saved, save, readSupport: jest.fn(), saveSupport: jest.fn(), readSupportForPlan: jest.fn(),
+    readSummarySelection: jest.fn(), saveSummarySelection: jest.fn(), readProfileSummary: jest.fn() });
 });
 async function ready() { await waitFor(() => expect(screen.getByRole('button', { name: 'Salvar preferências' })).toBeEnabled()); }
+it('opens summary selection only on request without saving a private communication draft', async () => {
+  const openSummary = jest.fn();
+  render(<PreferencesScreen onClose={onClose} onOpenSummary={openSummary} />); await ready();
+  fireEvent.changeText(screen.getByLabelText('Formas preferidas de comunicação'), 'Rascunho sintético');
+  expect(openSummary).not.toHaveBeenCalled();
+  fireEvent.press(screen.getByRole('button', { name: 'Resumo do perfil' }));
+  expect(openSummary).toHaveBeenCalledTimes(1); expect(save).not.toHaveBeenCalled();
+});
 it('opens support preferences without implicitly saving or removing the communication draft', async () => {
   const openSupport = jest.fn();
   render(<PreferencesScreen onClose={onClose} onOpenSupport={openSupport} />); await ready();
