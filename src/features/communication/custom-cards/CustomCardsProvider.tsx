@@ -7,6 +7,8 @@ import type { CardDraft, CustomCard } from './custom-card-validation';
 
 type Storage = ReturnType<typeof createCardStorage>;
 type CardsContext = {
+  favoriteIds: string[]; favoriteBusy: boolean; favoriteError: boolean;
+  setFavorite(id: string, selected: boolean): Promise<void>; retryFavorite(): void;
   cards: CustomCard[]; loading: boolean; error: string | null; retry(): void;
   save(draft: CardDraft, id?: string): Promise<void>; remove(id: string): Promise<void>;
 };
@@ -16,8 +18,12 @@ export function CustomCardsProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+  const [favoriteBusy, setFavoriteBusy] = useState(false);
+  const [failedFavorite, setFailedFavorite] = useState<{ id: string; selected: boolean } | null>(null);
+  const favoriteRequest = useRef(false);
   const storage = useRef<Storage | null>(null);
-  const initialization = useRef<Promise<{ current: Storage; saved: CustomCard[] }> | null>(null);
+  const initialization = useRef<Promise<{ current: Storage; saved: CustomCard[]; favorites: string[] }> | null>(null);
   const pruned = useRef(false);
   const { dispatch } = useSentence();
   useEffect(() => {
@@ -28,25 +34,40 @@ export function CustomCardsProvider({ children }: { children: ReactNode }) {
           const current = storage.current ?? createCardStorage(await openCardDatabase());
           storage.current = current;
           const saved = await current.list();
+          const favorites = await current.listFavorites();
           // Only before session editing: old sentence snapshots no longer exist.
           if (!pruned.current) {
             pruned.current = true;
             await current.prune().catch(() => undefined);
           }
-          return { current, saved };
+          return { current, saved, favorites };
         })();
-        const { saved } = await initialization.current;
-        if (active) { setCards(saved); setError(null); }
+        const { saved, favorites } = await initialization.current;
+        if (active) { setCards(saved); setFavoriteIds(favorites); setError(null); }
       } catch {
         if (active) setError(Platform.OS === 'web'
-          ? 'Cartões próprios estão disponíveis no aplicativo Android e iOS, não nesta prévia web.'
-          : 'Não foi possível abrir os cartões salvos. Tente novamente.');
+          ? 'Armazenamento de cartões e favoritos indisponível nesta prévia web.'
+          : 'Não foi possível abrir os cartões e favoritos salvos. Tente novamente.');
       } finally { if (active) setLoading(false); }
     })();
     return () => { active = false; };
   }, [attempt]);
+  async function setFavorite(id: string, selected: boolean) {
+    if (favoriteRequest.current) return;
+    favoriteRequest.current = true; setFavoriteBusy(true);
+    try {
+      if (!storage.current || loading || error) throw new Error('Storage unavailable.');
+      const saved = await storage.current.setFavorite(id, selected);
+      setFavoriteIds(saved); setFailedFavorite(null);
+    } catch {
+      setFailedFavorite({ id, selected });
+    } finally { favoriteRequest.current = false; setFavoriteBusy(false); }
+  }
   return (
-    <Context.Provider value={{ cards, loading, error, retry: () => { initialization.current = null; setLoading(true); setAttempt((value) => value + 1); },
+    <Context.Provider value={{ cards, loading, error, favoriteIds, favoriteBusy,
+      favoriteError: failedFavorite !== null, setFavorite,
+      retryFavorite: () => { if (failedFavorite) void setFavorite(failedFavorite.id, failedFavorite.selected); },
+      retry: () => { initialization.current = null; setLoading(true); setAttempt((value) => value + 1); },
       async save(draft, id) {
         if (!storage.current || loading || error) throw new Error('Storage unavailable.');
         const previous = cards.find((card) => card.id === id);
@@ -57,6 +78,8 @@ export function CustomCardsProvider({ children }: { children: ReactNode }) {
         if (!storage.current || loading || error) throw new Error('Storage unavailable.');
         const saved = await storage.current.remove(id);
         setCards(saved);
+        setFavoriteIds((ids) => ids.filter((favorite) => favorite !== id));
+        setFailedFavorite((failed) => failed?.id === id ? null : failed);
         dispatch({ type: 'remove-card', cardId: id });
       },
     }}>{children}</Context.Provider>

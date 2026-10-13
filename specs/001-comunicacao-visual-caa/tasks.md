@@ -143,11 +143,20 @@ ordem, preservando último estado confirmado em falha.
 **Teste independente**: marcar vários cartões, confirmar ordem de inclusão, desmarcar e marcar
 novamente, reiniciar em modo avião; testar lista vazia e falha de gravação/retry.
 
-- [ ] T032 [US-005] Adicionar testes para marcação, desmarcação, inserção no final, ordem após desmarcar/remarcar, estado vazio e falha de persistência em `tests/features/communication/favorites/favorites.test.ts`.
-- [ ] T033 [US-005] Implementar armazenamento SQLite local de cartões e favoritos com migrações, transações e restrições de `data-model.md` em `src/features/communication/storage/`; sem ORM, sincronização ou logs de conteúdo.
-- [ ] T034 [US-005] Implementar RF-017/RF-019: marcação, desmarcação e ordem de favoritos em `src/features/communication/favorites/`, persistindo a ordem localmente e preservando a última ordem salva se a gravação falhar.
-- [ ] T035 [US-005] Implementar acesso direto à área de favoritos para RF-018 e estado vazio informativo em `src/app/favorites.tsx` e `src/features/communication/favorites/`; informar falha de modo acessível e permitir tentar novamente.
+- [x] T032 [US-005] Adicionar testes para marcação, desmarcação, inserção no final, ordem após desmarcar/remarcar, estado vazio e falha de persistência em `tests/features/communication/favorites/favorites.test.tsx`.
+- [x] T033 [US-005] Implementar armazenamento SQLite local de cartões e favoritos com migrações, transações e restrições de `data-model.md` em `src/features/communication/storage/`; sem ORM, sincronização ou logs de conteúdo.
+- [x] T034 [US-005] Implementar RF-017/RF-019: marcação, desmarcação e ordem de favoritos em `src/features/communication/favorites/`, persistindo a ordem localmente e preservando a última ordem salva se a gravação falhar.
+- [x] T035 [US-005] Implementar acesso direto à área de favoritos para RF-018 e estado vazio informativo em `src/app/favorites.tsx` e `src/features/communication/favorites/`; informar falha de modo acessível e permitir tentar novamente.
 - [ ] T036 [US-005] Revisar navegação, leitor de tela, foco, ordem e erros de favoritos; testar persistência após reinício offline e registrar evidências de acessibilidade, privacidade e operação local em `specs/001-comunicacao-visual-caa/quickstart.md` e no PR.
+
+**Evidência US-005 (2026-10-13)**: T032–T035 verificadas por oito novos testes:
+cinco de componentes/provider e três com SQLite real do Node 24, incluindo
+reabertura, ordem, idempotência, rollback, retry e cascata. Usa a tabela versionada
+da US-004, sem mudança de schema. Estado publicado somente após commit; a frase
+continua volátil e favoritos editados mostram o conteúdo atual. Suíte com 84 testes
+aprovados antes de incorporar US-052, lint/typecheck e Expo Doctor 21/21.
+T036 permanece pendente de binário offline, TalkBack/VoiceOver e foco em aparelho.
+Os testes SQLite do host e fronteiras Expo simuladas não substituem essa evidência.
 
 ## Identidade visual solicitada — US-052 / Issue #52
 

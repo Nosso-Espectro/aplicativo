@@ -3,7 +3,7 @@ milestone: 9
 priority: P0
 tag: m001-comunicacao-visual-caa
 status: draft
-ready_stories: ["US-041", "US-001", "US-002", "US-003", "US-004", "US-052"]
+ready_stories: ["US-041", "US-001", "US-002", "US-003", "US-004", "US-005", "US-052"]
 source_checked: 2026-09-23
 ---
 
@@ -249,9 +249,9 @@ Como usuário de CAA, quero marcar cartões frequentes como favoritos, para aces
 
 #### Critérios de aceite
 
-- Qualquer cartão deve poder ser marcado ou desmarcado como favorito.
-- Deve existir uma área de favoritos acessível diretamente no módulo.
-- A ordem dos favoritos deve ser persistida localmente.
+- [ ] Qualquer cartão deve poder ser marcado ou desmarcado como favorito.
+- [ ] Deve existir uma área de favoritos acessível diretamente no módulo.
+- [ ] A ordem dos favoritos deve ser persistida localmente.
 
 **Why this priority**: prioridade P0 da Issue e da milestone; valor expresso na história original.
 

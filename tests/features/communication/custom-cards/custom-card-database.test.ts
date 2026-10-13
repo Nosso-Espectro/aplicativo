@@ -69,3 +69,39 @@ it('rolls back the mutation when reading its result fails, then permits retry', 
   expect(await db.list()).toEqual([]);
   expect(await db.save({ title: 'Teste', categoryId: 'needs', imageUri: null })).toHaveLength(1);
 });
+
+it('persists favorite sequence, ignores duplicate marking and places refavorited cards last — RF-017/RF-019', async () => {
+  const db = await openCardDatabase();
+  expect(await db.listFavorites()).toEqual([]);
+  expect(await db.setFavorite('yes', true)).toEqual(['yes']);
+  expect(await db.setFavorite('help', true)).toEqual(['yes', 'help']);
+  expect(await db.setFavorite('yes', true)).toEqual(['yes', 'help']);
+  expect(await db.setFavorite('yes', false)).toEqual(['help']);
+  expect(await db.setFavorite('yes', true)).toEqual(['help', 'yes']);
+  sql.close(); connections = [];
+  const reopened = await openCardDatabase();
+  expect(await reopened.listFavorites()).toEqual(['help', 'yes']);
+});
+it('preserves saved favorites after a transaction failure and permits retry', async () => {
+  const db = await openCardDatabase();
+  await db.setFavorite('yes', true);
+  failRead = true;
+  await expect(db.setFavorite('help', true)).rejects.toThrow();
+  failRead = false;
+  expect(await db.listFavorites()).toEqual(['yes']);
+  expect(await db.setFavorite('help', true)).toEqual(['yes', 'help']);
+});
+it('supports custom favorites and cascades deletion without affecting other favorites', async () => {
+  const db = await openCardDatabase();
+  const custom = (await db.save({ title: 'Teste', categoryId: 'needs', imageUri: null }))[0];
+  await db.setFavorite('help', true);
+  await db.setFavorite(custom.id, true);
+  await db.setFavorite('yes', true);
+  await db.save({ title: 'Editado', categoryId: 'requests', imageUri: null }, custom.id);
+  expect(await db.listFavorites()).toEqual(['help', custom.id, 'yes']);
+  expect((await db.list())[0].title).toBe('Editado');
+  await db.remove(custom.id);
+  expect(await db.listFavorites()).toEqual(['help', 'yes']);
+  await expect(db.setFavorite(custom.id, true)).rejects.toThrow();
+  expect(await db.listFavorites()).toEqual(['help', 'yes']);
+});

@@ -281,6 +281,35 @@ módulos. O registro anterior de 13 moderadas é histórico, não o estado atual
 Não aplicado `audit fix --force` nem downgrade do Expo; revisão de dependências
 continua necessária antes de release. Nenhum build local executado.
 
+## US-005 — Favoritos (2026-10-13)
+
+Marcação/desmarcação de cartões iniciais e personalizados, acesso direto à rota
+`/favorites` e estado vazio. Ordem de inclusão persistida na tabela `favorites`
+existente, com transação exclusiva, parâmetros SQL e fila compartilhada com CRUD.
+Remarcar insere no final; duplicatas não reordenam. Falha conserva o último estado
+confirmado e oferece nova tentativa sem expor detalhes internos. Controles ficam
+indisponíveis durante a gravação para evitar solicitações concorrentes duplicadas.
+Edição atualiza o conteúdo exibido nos favoritos sem modificar snapshots da frase;
+exclusão remove a referência e conserva a ordem restante.
+
+Sem servidor, telemetria, novos módulos, permissões ou logs de conteúdo. Rótulos de
+checkbox anunciam estado, alvos de 48dp, texto escalável e layout de uma coluna com
+texto ampliado. Revisão estática e testes de componentes realizados; leitor de tela,
+foco real, voz e reinício offline em Android/iOS continuam pendentes em T036.
+O navegador informa armazenamento nativo indisponível, sem simular persistência.
+
+Validação antes da integração da identidade visual: 84 testes Jest/15 suítes,
+lint/typecheck, Expo Doctor 21/21 e 46 testes de tooling aprovados. Três testes
+novos usam SQLite real do Node 24, com reabertura de arquivo, rollback e integridade
+referencial; cinco usam componentes/provider e fronteiras nativas simuladas.
+Nenhum build local executado; build remoto e atualização preservando dados no
+Samsung autorizado são etapas posteriores à integração.
+
+Após incorporar US-052 e a correção de concorrência CI/#54: 85 testes Jest em
+16 suítes, lint/typecheck e 47 testes de tooling aprovados. Validador estrutural:
+42 histórias e 224 tasks. A revisão do diff não identificou regressão bloqueante;
+as validações nativas, assistivas e de licenças continuam separadas e pendentes.
+
 ## US-052 — Ícone e Inicialização
 
 Imagem gerada a partir da capa fornecida pelo usuário, explicitamente aprovada
