@@ -8,6 +8,18 @@ WRAPPER = ROOT / "scripts/build/tear-android-ci"
 
 
 class SSHBuildTests(unittest.TestCase):
+    def test_manual_builds_have_sha_scoped_non_cancelling_concurrency(self):
+        workflow = (ROOT / ".github/workflows/mobile-quality.yml").read_text()
+        self.assertIn(
+            "group: mobile-quality-${{ github.workflow }}-${{ github.ref }}-"
+            "${{ github.event_name == 'workflow_dispatch' && github.sha || 'checks' }}",
+            workflow,
+        )
+        self.assertIn(
+            "cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}",
+            workflow,
+        )
+
     def test_rejects_arbitrary_commands_before_touching_build_storage(self):
         for request in ("", "bash", "build main", "build " + "a" * 39,
                         "build " + "a" * 40 + "; id", "artifact ../file",
