@@ -4,7 +4,7 @@
     "slug": "tear-aplicativo",
     "scheme": "tear",
     "version": "1.0.0",
-    "platforms": ["android", "ios"],
+    "platforms": ["android", "ios", "web"],
     "android": {
       "package": "org.nossoespectro.tear",
       "allowBackup": false,

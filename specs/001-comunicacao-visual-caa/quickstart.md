@@ -55,7 +55,31 @@ pelo usuário; a verificação individual de licença permanece pendente.
 - `adb devices`: nenhum dispositivo; SDK local sem emulador instalado.
   Abertura/offline, TalkBack/VoiceOver e build iOS ficam para o gate dedicado.
 
-## Estado atual e pré-requisitos
+## US-002 — Desenvolvimento local em 2026-10-13
+
+Branch `feat/us-002-montar-frases-com-cartoes-de-comunicacao`, criada sobre a main
+integrada pelo PR #43. Provider de sessão acima das rotas; frase apenas em memória.
+Cada seleção acrescenta um snapshot, inclusive cartões repetidos. Remoção usa ID
+da ocorrência; limpeza preserva catálogo e contador de IDs. A ação remove-card
+permite a integração futura da exclusão na #4, sem implementar editor nesta Issue.
+
+- 25 testes JS aprovados: ordem, duplicatas, remoção individual, limpeza,
+  snapshot de título/imagem, ausência de máximo funcional, remoção por ID de cartão,
+  troca de categorias, detalhe/retorno e ciclo de montagem do provider.
+- Testes simulam remount da sessão; não comprovam suspensão ou encerramento pelo
+  sistema em aparelho. Essas validações permanecem no gate da milestone.
+- Nenhuma persistência, fala, coleta ou transmissão de frase. URLs dos créditos
+  existentes abrem somente por ação explícita.
+- `npm run lint`, `npm run typecheck`, Expo Doctor 21/21, 44 testes de tooling,
+  validação documental e `git diff --check` aprovados, incluindo o suporte web.
+- Prévia web: `npx expo start --web --port 8082`, com react-native-web compatível
+  instalado pelo Expo. A configuração web serve à inspeção do desenvolvimento,
+  sem afirmar suporte funcional completo dos módulos nativos futuros.
+- Prévia acessível em http://localhost:8082; Metro compilou 873 módulos sem
+  erro e registrou a inicialização. Automação do navegador negada por permissão;
+  não foi realizada inspeção visual automatizada.
+
+## Pré-Requisitos Históricos Do Bootstrap
 
 - Feature: [spec.md](spec.md), Issues #1–#5 e US-041/#41 da milestone #9.
 - Comportamento: [contrato de interação](contracts/user-interaction.md).
