@@ -86,11 +86,11 @@ Base integrada da US-041 e fronteiras locais de imagem da US-004 reutilizadas. S
 
 Rotina vazia, imagem ausente, falha de persistência e etapa removida durante edição; preservar ordem/status (#6–#8).
 
-Questões em aberto da #8 impedem sua execução, não a US-006/US-007 refinadas nas Issues. Validação de imagens, persistência e acessibilidade em Android/iOS permanece necessária para o gate; a base/host não comprovam suporte em todas as versões mínimas. Ver [auditoria](../../docs/backlog-audit.md).
+Refinamentos de #6/#7/#8 foram registrados nas Issues sob delegação do usuário. Validação de imagens, progresso persistido, operação offline e acessibilidade em Android/iOS permanece necessária para o gate; a base/host não comprovam suporte em todas as versões mínimas. Ver [auditoria](../../docs/backlog-audit.md).
 
 ## Decisões arquiteturais
 
 - Diretriz confirmada: React Native; MVP sem backend.
 - Proposta: módulos por capacidade em `src/features/`, sem fixar extensão/linguagem nem arquitetura de estado.
-- US-006: reutilizar a stack efetiva, navegação Router e persistência SQLite privada; refinamento funcional registrado na Issue #6 sob delegação do usuário, preservando critérios originais. Questões de #7/#8 permanecem pendentes.
+- US-006/US-007/US-008: reutilizar a stack efetiva, navegação Router e persistência SQLite privada; refinamentos funcionais registrados nas Issues sob delegação do usuário, preservando critérios originais. Validações nativas/assistivas continuam pendentes do gate.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.
