@@ -67,6 +67,9 @@ Android ocorre por SSH em host Ubuntu dedicado; consulte
 Não executar build local. O Android remoto aceita somente SHAs integrados à main.
 Acione `Mobile quality` manualmente, escolhendo `android`, `ios` ou `both`.
 Android publica APK de teste; iOS publica app para simulador, sem assinatura.
+Issue #61: host SSH temporariamente suspenso após crashes JVM e descoberta de
+relatório de minerador root. Android manual usa runner GitHub limpo; não usar
+APKs do host sob investigação. Ver limites/decisão em `docs/android-build-host.md`.
 Os comandos nativos permanecem disponíveis para execução explícita, mas não
 fazem parte do fluxo local do agente. Consulte os comandos de
 instalação/offline e os resultados em [quickstart](../specs/001-comunicacao-visual-caa/quickstart.md)

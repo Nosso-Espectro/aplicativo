@@ -1,5 +1,39 @@
 # Android Build Host
 
+## Suspensão temporária do host — Issue #61
+
+Em 2026-10-13 os builds Android das US-008/US-014 falharam por encerramento
+fatal da JVM/Gradle, não por um erro de compilação diagnosticado no app. Logs
+do workflow indicam `hs_err_pid39900.log` e `hs_err_pid116455.log`; ambos foram
+apagados pela limpeza do checkout na tentativa seguinte. Relatórios anteriores
+do Kotlin mostram SIGSEGV/SIGILL em frames Java compilados C1 com OpenJDK Ubuntu
+17.0.20.1. Não há evidência observada de OOM; isso não exclui falha JVM/hardware.
+Não se atribui a causa raiz a um bug específico sem o relatório correspondente.
+
+Também foi encontrado relatório de crash de `/usr/bin/xmrig` executado como root.
+O usuário pediu remoção: executável/processo já estavam ausentes; remoção explícita
+do caminho e busca de nomes/referências em arquivos, serviços e cron confirmaram
+ausência nos locais examinados. Relatórios de crash foram preservados no host,
+não publicados. A busca limitada NÃO comprova integridade do sistema, nem relação
+causal entre mineração e falhas de build. Não instalar artefatos desse host.
+
+Por isolamento preventivo, o workflow manual Android volta temporariamente ao
+runner GitHub `ubuntu-24.04`, com Node da `.nvmrc`, Temurin17, SDK36/NDK27.1,
+dependências pelo lockfile, sem SSH ou caches/artefatos do host. Gradle usa
+`--no-daemon` (pode criar JVM de uso único), dois workers e Kotlin in-process.
+Isso evita reutilizar processos antigos, mas não é prova de correção do crash;
+o resultado nativo deve ser confirmado na execução remota do SHA integrado.
+Sem mudanças em iOS/macOS ou compilação local.
+
+Antes de reativar SSH: investigar/recriar o servidor a partir de imagem confiável,
+rotacionar credenciais e revisar segurança da conta root/serviços. Reinstalação
+destrutiva do servidor não foi autorizada nesta tarefa. Os scripts abaixo ficam
+preservados como referência; provisioná-los não é validação de host íntegro.
+
+Referências técnicas: [daemon Gradle](https://docs.gradle.org/current/userguide/gradle_daemon.html),
+[estratégia Kotlin](https://kotlinlang.org/docs/compiler-execution-strategy.html),
+[logs fatais JVM](https://docs.oracle.com/en/java/javase/17/troubleshoot/location-fatal-error-log.html).
+
 Issue #49: Ubuntu 24.04 x86_64 dedicado, 8 CPUs, 31 GiB RAM. GitHub Actions
 continua coordenando checks/artefatos; somente a compilação Android usa SSH.
 iOS permanece no runner macOS 26: Linux não fornece Xcode ou assinatura iOS.
