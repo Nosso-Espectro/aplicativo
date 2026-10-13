@@ -4,6 +4,7 @@ import { CustomCardsProvider } from '../features/communication/custom-cards/Cust
 import { View } from 'react-native';
 import { LowStimulationProvider, useLowStimulationPresentation } from '../features/regulation/LowStimulationProvider';
 import { LowStimulationControl } from '../features/regulation/LowStimulationControl';
+import { TransitionTimerProvider } from '../features/transition-timer/TransitionTimerProvider';
 
 function ApplicationStack() {
   const { navigationAnimation } = useLowStimulationPresentation();
@@ -17,7 +18,7 @@ export default function RootLayout() {
   return (
     <LowStimulationProvider><SentenceProvider>
       <CustomCardsProvider>
-        <ApplicationStack />
+        <TransitionTimerProvider><ApplicationStack /></TransitionTimerProvider>
       </CustomCardsProvider>
     </SentenceProvider></LowStimulationProvider>
   );

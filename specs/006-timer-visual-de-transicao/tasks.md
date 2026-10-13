@@ -8,11 +8,19 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 
 ## US-017 — Issue #17
 
-- [ ] T001 [US-017] Em `src/features/transition-timer/visual-timer`, atender RF-001 (critério 1 de #17): Deve ser possível definir a duração do timer. Verificar com o cenário correspondente no PR.
-- [ ] T002 [US-017] Em `src/features/transition-timer/visual-timer`, atender RF-002 (critério 2 de #17): O tempo restante deve ter representação visual além dos números. Verificar com o cenário correspondente no PR.
-- [ ] T003 [US-017] Em `src/features/transition-timer/visual-timer`, atender RF-003 (critério 3 de #17): O timer deve permitir iniciar, pausar, retomar e cancelar. Verificar com o cenário correspondente no PR.
-- [ ] T004 [US-017] Adicionar testes de comportamento de RF-001, RF-002, RF-003 em `tests/features/transition-timer/visual-timer`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
+- [x] T001 [US-017] Em `src/features/transition-timer/visual-timer`, atender RF-001 (critério 1 de #17): Deve ser possível definir a duração do timer. Verificar com o cenário correspondente no PR.
+- [x] T002 [US-017] Em `src/features/transition-timer/visual-timer`, atender RF-002 (critério 2 de #17): O tempo restante deve ter representação visual além dos números. Verificar com o cenário correspondente no PR.
+- [x] T003 [US-017] Em `src/features/transition-timer/visual-timer`, atender RF-003 (critério 3 de #17): O timer deve permitir iniciar, pausar, retomar e cancelar. Verificar com o cenário correspondente no PR.
+- [x] T004 [US-017] Adicionar testes de comportamento de RF-001, RF-002, RF-003 em `tests/features/transition-timer/visual-timer`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
 - [ ] T005 [US-017] Revisar RNF-001 a RNF-004 na interface/dados de #17, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+
+US-017:35 testes/4 suítes relacionados e310 testes/48 suítes completos, lint/tipos,
+Doctor21/21,49 tooling e validador aprovados. T005 teve revisão local de código,
+contraste, semântica, layouts responsivos, privacidade/offline e recuperação;
+permanece pendente no gate para SQLite Expo/offline após reinício/backups, relógio,
+background/bloqueio reais, TalkBack/VoiceOver, foco, ampliação/teclado/insets e
+alvos nativos. Não executar build local, confundir mocks/build com essa validação,
+instalar APK ou declarar release por esta evidência.
 
 ## US-018 — Issue #18
 

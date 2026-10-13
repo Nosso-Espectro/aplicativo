@@ -40,16 +40,25 @@ Pausa/retomada/cancelamento dependem do estado atual confirmado; término passad
 
 ## Persistência
 
-Andamento inicial US-017: `visual-timer.ts` contém validação de duração/sessão e
-cálculos de deadline, pausa/retomada e proporção/segundos restantes. Sete testes
-relacionados, lint e typecheck aprovados. Provider, tela/rota, barra real, SQLite,
-cancelamento confirmado e testes de integração ainda faltam; nenhuma task desta
-história foi concluída pelo modelo isolado.
+US-017 implementa modelo, provider global, tela/rota real e acesso pelo quadro.
+Barra estável sem interpolação e contador em partes quebráveis/scaláveis, com
+estado independente de cor e liveRegion none nos valores por segundo. Campos
+numéricos sem duração sugerida, controles48dp e confirmação de cancelamento.
+Estado conhecido somente após leitura, erro preserva sessão/draft e retry reabre
+o timer salvo, sem repetir automaticamente uma ação destrutiva. A pessoa pode
+repetir explicitamente a ação após recuperar a leitura.
 
 SQLite privado separado tear-transition-timer.db v1 para somente a sessão atual,
 fila de operações, transação/readback/rollback e versão futura recusada. Escritas
 ao iniciar/pausar/retomar/cancelar, não a cada tick. Estado confirmado só após
 commit, erros genéricos/retry preservando sessão/draft e bloqueando duplicatas.
+
+Transições calculadas dentro da transação usando a sessão atual e comparando o
+snapshot esperado do comando; alvo stale é recusado sem sobrescrever/cancelar
+outra sessão. Consentimento de cancelamento da tela aponta ao snapshot confirmado
+e deixa de valer quando a sessão muda. Início novo só quando ausente/concluído.
+Prazo expirado é representado como concluído ao ler/atualizar; não há escrita por
+tick. A leitura recuperável não reconfirma um cancelamento antigo.
 Restauração desconhecida não oferece iniciar outro timer que sobrescreva sessão;
 falha não bloqueia comunicação nem afirma ausência de dados. Recuperar término
 absoluto ao reabrir; não criar histórico nem prometer alarmes em background.
@@ -72,6 +81,13 @@ Recursos locais não devem depender de autenticação ou API. Capacidades extern
 
 ## Acessibilidade
 
+Revisão local: #202124/#FFFFFF 16.10:1, #303438/#FFFFFF 12.54:1,
+#16634D/#FFFFFF 7.18:1 e #72777D/#FFFFFF 4.52:1. Trilha/barra24dp estáveis e largura
+proporcional, campos/contador/ações quebráveis com limites responsivos. O grupo
+numérico tem nome completo em português; progressbar expõe min/max/restante/texto,
+sem anúncio explícito a cada segundo. Isso não comprova comportamento TalkBack/
+VoiceOver, foco, ampliação/teclado/insets/áreas de toque reais, que ficam no gate.
+
 Aplicar RNF-001 e a Skill accessibility-neuroinclusive: rótulos e ordem de foco, leitor de tela, texto ampliado, contraste e alvos de toque. Verificar teclado quando suportado pelo dispositivo. Respeitar preferências de som/movimento e não ativar mídia inesperadamente. Critérios mensuráveis faltantes precisam de refinamento, não de aprovação automática.
 
 ## Privacidade e segurança
@@ -79,6 +95,15 @@ Aplicar RNF-001 e a Skill accessibility-neuroinclusive: rótulos e ordem de foco
 Aplicar RNF-002 e RNF-004. Usar dados sintéticos nos testes; evitar dados pessoais em logs. Controlar compartilhamento e permissões nas ações que realmente necessitam deles. Não adicionar telemetria, conta ou serviço externo por conveniência técnica.
 
 ## Estratégia de testes
+
+Evidência em 2026-10-13:35 testes de US-017 em quatro suítes e310 testes/48 suítes
+completos, lint/tipos,Doctor21/21,49 tooling e validador aprovados. SQL real do Node
+em arquivos com close/reopen, rollback de start/pause/resume/cancel e commit,
+versão futura/corrupção/alvo stale recusados, isolamento de modo/plano. Componentes
+com relógio controlado verificam foreground após pausa dos ticks em background,
+remount e sessão pausada, recuperação sem ação automática, draft/confirmado/
+duplicatas/cancelamento e rotas reais preservando modo/Stack. [AppState RN0.86](https://reactnative.dev/docs/0.86/appstate)
+foi a referência primária; nenhum teste alegado em telefone/OS reais.
 
 - Derivar cenários de cada RF, preservando a relação Issue → RF → task → teste.
 - Usar testes unitários para transformações de estado/dados; componentes para interação e acessibilidade; integração para persistência/capacidades nativas quando pertinentes.

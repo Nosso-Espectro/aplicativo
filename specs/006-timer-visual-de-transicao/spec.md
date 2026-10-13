@@ -11,7 +11,7 @@ source_checked: 2026-10-13
 
 Milestone GitHub: [P1 — Timer Visual de Transição](https://github.com/Nosso-Espectro/aplicativo/milestone/14) (número 14).
 
-Milestone e Issues #17/#18 abertas. US-017 Ready após refinamento na origem; nenhuma funcionalidade desta milestone entregue. US-018 conserva questões próprias de avisos/som/vibração.
+US-017 implementada e verificada nos checks leves, com build remoto e revisão nativa/assistiva pendentes do gate. US-018 conserva questões próprias de avisos/som/vibração e não foi entregue; a milestone não está concluída.
 
 ## Contexto
 
@@ -39,9 +39,9 @@ Como usuário com dificuldade em transições, quero visualizar o tempo restante
 
 #### Critérios de aceite
 
-- [ ] Deve ser possível definir a duração do timer.
-- [ ] O tempo restante deve ter representação visual além dos números.
-- [ ] O timer deve permitir iniciar, pausar, retomar e cancelar.
+- [x] Deve ser possível definir a duração do timer.
+- [x] O tempo restante deve ter representação visual além dos números.
+- [x] O timer deve permitir iniciar, pausar, retomar e cancelar.
 
 ### US-018 — Configurar avisos progressivos do timer
 
