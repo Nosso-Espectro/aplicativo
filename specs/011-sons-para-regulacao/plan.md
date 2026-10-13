@@ -17,7 +17,7 @@ para gerar assets originais com DSP existente, não para compilar aplicativo.
 ## Arquitetura atual
 
 Main46b0268 integra CAA/voz, rotinas, perfil/apoio/contato, modo de baixa estimulação
-e timer visual. Reutilizar Native TTS existente, não reimplementar voz. Provider
+e timer visual. Reutilizar Native TTS existente, não reimplementar voz. Provider futuro
 restrito a um player de mídia/controle de escolhas, preservado entre rotas e
 coordenação com SpeechControls, sem exposição do texto da frase. Rota/tela próprias
 e acesso pelo quadro; painel #10 não pertence à branch. Falha da nova capacidade
@@ -62,8 +62,9 @@ testes tooling exercitam integridade/ausência/duplicação/níveis e preservaç
 Suíte tooling56 verde, lint/tipos e validador verdes. Escuta e loop imperceptível
 não alegados; documentação de origem/limites no README junto aos arquivos.
 
-Dependências e configuração do plugin avaliadas; engine/provider, UI/slider,
-opção confirmada de background e coordenação/regressão TTS ainda faltam. Nenhuma task concluída
+Dependências/configuração e engine/controller isolados avaliados; provider,
+UI/slider, opção confirmada de background e integração/regressão real com o TTS
+ainda faltam. Nenhuma task concluída
 pelo modelo/assets isolados, nenhum fluxo de reprodução alegado como entregue.
 
 Assets locais essenciais, sem banco novo ou restauração de autoplay. Seleção,
@@ -135,7 +136,45 @@ setAudioModeAsync e controle de mídia. `AudioPlayer` herda `release()` de
 SharedObject; Android sharedObjectDidRelease e iOS sharedObjectWillRelease limpam
 recursos, listener tem `remove()` próprio. Existe também método player.remove(),
 mas não confundir remoção do registro com descarte do shared object. Controller
-e testes desse lifecycle ainda faltam; manter criação tardia sob ação explícita.
+e testes do lifecycle isolado agora implementados; preservar criação tardia.
+
+`expo-sound-engine.ts` mapeia quatro WAVs estaticamente, carrega expo-audio por
+require tardio somente na factory chamada por Play (import de tipo apagado).
+Não habilita downloadFirst nem keepAudioSessionActive; loop nativo, status real
+reduzido a booleans sem texto de erro privado, volume somente do player.
+Modo configurado conforme opção, recording/backgroundRecording false,
+doNotMix para foco/controles, metadados fixos Som contínuo/TEAr sem artwork.
+Cleanup remove listener, pausa, limpa controles e libera SharedObject em finally
+mesmo em falhas intermediárias; idempotente. Oito testes do adapter com SDK falso,
+incluindo import tardio e quatro IDs de assets distintos, não validam áudio real.
+
+`sound-controller.ts` mantém seleção/ganho/opção voláteis, estado observado e
+pedidos com geração/slot. Play não aparenta sucesso pelo comando: aguarda
+loaded/playing sem buffering, bloqueia duplicatas, pausa/troca/foreground/speech
+invalidam pedidos antigos; player de factory tardia é descartado sem tocar.
+Native error/falha genérica preservam escolhas, player liberado, retry explícito.
+Watchdog técnico30s de carregamento cancela/rejeita sucesso tardio; limpa no
+estado observado ou cancelamento. Pausa usa estado observado e sinal stopping
+enquanto o native ainda relata reprodução, sem afirmar pausa antecipadamente.
+Mudança de background com engine pausa antes, configura serialmente e confirma
+opção só após sucesso; falha preserva escolha anterior. Nenhuma confirmação UI
+foi implementada por esse método, depende do futuro fluxo voluntário.
+
+Lease de voz bloqueia play e pausa imediatamente; ready aguarda mudanças nativas
+de sessão anteriores, sem aguardar factory pendente já cancelada. Limite técnico
+3s de ready em RPC sem resposta libera tentativa de voz e descarta ambiente em
+erro, sem liberar reprodução antiga. release idempotente cancela deadline,
+cancelamento/unmount limpa waits; nunca retoma ambiente automaticamente. Essas
+APIs ainda NÃO estão ligadas a SpeechControls/local-speech: próxima etapa deve
+adquirir/reter/liberar lease e verificar token ativo/cancelado novamente após
+await ready, antes de TTS, incluindo stop que falha, leitura que termina, erro e
+unmount. Foco/interação de sessão nativa e efeito de RPC muito tardio precisam do
+gate real; mocks não comprovam prioridade de áudio em aparelho.
+
+22 testes do controller e oito do adapter (36 com seis do modelo) exercitam
+cancelamento/duplicatas/estado observado/buffering/erros/gain0/background/leases,
+limites/readiness/lifecycle. Controller e adapter ainda não conectados às rotas;
+nenhum som emitido ou critério de fluxo marcado entregue nessa implementação.
 
 Licenças MIT expo-audio/expo-asset preservadas dos pacotes fixados; slider omite
 LICENSE no npm, texto obtido de LICENSE.md no tag v5.2.0 upstream,
@@ -146,8 +185,10 @@ nativas/empacotamento final continuam parte da revisão remota, não garantidas
 apenas pelos textos npm. Audit antes/depois: mesmos66 apontamentos (16moderate,
 49high,1critical), nenhum advisory novo; #51 permanece aberta, sem audit fix force.
 Oito testes relacionados/configuração/avisos, suíte321/50, tooling56, lint/tipos,
-Doctor21/21 e validador verdes. Assets e capacidades preparadas, mas sem
-player/UI/TTS ou empacotamento nativo validado.
+Doctor21/21 e validador verdes nessa etapa anterior. Após controller/adapter:
+suíte351/52, tooling56, lint/tipos sem warnings, Doctor21/21 verdes. Assets,
+capacidades e controller/adapter preparados, mas sem provider/UI/TTS ou
+empacotamento nativo validado.
 
 ## Riscos
 
@@ -162,5 +203,5 @@ pendentes, não autorizam instalação no celular. Ver [auditoria](../../docs/ba
 
 - Diretriz confirmada: React Native; MVP sem backend.
 - US-027: TypeScript, assets locais procedurais declarados, engine/slider SDK recomendados, escolhas voláteis e coordenação mínima com TTS existente.
-- Pendente: implementação e testes de lifecycle/player/UI/TTS; validação nativa de permissões/escuta/background e política própria de término #28.
+- Pendente: provider/UI/rotas e integração/regressão TTS; validação nativa de permissões/escuta/background/lifecycle e política própria de término #28.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.
