@@ -43,6 +43,11 @@ do sistema, não as altera. Ícone/splash native permanecem fora desse controle.
 
 ## Persistência
 
+Andamento inicial US-009: `low-stimulation.ts` implementa validação da preferência
+e regras de apresentação/movimento, com seis testes aprovados, lint/tipos verdes.
+Provider/switch, persistência e integração real dos quadros/Stack ainda faltam;
+nenhuma task de entrega concluída pelo modelo isolado.
+
 US-009 planeja SQLite privado `tear-display-preferences.db` versão1, singleton
 enabled INTEGER0/1, fila/transação/rollback/schema futuro recusado. Publicar modo
 confirmado somente após commit; falha mantém confirmado, erro e retry explícito,
