@@ -49,6 +49,7 @@ if [[ ! -x "$sdk/cmdline-tools/latest/bin/sdkmanager" ]]; then
 fi
 chown -R tear-build:tear-build "$sdk"
 runuser -u tear-build -- env HOME=/srv/tear-build/home JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 ANDROID_HOME="$sdk" ANDROID_SDK_ROOT="$sdk" bash -c '
+  cd "$HOME"
   printf "y\n%.0s" {1..100} | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null
   "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;27.1.12297006"
 '
