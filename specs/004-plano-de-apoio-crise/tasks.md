@@ -32,6 +32,11 @@ comprovam essas verificações em aparelho.
 
 ## US-013 — Issue #13
 
+Ready registrada na Issue, spec e plano. Base inicial `trusted-contact.ts` e
+cinco testes de validação/URI aprovados; UI, SQLite, revisão antes de handoff,
+disponibilidade e abertura ainda pendentes. Nenhuma task abaixo concluída pelo
+modelo isolado. #12 continua aberta pela dependência real de #10.
+
 - [ ] T012 [US-013] Em `src/features/support-plan/trusted-contact`, atender RF-008 (critério 1 de #13): O usuário deve poder cadastrar um contato e uma mensagem padrão. Verificar com o cenário correspondente no PR.
 - [ ] T013 [US-013] Em `src/features/support-plan/trusted-contact`, atender RF-009 (critério 2 de #13): Ao acionar o recurso, o aplicativo deve abrir o WhatsApp ou mecanismo compatível com a mensagem preenchida. Verificar com o cenário correspondente no PR.
 - [ ] T014 [US-013] Em `src/features/support-plan/trusted-contact`, atender RF-010 (critério 3 de #13): O envio final deve permanecer sob controle do usuário. Verificar com o cenário correspondente no PR.

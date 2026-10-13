@@ -45,14 +45,23 @@ agenda. Nome é apenas rótulo local, não compõe mensagem enviada. Configuraç
 válida exige telefone/mensagem; remoção integral confirmada pode salvar vazio.
 Nenhuma verificação de existência da pessoa/conta WhatsApp.
 
-Validação planeja `libphonenumber-js` versão1.13.15, importação `/max` para
+Validação inicial usa `libphonenumber-js` versão1.13.15, importação `/max` para
 metadados completos, parser estrito `extract:false`, formato internacional
 normalizado e rejeição de ramal. Biblioteca de domínio evita implementar parser
 telefônico próprio; metadados embarcados operam offline, sem API. Versão fixada no
-lockfile; licença/impacto de dependência revisados na implementação. Referências:
+lockfile, única entrada nova e sem dependências de runtime adicionais. Licença
+MIT e arquivo Apache2.0 de metadados presentes no pacote; preservar avisos na
+distribuição, não equivale a auditoria completa das dependências (#51). Instalação
+sem scripts de lifecycle; nenhuma compilação local. Referências:
 [biblioteca](https://github.com/catamphetamine/libphonenumber-js),
 [WhatsApp](https://faq.whatsapp.com/5913398998672934) e
 [Linking RN0.86](https://reactnative.dev/docs/0.86/linking).
+
+Andamento US-013: `trusted-contact.ts` e cinco testes de modelo/URI aprovados,
+lint/typecheck verdes. Modelo valida configuração ou remoção vazia; URI contém
+apenas telefone/mensagem codificados, sem nome, envio ou abertura automática.
+Editor, persistência, revisão/handoff e consultas nativas ainda faltam; nenhuma
+task US-013 concluída. Parse válido não comprova pessoa/conta WhatsApp existente.
 
 ## Persistência
 
