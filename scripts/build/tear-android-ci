@@ -26,6 +26,8 @@ export ANDROID_HOME=/opt/tear-build/android-sdk
 export ANDROID_SDK_ROOT=$ANDROID_HOME
 export GRADLE_USER_HOME="$base/cache/gradle"
 export HOME="$base/home"
+export ANDROID_USER_HOME="$HOME/.android"
+export JAVA_TOOL_OPTIONS="-Duser.home=$HOME"
 export EXPO_NO_TELEMETRY=1 CI=1
 export GIT_TERMINAL_PROMPT=0
 checkout="$base/checkout"
