@@ -128,11 +128,15 @@ jobs:
           ssh "${options[@]}" "tear-build@$BUILD_HOST" "artifact $GITHUB_SHA" > build/android/app-release.apk.part
           test -s build/android/app-release.apk.part
           mv build/android/app-release.apk.part build/android/app-release.apk
+      - name: Include third-party notices
+        run: cp docs/third-party-notices/libphonenumber-js.txt build/android/THIRD_PARTY_NOTICES.txt
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
           name: tear-android-${{ github.sha }}
-          path: build/android/*.apk
+          path: |
+            build/android/*.apk
+            build/android/THIRD_PARTY_NOTICES.txt
           if-no-files-found: error
           retention-days: 14
 
@@ -175,10 +179,14 @@ jobs:
             build
       - name: Archive simulator app
         run: ditto -c -k --sequesterRsrc --keepParent build/ios/Build/Products/Release-iphonesimulator/TEAr.app build/tear-ios-simulator.zip
+      - name: Include third-party notices
+        run: cp docs/third-party-notices/libphonenumber-js.txt build/THIRD_PARTY_NOTICES.txt
       - name: Upload iOS simulator app
         uses: actions/upload-artifact@v4
         with:
           name: tear-ios-simulator-${{ github.sha }}
-          path: build/tear-ios-simulator.zip
+          path: |
+            build/tear-ios-simulator.zip
+            build/THIRD_PARTY_NOTICES.txt
           if-no-files-found: error
           retention-days: 14

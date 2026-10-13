@@ -57,11 +57,13 @@ sem scripts de lifecycle; nenhuma compilação local. Referências:
 [WhatsApp](https://faq.whatsapp.com/5913398998672934) e
 [Linking RN0.86](https://reactnative.dev/docs/0.86/linking).
 
-Andamento US-013: `trusted-contact.ts` e cinco testes de modelo/URI aprovados,
-lint/typecheck verdes. Modelo valida configuração ou remoção vazia; URI contém
-apenas telefone/mensagem codificados, sem nome, envio ou abertura automática.
-Editor, persistência, revisão/handoff e consultas nativas ainda faltam; nenhuma
-task US-013 concluída. Parse válido não comprova pessoa/conta WhatsApp existente.
+US-013 implementada em `TrustedContactScreen.tsx`, `trusted-contact-database.ts`
+e `whatsapp-handoff.ts`, rota `/trusted-contact` pelo quadro. Texto validado
+inclusive para codificação Unicode; telefone/mensagem confirmados são revisados
+antes de comando separado para abertura. Nenhum envio ou abertura ao salvar,
+carregar, cancelar ou navegar. Draft alterado invalida revisão e bloqueia handoff.
+Limpar todos os campos de um contato salvo também exige confirmação de remoção.
+Parse válido não comprova pessoa/conta WhatsApp existente.
 
 ## Persistência
 
@@ -80,7 +82,7 @@ recusado sem downgrade. Salvar vazio é permitido; remoção integral confirmada
 limpa apenas o plano. Sem snapshot de texto do perfil, rede, log pessoal ou backup
 externo do aplicativo. Política de backup do sistema permanece revisão nativa.
 
-US-013 planeja SQLite privado `tear-trusted-contact.db` versão1 com singleton de
+US-013 usa SQLite privado `tear-trusted-contact.db` versão1 com singleton de
 nome/telefone/mensagem, fila/transação parametrizada/rollback e publicação após
 commit. Independente de plano/perfil; salvar/cancelar não abrem outros apps.
 Editor/acionamento em rota própria pelo quadro. Antes de handoff, mostrar destino
@@ -91,6 +93,21 @@ fallback, cópia automática de plano/perfil, envio ou leitura de agenda. Fluxo
 externo usa rede/app somente por ação autorizada; operação local fica offline.
 Testes de URI/Linking usam mocks e fixtures sintéticas, não aplicativos/dados
 pessoais do aparelho; handoff nativo continua pendência real do gate.
+
+Disponibilidade: Linking consulta `whatsapp://send` somente após confirmação,
+depois solicita abertura do link oficial preenchido; falha/ausência/cancelamento
+produzem estado genérico sem fallback ou retry automático. Sucesso significa
+pedido de abertura, não envio confirmado. Plugin local CJS
+`with-whatsapp-visibility.cjs` acrescenta apenas query Android VIEW/scheme
+whatsapp, idempotente e preservando consultas/permissões existentes; Info.plist
+declara somente LSApplicationQueriesSchemes whatsapp. Sem READ_CONTACTS ou
+QUERY_ALL_PACKAGES. Prévia web informa indisponibilidade do handoff nativo.
+
+Licenças da biblioteca fixada copiadas integralmente para
+`docs/third-party-notices/libphonenumber-js.txt`. Workflow remoto acompanha
+APK/arquivo de simulador com THIRD_PARTY_NOTICES.txt, mantendo nomes/caminhos
+dos binários. Testes verificam conteúdo e configuração YAML, não execução remota.
+Não é inventário completo de licenças nem aprovação da auditoria #51.
 
 ## Fluxos principais
 

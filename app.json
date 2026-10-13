@@ -24,11 +24,13 @@
     },
     "ios": {
       "bundleIdentifier": "org.nossoespectro.tear",
-      "deploymentTarget": "16.4"
+      "deploymentTarget": "16.4",
+      "infoPlist": { "LSApplicationQueriesSchemes": ["whatsapp"] }
     },
     "plugins": [
       "expo-router",
       "expo-sqlite",
+      "./plugins/with-whatsapp-visibility.cjs",
       [
         "expo-image-picker",
         {

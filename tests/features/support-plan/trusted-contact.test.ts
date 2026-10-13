@@ -29,5 +29,6 @@ it('constructs only an encoded official draft link, excludes local name and neve
   expect(link).not.toContain(fixture.name); expect(link).toContain('%26'); expect(link).toContain('%0A');
 });
 it('rejects an unencodable message generically rather than constructing a partial outgoing link', () => {
-  expect(() => createWhatsAppDraftLink({ ...fixture, message: '\uD800' })).toThrow('Invalid contact message.');
+  expect(() => normalizedTrustedContact({ ...fixture, message: '\uD800' })).toThrow('Invalid trusted contact.');
+  expect(() => createWhatsAppDraftLink({ ...fixture, message: '\uD800' })).toThrow('Invalid trusted contact.');
 });

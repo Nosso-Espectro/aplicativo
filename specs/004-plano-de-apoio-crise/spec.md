@@ -11,7 +11,7 @@ source_checked: 2026-10-13
 
 Milestone GitHub: [P0 — Plano de Apoio / Crise](https://github.com/Nosso-Espectro/aplicativo/milestone/12) (número 12).
 
-Milestone aberta. US-011 integrada pelo PR #67; #13 refinada e Ready. #12 depende do painel #10 ainda não implementado, sem simular/fechar esse critério. Builds e validações nativas/assistivas permanecem no gate; milestone não concluída.
+Milestone aberta. US-011 integrada pelo PR #67; US-013 implementada e testada com abertura voluntária. #12 depende do painel #10 ainda não implementado, sem simular/fechar esse critério. Builds e validações nativas/assistivas permanecem no gate; milestone não concluída.
 
 ## Contexto
 
@@ -110,7 +110,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-US-011 entregou somente o editor local do plano e referências voluntárias ao perfil. US-013 implementará contato/mensagem locais e handoff voluntário ao WhatsApp; não compartilhará plano/perfil ou enviará mensagens automaticamente. Cartão/painel pertencem a #12/#10; sem exportação adicional, diagnóstico, IA ou backend.
+US-011 entregou somente o editor local do plano e referências voluntárias ao perfil. US-013 mantém contato/mensagem locais e handoff voluntário ao WhatsApp; não compartilha plano/perfil nem envia mensagens automaticamente. Cartão/painel pertencem a #12/#10; sem exportação adicional, diagnóstico, IA ou backend.
 
 ## Dependências funcionais
 

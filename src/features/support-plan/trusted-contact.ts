@@ -9,12 +9,12 @@ export function normalizedTrustedContact(input: TrustedContact): TrustedContact 
   if (!name && !rawPhone && !message) return { ...emptyTrustedContact };
   const phone = parsePhoneNumberFromString(rawPhone, { extract: false });
   if (!rawPhone.startsWith('+') || !phone?.isValid() || phone.ext || !message) throw new Error('Invalid trusted contact.');
+  try { encodeURIComponent(message); } catch { throw new Error('Invalid trusted contact.'); }
   return { name, phone: phone.number, message };
 }
 
 export function createWhatsAppDraftLink(input: TrustedContact): string {
   const contact = normalizedTrustedContact(input);
   if (!contact.phone) throw new Error('Trusted contact not configured.');
-  try { return `https://wa.me/${contact.phone.slice(1)}?text=${encodeURIComponent(contact.message)}`; }
-  catch { throw new Error('Invalid contact message.'); }
+  return `https://wa.me/${contact.phone.slice(1)}?text=${encodeURIComponent(contact.message)}`;
 }
