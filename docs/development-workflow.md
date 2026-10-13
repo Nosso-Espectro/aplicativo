@@ -61,7 +61,10 @@ iOS requer macOS, Xcode e CocoaPods compatíveis com SDK 57. Os mínimos de exec
 Android 7/API 24 e iOS 16.4; geração de projetos e bundles não prova execução nessas versões.
 Esses comandos não fazem parte da execução local de cada tarefa ou Issue.
 Builds ficam para o gate da milestone em máquina dedicada, ou solicitação explícita.
-O ambiente dedicado é o GitHub Actions; SSH não é necessário.
+Atualização #49: GitHub Actions coordena os checks e artefatos, mas a compilação
+Android ocorre por SSH em host Ubuntu dedicado; consulte
+[configuração do host](android-build-host.md). iOS continua em macOS 26.
+Não executar build local. O Android remoto aceita somente SHAs integrados à main.
 Acione `Mobile quality` manualmente, escolhendo `android`, `ios` ou `both`.
 Android publica APK de teste; iOS publica app para simulador, sem assinatura.
 Os comandos nativos permanecem disponíveis para execução explícita, mas não
