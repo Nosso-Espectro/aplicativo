@@ -3,15 +3,15 @@ milestone: 11
 priority: P0
 tag: m005-regulacao-sensorial
 status: draft
-ready_stories: []
-source_checked: 2026-09-23
+ready_stories: ["US-009"]
+source_checked: 2026-10-13
 ---
 
 # Regulação Sensorial
 
 Milestone GitHub: [P0 — Regulação Sensorial](https://github.com/Nosso-Espectro/aplicativo/milestone/11) (número 11).
 
-Estado consultado: aberta; todas as histórias abaixo estão abertas. Especificação em revisão, não implementação concluída.
+US-009 implementada e verificada nos checks leves, com revisão nativa/assistiva e build remoto pendentes do gate. US-010 conserva dependências de destinos/painel ainda pendentes; a milestone não está concluída.
 
 ## Contexto
 
@@ -39,10 +39,10 @@ Como pessoa em sobrecarga sensorial, quero ativar uma interface visual simplific
 
 #### Critérios de aceite
 
-- [ ] O modo deve reduzir animações e elementos não essenciais.
-- [ ] A interface deve manter contraste suficiente e legibilidade.
-- [ ] O usuário deve conseguir ativar e desativar o modo rapidamente.
-- [ ] A preferência deve persistir entre sessões.
+- [x] O modo deve reduzir animações e elementos não essenciais.
+- [x] A interface deve manter contraste suficiente e legibilidade.
+- [x] O usuário deve conseguir ativar e desativar o modo rapidamente.
+- [x] A preferência deve persistir entre sessões.
 
 ### US-010 — Acessar painel rápido de regulação
 
@@ -93,7 +93,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Implementações de outras milestones, requisitos não rastreados e decisões funcionais listadas como pendentes. Nesta execução apenas documentação e ferramentas de engenharia; nenhuma funcionalidade é implementada.
+US-009 trata somente modo voluntário/persistido de apresentação calma. Não implementar painel, destinos de sons/timer/contato, cartão de apoio ou navegação inferior nessa branch. Não alterar globalmente configurações de rede/acessibilidade/som/segurança do aparelho, o ícone/splash do OS ou os dados das ferramentas.
 
 ## Dependências funcionais
 
@@ -111,8 +111,16 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 ## Questões em aberto
 
 - Q-REG-01 — #10 (P0) exige atalhos para sons (#27, P1) e timer (#17, P1). Produto precisa definir entrega desses destinos no MVP ou revisar o backlog; não ocultar, simular ou antecipar recursos silenciosamente.
-- Q-REG-02 — Definir limite mensurável de “poucos toques”, elementos removíveis e alcance do modo de baixa estimulação (#9/#10).
+- Q-REG-02 — Resolvida para #9 na origem: switch global acessível, alternância em um toque quando visível; no modal de cartão retornar ao quadro antes de alternar. Modo ligado remove transições animadas do Stack e imagem decorativa da marca nos quadros; mantém TEAr/cabeçalhos/pictogramas/textos/ações/voz voluntária/dados. Contraste AA aplicável, texto escalável e alvos48dp preservados, superfícies neutras. Preferência local inicialmente desligada, restauração e escrita com falhas recuperáveis/estado confirmado; enquanto desconhecida, apresentação calma sem bloquear comunicação. Redução de movimento do sistema respeitada independentemente da preferência, sem alterar configurações globais. Quantidade de toques/destinos do painel #10 continua a refinar.
 - Q-REG-03 — Painel #10 e acesso direto do cartão #12 têm dependência de integração recíproca. Nenhuma milestone pode ser declarada concluída sem validar ambos os fluxos.
+
+Refinamento da [US-009](https://github.com/Nosso-Espectro/aplicativo/issues/9#issuecomment-6154669659)
+sob delegação explícita do usuário preserva os quatro critérios originais e a
+reversibilidade do modo, sem inferência clínica. Ícone/splash nativos não são
+ocultados em runtime; não alegar redução de animação do próprio sistema. Falha de
+gravação mantém estado confirmado e oferece retry, sem duplicatas ou sucesso
+antes do commit. Nenhuma nova permissão/dependência, transmissão ou cópia de dados.
+Q-REG-01/03 não bloqueiam essa preferência independente, permanecem na #10.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 

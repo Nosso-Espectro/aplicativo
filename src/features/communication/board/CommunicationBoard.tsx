@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import appIcon from '../../../../assets/branding/tear-icon.png';
+import { useLowStimulationPresentation } from '../../regulation/LowStimulationProvider';
 
 import {
   categories,
@@ -46,6 +47,7 @@ export function CommunicationBoard({ cards = initialCards, onSelectCard, sentenc
   favoriteIds = [], onFavorite, favoriteDisabled = false, heading = 'Comunicação', showCategories = true, emptyMessage = 'Nenhum cartão disponível.', navigation, feedback }: BoardProps) {
   const [category, setCategory] = useState<CategoryId | 'all'>('all');
   const [selectedCard, setSelectedCard] = useState<CommunicationCard | null>(null);
+  const { showBrandImage } = useLowStimulationPresentation();
   const { width, fontScale } = useWindowDimensions();
   const singleColumn = width < 340 || fontScale >= 1.5;
   const visibleCards = cards.filter(
@@ -60,7 +62,7 @@ export function CommunicationBoard({ cards = initialCards, onSelectCard, sentenc
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.brandRow}>
-          <Image source={appIcon} accessible={false} resizeMode="contain" style={styles.appIcon} />
+          {showBrandImage && <Image source={appIcon} accessible={false} resizeMode="contain" style={styles.appIcon} />}
           <Text accessibilityRole="header" style={styles.brand}>TEAr</Text>
         </View>
         <Text accessibilityRole="header" style={styles.heading}>{heading}</Text>
