@@ -5,7 +5,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { emptyPreferences, hasPreferences, type CommunicationPreferences } from './preferences';
 import { openPreferencesDatabase } from './preferences-database';
 
-export function PreferencesScreen({ onClose }: { onClose(): void }) {
+export function PreferencesScreen({ onClose, onOpenSupport }: { onClose(): void; onOpenSupport?(): void }) {
   const [draft, setDraft] = useState({ ...emptyPreferences });
   const [saved, setSaved] = useState({ ...emptyPreferences });
   const [loading, setLoading] = useState(true);
@@ -51,6 +51,7 @@ export function PreferencesScreen({ onClose }: { onClose(): void }) {
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
         <Command icon="arrow-back" label="Cancelar e voltar" disabled={busy} onPress={onClose} />
         <Text accessibilityRole="header" style={styles.heading}>Perfil de comunicação</Text>
+        {onOpenSupport && <Command icon="tune" label="Sensibilidades e estratégias" disabled={busy} onPress={onOpenSupport} />}
         {loading && <Text accessibilityLiveRegion="polite" style={styles.text}>Abrindo preferências…</Text>}
         {loadError && <>
           <Text accessibilityRole="alert" style={styles.error}>{Platform.OS === 'web' ? 'Armazenamento do perfil indisponível nesta prévia web.' : 'Não foi possível abrir as preferências salvas.'}</Text>

@@ -19,3 +19,29 @@ Pendências T006: persistência offline nativa, leitor de tela/foco/teclado/ampl
 e backups do sistema. Prévia web informa armazenamento nativo indisponível, sem
 persistência simulada. Builds remotos e atualização do Samsung preservando dados
 somente após integração/artefato. Nenhum build local ou release aprovado.
+
+## US-015 — Sensibilidades e estratégias
+
+Perfil de comunicação → Sensibilidades e estratégias. Preencher somente os campos
+escolhidos (som, luz, toque, temperatura, outras, estratégias úteis/evitadas),
+salvar explicitamente e reabrir. Cancelar não grava; limpar um campo e salvar
+remove essa informação. Remover todas exige confirmação e mantém a comunicação
+da US-014. Falha conserva preenchimento e versão salva, oferecendo retry sem
+exibir detalhes internos; gravação pendente bloqueia ações duplicadas.
+
+SQLite versão2 migra a tabela de comunicação intacta e adiciona tabela própria
+de suporte; testes reais no Node verificam migração v1, reabertura, UPSERT,
+isolamento, rollback e leitura do contrato `readSupportForPlan(selected)`.
+O contrato retorna somente valores atuais escolhidos explicitamente (padrão
+nenhum), sem snapshot antigo após editar/remover; seu consumidor visual será #11.
+Testes de componentes verificam campos/rótulos, estados vazio/erro/salvando,
+edição/remoção/cancelamento/retry e navegação sem gravação implícita.
+
+Revisão estática: textos escaláveis, formulário em scroll com teclado, alvos
+mínimos 48dp, rótulos acessíveis e cabeçalhos, sem áudio/animação automáticos,
+permissões/dependências novas, rede ou logs de conteúdo. T011 continua pendente
+para SQLite Expo offline, TalkBack/VoiceOver, foco/ampliação/teclado e política
+de backups em dispositivo. Mocks/SQLite do host não equivalem a essas validações.
+
+Evidência em 2026-10-13: 151 testes Jest/26 suítes, lint/typecheck, Doctor21/21,
+47 testes de tooling e validador de workflow aprovados na branch US-015.

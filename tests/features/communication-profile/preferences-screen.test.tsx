@@ -9,9 +9,17 @@ const save = jest.fn(); const onClose = jest.fn();
 beforeEach(() => {
   jest.clearAllMocks(); saved = { ...emptyPreferences }; save.mockReset();
   save.mockImplementation(async (value) => { saved = normalizedPreferences(value); return saved; });
-  jest.mocked(openPreferencesDatabase).mockResolvedValue({ read: async () => saved, save });
+  jest.mocked(openPreferencesDatabase).mockResolvedValue({ read: async () => saved, save, readSupport: jest.fn(), saveSupport: jest.fn(), readSupportForPlan: jest.fn() });
 });
 async function ready() { await waitFor(() => expect(screen.getByRole('button', { name: 'Salvar preferências' })).toBeEnabled()); }
+it('opens support preferences without implicitly saving or removing the communication draft', async () => {
+  const openSupport = jest.fn();
+  render(<PreferencesScreen onClose={onClose} onOpenSupport={openSupport} />); await ready();
+  fireEvent.changeText(screen.getByLabelText('Formas preferidas de comunicação'), 'Texto sintético');
+  fireEvent.press(screen.getByRole('button', { name: 'Sensibilidades e estratégias' }));
+  expect(openSupport).toHaveBeenCalledTimes(1); expect(save).not.toHaveBeenCalled();
+  expect(screen.getByLabelText('Formas preferidas de comunicação').props.value).toBe('Texto sintético');
+});
 it('shows empty/uninformed state, saves free text and restores it after a new session', async () => {
   const view = render(<PreferencesScreen onClose={onClose} />); await ready();
   expect(screen.getByText('Ainda não há preferências salvas.')).toBeOnTheScreen();

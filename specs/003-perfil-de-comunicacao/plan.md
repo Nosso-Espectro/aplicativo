@@ -32,6 +32,17 @@ US-014: banco privado `tear-profile.db` versão1, tabela singleton `communicatio
 
 ## Persistência
 
+US-015: rota `/support-preferences` acessada pelo perfil, sete campos opcionais
+livres com IDs estáveis, salvar/cancelar explícitos e remoção integral confirmada
+somente deste módulo. Banco `tear-profile.db` versão2 adiciona singleton
+`support_preferences` sem alterar tabela/valores da US-014. UPSERT parametrizado,
+fila de operações e transação com leitura antes de publicar sucesso; rollback
+mantém dados confirmados. O método `readSupportForPlan(selected)` recebe seleção
+explícita (padrão nenhum) e lê os valores atuais do SQLite, omitindo vazios e
+campos não escolhidos. Não persiste seleção nem snapshot: a tela #11 consumirá
+esse contrato; edição/remoção reflete-se na leitura seguinte, sem dependência
+circular ou transmissão. Schema futuro é recusado, sem downgrade.
+
 Preferências locais por padrão (#14); seleção de compartilhamento controlada pelo usuário (#16). Definir contrato de reutilização no plano (#15).
 
 ## Fluxos principais
@@ -60,7 +71,7 @@ Aplicar RNF-002 e RNF-004. Usar dados sintéticos nos testes; evitar dados pesso
 - Usar testes unitários para transformações de estado/dados; componentes para interação e acessibilidade; integração para persistência/capacidades nativas quando pertinentes.
 - Exercitar os casos de erro do spec e regressões das dependências reais.
 - Verificar em dispositivo/simulador os fluxos que dependem de voz, áudio, permissões ou notificações; mocks isolados não comprovam suporte nativo.
-- Selecionar E2E para fluxos críticos quando a infraestrutura existir. Executar testes, lint, typecheck quando aplicável e build antes de concluir.
+- Selecionar E2E para fluxos críticos quando a infraestrutura existir. Executar testes, lint e typecheck quando aplicável; builds nativos somente remotos, com resultado e verificações de dispositivo rastreados no gate.
 
 Checks existentes: Jest serial, lint, typecheck, Expo Doctor, unittest de tooling e validador de workflow. Cinco testes SQLite real do Node24 e seis componentes com fronteira nativa simulada cobrem reabertura, tri-state, edição/remoção, rollback, retry e duplicatas. Não equivalem a validação SQLite Expo/TalkBack/VoiceOver no aparelho, que permanece pendente.
 

@@ -1,6 +1,6 @@
 # Tasks — Perfil de Comunicação
 
-Milestone #13: [spec.md](spec.md) e [plan.md](plan.md). Todas pendentes; não executadas nesta preparação.
+Milestone #13: [spec.md](spec.md) e [plan.md](plan.md). Progresso marcado somente após verificações; validações nativas/assistivas ainda pendentes no gate.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -22,10 +22,10 @@ pendentes em aparelho. Não marcar como validados pelos mocks/SQLite do host.
 
 ## US-015 — Issue #15
 
-- [ ] T007 [US-015] Em `src/features/communication-profile/sensitivities`, atender RF-005 (critério 1 de #15): Deve ser possível registrar sensibilidades relacionadas a som, luz, toque, temperatura e outras. Verificar com o cenário correspondente no PR.
-- [ ] T008 [US-015] Em `src/features/communication-profile/sensitivities`, atender RF-006 (critério 2 de #15): Deve ser possível registrar estratégias que ajudam e estratégias que devem ser evitadas. Verificar com o cenário correspondente no PR.
-- [ ] T009 [US-015] Em `src/features/communication-profile/sensitivities`, atender RF-007 (critério 3 de #15): As informações devem poder ser reutilizadas no Plano de Apoio. Verificar com o cenário correspondente no PR.
-- [ ] T010 [US-015] Adicionar testes de comportamento de RF-005, RF-006, RF-007 em `tests/features/communication-profile/sensitivities`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
+- [x] T007 [US-015] RF-005: `SupportPreferencesScreen.tsx` e `preferences-database.ts` registram som/luz/toque/temperatura/outras, campos opcionais editáveis, salvamento explícito e remoção confirmada. Testes de componentes e reabertura SQLite real aprovados.
+- [x] T008 [US-015] RF-006: campos de estratégias úteis/evitadas persistidos localmente; erro conserva rascunho/versão salva, cancelamento e retry testados, sem interferir nos dados da US-014.
+- [x] T009 [US-015] RF-007: `readSupportForPlan(selected)` lê do SQLite somente campos explicitamente escolhidos e não vazios, seleção padrão vazia. Teste consumidor local verifica reabertura, edição e remoção sem snapshot antigo. A tela do plano permanece na #11 conforme refinamento do backlog.
+- [x] T010 [US-015] Testes em `tests/features/communication-profile/`: normalização, seleção, SQL parametrizado, migração v1/v2, isolamento da remoção, rollback/retry, duplicatas e componentes aprovados; sem dados pessoais.
 - [ ] T011 [US-015] Revisar RNF-001 a RNF-004 na interface/dados de #15, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
 
 ## US-016 — Issue #16

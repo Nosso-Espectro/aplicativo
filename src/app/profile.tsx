@@ -3,5 +3,5 @@ import { PreferencesScreen } from '../features/communication-profile/Preferences
 
 export default function ProfileScreen() {
   const router = useRouter();
-  return <PreferencesScreen onClose={() => router.canGoBack() ? router.back() : router.replace('/')} />;
+  return <PreferencesScreen onClose={() => router.canGoBack() ? router.back() : router.replace('/')} onOpenSupport={() => router.push('/support-preferences')} />;
 }
