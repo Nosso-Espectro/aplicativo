@@ -8,12 +8,17 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 
 ## US-014 — Issue #14
 
-- [ ] T001 [US-014] Em `src/features/communication-profile/preferences`, atender RF-001 (critério 1 de #14): O perfil deve permitir registrar formas preferidas de comunicação. Verificar com o cenário correspondente no PR.
-- [ ] T002 [US-014] Em `src/features/communication-profile/preferences`, atender RF-002 (critério 2 de #14): Deve ser possível informar necessidade de tempo adicional para responder. Verificar com o cenário correspondente no PR.
-- [ ] T003 [US-014] Em `src/features/communication-profile/preferences`, atender RF-003 (critério 3 de #14): Deve ser possível editar e remover informações. Verificar com o cenário correspondente no PR.
-- [ ] T004 [US-014] Em `src/features/communication-profile/preferences`, atender RF-004 (critério 4 de #14): Os dados devem permanecer locais por padrão. Verificar com o cenário correspondente no PR.
-- [ ] T005 [US-014] Adicionar testes de comportamento de RF-001, RF-002, RF-003, RF-004 em `tests/features/communication-profile/preferences`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
+- [x] T001 [US-014] Implementar RF-001 em `src/features/communication-profile/PreferencesScreen.tsx`: texto livre de comunicação/recebimento, campos opcionais, edição e salvamento explícitos testados.
+- [x] T002 [US-014] Implementar RF-002: tri-state não informado/preciso/não preciso com radios acessíveis, distinção NULL/1/0 verificada em banco/componentes.
+- [x] T003 [US-014] Implementar RF-003: editar/limpar campos, confirmar remoção integral e preservar estado em falha/cancelamento, com retry testado.
+- [x] T004 [US-014] Implementar RF-004 em `preferences-database.ts`: SQLite privado local, UPSERT parametrizado e transação/fila; reabertura/rollback verificados no SQLite do Node, sem chamadas de rede.
+- [x] T005 [US-014] Adicionar testes em `tests/features/communication-profile/`: cinco SQLite real e seis componentes, total 135 testes/24 suítes aprovado.
 - [ ] T006 [US-014] Revisar RNF-001 a RNF-004 na interface/dados de #14, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+
+T006: revisão estática de rótulos, contraste, alvos 48dp, texto escalável, ausência
+de mídia/transmissão/logs pessoais e controle explícito realizada. Leitor de tela,
+foco/teclado/ampliação, reabertura offline e política de backup do sistema ainda
+pendentes em aparelho. Não marcar como validados pelos mocks/SQLite do host.
 
 ## US-015 — Issue #15
 

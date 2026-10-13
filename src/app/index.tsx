@@ -28,6 +28,11 @@ export default function StartupScreen() {
         style={{ minHeight: 48, flexDirection: 'row', gap: 8, alignItems: 'center', padding: 12 }}>
         <MaterialIcons name="format-list-numbered" size={24} color="#16634D" accessible={false} />
         <Text style={{ color: '#16634D', fontSize: 18, flexShrink: 1 }}>Rotinas</Text>
+      </Pressable>
+      <Pressable accessibilityRole="button" accessibilityLabel="Abrir perfil de comunicação" onPress={() => router.push('/profile')}
+        style={{ minHeight: 48, flexDirection: 'row', gap: 8, alignItems: 'center', padding: 12 }}>
+        <MaterialIcons name="person-outline" size={24} color="#16634D" accessible={false} />
+        <Text style={{ color: '#16634D', fontSize: 18, flexShrink: 1 }}>Perfil de comunicação</Text>
       </Pressable></View>}
       cards={[...initialCards, ...custom.cards.map((card) => ({
         ...card, pictogram: card.imageUri ? { uri: card.imageUri } : undefined,

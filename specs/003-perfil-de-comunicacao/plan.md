@@ -4,11 +4,11 @@ Spec: [spec.md](spec.md). Milestone #13; Issues #14, #15, #16. Plano proposto, s
 
 ## Stack
 
-Inspeção em 2026-09-23: repositório sem código de aplicação, package.json, dependências ou ferramentas de build/teste. React Native e primeira versão sem backend são diretrizes explícitas do projeto, ainda não implementadas. Expo, linguagem, navegação e biblioteca de persistência não foram escolhidos. Não assumir stack web, banco ou servidor.
+Inspeção em 2026-10-13: Expo SDK57/RN0.86.3/React19.2.3, TypeScript strict, Expo Router e SQLite já integrados. Node24.21.0/npm11.19.0, Jest/RNTL, lint/typecheck e Expo Doctor existentes. US-014 reutiliza essa base sem novas dependências/permissões. Builds manuais remotos; nenhuma compilação local.
 
 ## Arquitetura atual
 
-Somente README e licença antes desta preparação. Não há componentes, modelos ou serviços existentes para reutilizar. Os caminhos abaixo são propostas de organização e não arquivos já criados.
+Comunicação e rotinas implementadas. Perfil tem rota `/profile`, módulo `src/features/communication-profile/` e acesso explícito pelo quadro. Estado do formulário apenas nessa tela; carregar uma vez, preservar edição em erro, salvar explicitamente e confirmar remoção integral. Sem alterar frases/favoritos/rotinas nem implementar navegação global.
 
 ## Estratégia
 
@@ -28,7 +28,7 @@ Módulo proposto: `src/features/communication-profile/`.
 
 Perfil com formas de comunicação, necessidade de tempo adicional, sensibilidades, estratégias úteis/evitadas e seleção explícita de informações para apresentação. Sem conta remota.
 
-Representação física, tipos e migrações serão definidos após a escolha técnica; não instalar banco por antecipação.
+US-014: banco privado `tear-profile.db` versão1, tabela singleton `communication_preferences(id=1, communication, instructions, extra_time)`. Textos opcionais livres, trim externo; extra_time NULL/1/0 diferencia não informado/preciso/não preciso. Transação exclusiva com leitura do resultado antes do commit, fila de leituras/escritas, UPSERT parametrizado. Salvar campos vazios ou não informado remove a informação; remoção integral salva o modelo vazio após confirmação. Schema futuro é recusado sem downgrade. Sem antecipar campos de #15/#16 ou flags de compartilhamento.
 
 ## Persistência
 
@@ -62,17 +62,17 @@ Aplicar RNF-002 e RNF-004. Usar dados sintéticos nos testes; evitar dados pesso
 - Verificar em dispositivo/simulador os fluxos que dependem de voz, áudio, permissões ou notificações; mocks isolados não comprovam suporte nativo.
 - Selecionar E2E para fluxos críticos quando a infraestrutura existir. Executar testes, lint, typecheck quando aplicável e build antes de concluir.
 
-Hoje não existem runner, scripts de qualidade ou build do aplicativo. A validação da documentação não equivale a testes do produto e não habilita release.
+Checks existentes: Jest serial, lint, typecheck, Expo Doctor, unittest de tooling e validador de workflow. Cinco testes SQLite real do Node24 e seis componentes com fronteira nativa simulada cobrem reabertura, tri-state, edição/remoção, rollback, retry e duplicatas. Não equivalem a validação SQLite Expo/TalkBack/VoiceOver no aparelho, que permanece pendente.
 
 ## Dependências técnicas
 
-Base React Native ainda a inicializar. Selecionar somente as bibliotecas necessárias aos critérios da história, documentando suporte offline, plataformas e permissões. Integrações funcionais estão em spec.md; reuso de temporizador/áudio pode ser avaliado quando houver código, sem criar framework antecipado.
+Base integrada da US-041, com SQLite já usado por comunicação/rotinas; sem inicialização técnica extra ou nova biblioteca. Banco do perfil separado não modifica schema dos módulos existentes.
 
 ## Riscos
 
 Campos ausentes, nenhuma informação selecionada e falha ao salvar; não incluir informações não autorizadas no resumo (#14–#16).
 
-As questões em aberto da spec, a ausência de plataforma-alvo definida e a falta de comandos de qualidade impedem afirmar prontidão de implementação/release. Ver [auditoria](../../docs/backlog-audit.md).
+Questões de #15/#16 não bloqueiam US-014 refinada na Issue. Privacidade do app foi revisada sem rede/logs/compartilhamento; backups do sistema, foco/teclado/ampliação e armazenamento offline em plataformas precisam de revisão nativa antes do gate. Não aprova release. Ver [auditoria](../../docs/backlog-audit.md).
 
 ## Decisões arquiteturais
 
