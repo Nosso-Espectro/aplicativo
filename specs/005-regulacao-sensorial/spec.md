@@ -110,7 +110,7 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-REG-01 — #10 (P0) exige atalhos para sons (#27, P1) e timer (#17, P1). Produto precisa definir entrega desses destinos no MVP ou revisar o backlog; não ocultar, simular ou antecipar recursos silenciosamente.
+- Q-REG-01 — Decisão de sequência registrada na #10 sob delegação humana: entregar os destinos originais #17 (timer) e #27 (sons) no MVP, cada qual após Ready/em branch própria, antes do painel real. Não mudar prioridades, esconder/trocar/simular atalhos ou antecipar #18. A opção de produto está resolvida; entrega dos destinos e integração #10 continuam pendentes. Ver [origem](https://github.com/Nosso-Espectro/aplicativo/issues/10#issuecomment-6155218484).
 - Q-REG-02 — Resolvida para #9 na origem: switch global acessível, alternância em um toque quando visível; no modal de cartão retornar ao quadro antes de alternar. Modo ligado remove transições animadas do Stack e imagem decorativa da marca nos quadros; mantém TEAr/cabeçalhos/pictogramas/textos/ações/voz voluntária/dados. Contraste AA aplicável, texto escalável e alvos48dp preservados, superfícies neutras. Preferência local inicialmente desligada, restauração e escrita com falhas recuperáveis/estado confirmado; enquanto desconhecida, apresentação calma sem bloquear comunicação. Redução de movimento do sistema respeitada independentemente da preferência, sem alterar configurações globais. Quantidade de toques/destinos do painel #10 continua a refinar.
 - Q-REG-03 — Painel #10 e acesso direto do cartão #12 têm dependência de integração recíproca. Nenhuma milestone pode ser declarada concluída sem validar ambos os fluxos.
 

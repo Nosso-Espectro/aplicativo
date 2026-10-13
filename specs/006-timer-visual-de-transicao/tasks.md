@@ -1,6 +1,6 @@
 # Tasks — Timer Visual de Transição
 
-Milestone #14: [spec.md](spec.md) e [plan.md](plan.md). Todas pendentes; não executadas nesta preparação.
+Milestone #14: [spec.md](spec.md) e [plan.md](plan.md). US-017 Ready após refinamento vivo; tasks permanecem pendentes até comportamento validado. US-018 não pertence à branch #17.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 

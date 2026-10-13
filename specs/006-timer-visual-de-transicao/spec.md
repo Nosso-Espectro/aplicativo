@@ -3,15 +3,15 @@ milestone: 14
 priority: P1
 tag: m006-timer-visual-de-transicao
 status: draft
-ready_stories: []
-source_checked: 2026-09-23
+ready_stories: ["US-017"]
+source_checked: 2026-10-13
 ---
 
 # Timer Visual de Transição
 
 Milestone GitHub: [P1 — Timer Visual de Transição](https://github.com/Nosso-Espectro/aplicativo/milestone/14) (número 14).
 
-Estado consultado: aberta; todas as histórias abaixo estão abertas. Especificação em revisão, não implementação concluída.
+Milestone e Issues #17/#18 abertas. US-017 Ready após refinamento na origem; nenhuma funcionalidade desta milestone entregue. US-018 conserva questões próprias de avisos/som/vibração.
 
 ## Contexto
 
@@ -91,11 +91,11 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Implementações de outras milestones, requisitos não rastreados e decisões funcionais listadas como pendentes. Nesta execução apenas documentação e ferramentas de engenharia; nenhuma funcionalidade é implementada.
+US-017 não implementa avisos progressivos #18, som/vibração/notificações/serviço em segundo plano, sons #27, painel #10, cartão #12 ou navegação inferior. Sem backend, IA, sincronização, histórico, compartilhamento ou permissões novas.
 
 ## Dependências funcionais
 
-Não há dependência entre milestones explicitamente exigida pelas histórias. A fundação técnica é tratada no plano.
+US-017 é o destino real de temporizador necessário ao painel #10; o contato #13 e o modo #9 já estão integrados. A entrega do destino não entrega o painel nem muda prioridades. A sequência #17/#27 antes de #10 foi registrada na [origem](https://github.com/Nosso-Espectro/aplicativo/issues/10#issuecomment-6155218484), sem atalhos simulados.
 
 ## Casos de erro
 
@@ -105,8 +105,18 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-TIMER-01 — Como o timer funciona com app em segundo plano, dispositivo bloqueado ou processo encerrado (#17/#18)?
-- Q-TIMER-02 — Quais durações são válidas e como tratar marcos maiores que a duração? Onde são configurados som/vibração (#18)?
+- Q-TIMER-01 — Resolvida para #17: sessão local única, inicialmente ausente. Timer em execução usa término absoluto; restaura e recalcula restante ao voltar de outra rota, segundo plano, bloqueio ou encerramento do processo, sem depender de ticks em background. Pausa preserva restante, retomada gera novo término, cancelamento confirmado afeta somente este módulo. Conclusão visual ao atualizar/reabrir, sem mídia/notificação automática ou garantia de serviço em background. Avisos #18 precisam de política própria.
+- Q-TIMER-02 — Resolvida somente para duração #17: campos Minutos/Segundos, inteiros não negativos, segundos0–59 e total de1 segundo a24 horas; minuto inicialmente vazio e segundos0, sem duração sugerida/início automático. Entradas inválidas não iniciam nem perdem sessão confirmada. Durante execução/pausa não editar duração; cancelar/concluir permite nova configuração. Marcos de aviso e preferências som/vibração #18 continuam pendentes.
+
+Refinamento da [US-017](https://github.com/Nosso-Espectro/aplicativo/issues/17#issuecomment-6155218202)
+sob delegação explícita do usuário preserva os três critérios originais. Tempo
+em números e barra de quantidade restante com dimensões estáveis, sem animação
+interpolada/piscar; estado independente de cor e sem anúncio a cada segundo.
+Controle explícito e erros genéricos/retry, estado confirmado somente após commit,
+sem duplicatas. SQLite privado separado, transação/rollback/schema futuro recusado,
+sem alterar outros módulos ou inferir necessidades clínicas. O limite operacional
+de duração não é orientação clínica. Acesso inicial pelo quadro; painel #10 real
+será integrado em sua própria história. Nenhuma task foi concluída pelo refinamento.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 
