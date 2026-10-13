@@ -32,6 +32,14 @@ US-014: banco privado `tear-profile.db` versão1, tabela singleton `communicatio
 
 ## Persistência
 
+US-016 em início: seleção independente de IDs estáveis dos campos das #14/#15,
+padrão vazio, ordem canônica previsível. Modelo filtra apenas valores atuais
+escolhidos/não vazios; false no tempo adicional não é ausência. A seleção deverá
+persistir localmente em estrutura própria sem snapshot do conteúdo, com migração
+que preserve comunicação/suporte; apresentação em tela cheia somente por ação
+explícita. UI/persistência da seleção ainda não implementadas; nenhuma task US-016
+marcada como concluída. Refinamento correspondente registrado na Issue #16.
+
 US-015: rota `/support-preferences` acessada pelo perfil, sete campos opcionais
 livres com IDs estáveis, salvar/cancelar explícitos e remoção integral confirmada
 somente deste módulo. Banco `tear-profile.db` versão2 adiciona singleton
