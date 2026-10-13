@@ -22,7 +22,7 @@ Milestone → spec; Issue → story; story → requisitos/tasks. Leia o [índice
 
 ## Qualidade
 
-Sempre considerar testes adequados ao risco, acessibilidade, design, privacidade e código limpo. Antes de concluir: testes relacionados, lint, typecheck quando aplicável, build e checks existentes. Ausência de ferramentas não significa aprovação. Não gerar cobertura artificial. Consulte a DoD e o gate de milestone no workflow.
+Sempre considerar testes adequados ao risco, acessibilidade, design, privacidade e código limpo. Antes de concluir uma tarefa: testes relacionados, lint, typecheck quando aplicável e checks leves existentes. Não executar build local automaticamente por tarefa, Issue ou execução do agente. Builds nativos são executados manualmente no GitHub Actions; o gate da milestone verifica o resultado remoto no SHA integrado da main. Não presumir build aprovado sem execução remota bem-sucedida. Verificações em dispositivo permanecem necessárias quando aplicáveis. Ausência de ferramentas não significa aprovação. Não gerar cobertura artificial. Consulte a DoD e o gate de milestone no workflow.
 
 ## Skills locais
 

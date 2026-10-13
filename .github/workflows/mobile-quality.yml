@@ -6,6 +6,16 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      platform:
+        description: Native platform to build
+        type: choice
+        required: true
+        default: android
+        options:
+          - android
+          - ios
+          - both
 
 permissions:
   contents: read
@@ -42,7 +52,8 @@ jobs:
         run: npx expo-doctor
 
   android-build:
-    name: Android release build (local test signing)
+    if: github.event_name == 'workflow_dispatch' && (inputs.platform == 'android' || inputs.platform == 'both')
+    name: Android release APK (test signing)
     runs-on: ubuntu-latest
     needs: quality
     timeout-minutes: 35
@@ -67,3 +78,57 @@ jobs:
         run: npm ci
       - name: Build Android app with embedded bundle through CNG
         run: npm run build:android
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: tear-android-${{ github.sha }}
+          path: android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+  ios-build:
+    if: github.event_name == 'workflow_dispatch' && (inputs.platform == 'ios' || inputs.platform == 'both')
+    name: iOS Release simulator build
+    runs-on: macos-26
+    needs: quality
+    timeout-minutes: 45
+    env:
+      CI: '1'
+      NODE_ENV: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Check Xcode
+        run: xcodebuild -version
+      - name: Install locked dependencies
+        run: npm ci --include=dev
+      - name: Generate iOS project
+        run: npx --no-install expo prebuild --platform ios --no-install
+      - name: Install CocoaPods dependencies
+        working-directory: ios
+        run: pod install
+      - name: Build unsigned iOS simulator app
+        run: |
+          xcodebuild \
+            -workspace ios/TEAr.xcworkspace \
+            -scheme TEAr \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/ios \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+      - name: Archive simulator app
+        run: ditto -c -k --sequesterRsrc --keepParent build/ios/Build/Products/Release-iphonesimulator/TEAr.app build/tear-ios-simulator.zip
+      - name: Upload iOS simulator app
+        uses: actions/upload-artifact@v4
+        with:
+          name: tear-ios-simulator-${{ github.sha }}
+          path: build/tear-ios-simulator.zip
+          if-no-files-found: error
+          retention-days: 14
