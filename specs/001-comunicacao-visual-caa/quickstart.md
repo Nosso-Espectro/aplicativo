@@ -305,6 +305,11 @@ referencial; cinco usam componentes/provider e fronteiras nativas simuladas.
 Nenhum build local executado; build remoto e atualização preservando dados no
 Samsung autorizado são etapas posteriores à integração.
 
+Após incorporar US-052 e a correção de concorrência CI/#54: 85 testes Jest em
+16 suítes, lint/typecheck e 47 testes de tooling aprovados. Validador estrutural:
+42 histórias e 224 tasks. A revisão do diff não identificou regressão bloqueante;
+as validações nativas, assistivas e de licenças continuam separadas e pendentes.
+
 ## US-052 — Ícone e Inicialização
 
 Imagem gerada a partir da capa fornecida pelo usuário, explicitamente aprovada
