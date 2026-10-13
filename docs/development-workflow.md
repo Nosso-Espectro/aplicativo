@@ -61,9 +61,11 @@ iOS requer macOS, Xcode e CocoaPods compatíveis com SDK 57. Os mínimos de exec
 Android 7/API 24 e iOS 16.4; geração de projetos e bundles não prova execução nessas versões.
 Esses comandos não fazem parte da execução local de cada tarefa ou Issue.
 Builds ficam para o gate da milestone em máquina dedicada, ou solicitação explícita.
-A futura execução via SSH ainda não foi configurada; não presumir acesso remoto.
-Para execução autorizada nesse ambiente, use `npm run build:android` e, no macOS,
-`npm run build:ios`. Consulte os comandos de
+O ambiente dedicado é o GitHub Actions; SSH não é necessário.
+Acione `Mobile quality` manualmente, escolhendo `android`, `ios` ou `both`.
+Android publica APK de teste; iOS publica app para simulador, sem assinatura.
+Os comandos nativos permanecem disponíveis para execução explícita, mas não
+fazem parte do fluxo local do agente. Consulte os comandos de
 instalação/offline e os resultados em [quickstart](../specs/001-comunicacao-visual-caa/quickstart.md)
 e a [revisão do bootstrap](bootstrap-tecnico.md).
 
@@ -165,7 +167,27 @@ Os gates automáticos e a revisão manual se complementam. O helper verifica est
 
 ### Configuração dos comandos de qualidade
 
-[scripts/quality-gate.json](../scripts/quality-gate.json) aponta para testes Jest, lint, typecheck e `npm run build`, que exige os builds Android e iOS. O gate completo precisa de macOS com ambos os toolchains; sem eles, falha e **bloqueia a release**. Os arrays são executados da raiz sem shell implícito. Não substituir build nativo por exportação JS nem configurar comandos triviais para obter sucesso artificial.
+[scripts/quality-gate.json](../scripts/quality-gate.json) aponta para testes Jest,
+lint, typecheck e `python3 scripts/github/check-native-build.py`. Esse check
+consulta os builds reais do GitHub Actions no SHA integrado da main: ambos
+os jobs nativos devem ter sucesso e seus artefatos devem existir e não estar
+expirados. Ele não compila nesta máquina. Falta de execução remota bloqueia
+a release. Os arrays são executados da raiz sem shell implícito.
+Não substituir build nativo por exportação JS ou comandos triviais.
+
+Para produzir as evidências de build do gate:
+
+```bash
+gh workflow run mobile-quality.yml --repo Nosso-Espectro/aplicativo --ref main -f platform=both
+python3 scripts/github/check-native-build.py
+```
+
+O comando de verificação deve ser executado depois da conclusão remota e na
+main correspondente ao SHA compilado. O build iOS para simulador não comprova
+assinatura, App Store, execução em aparelho ou acessibilidade nativa.
+Os runners de iOS usam [macOS 26](https://github.com/actions/runner-images/blob/main/images/macos/macos-26-Readme.md),
+compatível com a infraestrutura documentada para
+[Expo SDK 57](https://docs.expo.dev/build-reference/infrastructure/).
 
 Somente `typecheck` e `e2e` podem usar um objeto `{"not_applicable": "justificativa técnica revisada e concreta"}` quando realmente não aplicáveis. Testes, lint e build são obrigatórios. E2E está justificado como não aplicável à base neutra da US-041; reavaliar nas histórias funcionais. Configuração do gate não equivale a aprovação: builds, abertura offline e revisões nativas continuam pendentes conforme as evidências locais.
 

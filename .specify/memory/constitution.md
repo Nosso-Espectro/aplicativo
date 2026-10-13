@@ -77,8 +77,9 @@ typecheck quando aplicável e demais checks leves existentes exigidos pelo proje
 Builds NÃO DEVEM ser disparados automaticamente por tarefa, Issue ou execução do
 agente nesta máquina. Builds e verificações dependentes de binário DEVEM ocorrer
 no gate da milestone em ambiente dedicado, ou por solicitação explícita do usuário.
-Enquanto a máquina SSH não estiver configurada, NÃO DEVE ser presumida disponibilidade
-remota; registrar a pendência sem substituir o build por sucesso artificial. Evidências
+O ambiente dedicado de build é o GitHub Actions, acionado manualmente.
+O gate DEVE verificar os jobs e artefatos no SHA integrado da main; não executar
+compilação local nem substituir a validação remota por sucesso artificial. Evidências
 DEVEM registrar resultados reais e limitações. Ausência de ferramentas ou falha de execução
 NÃO equivale a aprovação. Tasks só DEVEM ser marcadas como concluídas após a validação.
 
@@ -207,4 +208,9 @@ A emenda 2.0.0 foi aprovada pelo usuário em 2026-10-13 para retirar builds por
 tarefa nesta máquina com capacidade de processamento insuficiente. Checks leves
 continuam por Issue; builds reais permanecem obrigatórios no gate dedicado.
 
-**Version**: 2.0.0 | **Ratified**: 2026-09-23 | **Last Amended**: 2026-10-13
+Emenda 2.0.1 de 2026-10-13: por solicitação do usuário, GitHub Actions substitui
+a máquina SSH planejada como ambiente de build. Mantida a execução manual e o
+gate final; Android gera APK de teste e iOS gera app para simulador sem assinatura.
+Isso não comprova execução em aparelho nem distribuição para a App Store.
+
+**Version**: 2.0.1 | **Ratified**: 2026-09-23 | **Last Amended**: 2026-10-13
