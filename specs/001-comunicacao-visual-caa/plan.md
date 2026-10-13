@@ -53,6 +53,14 @@ os assets licenciados permanecem obrigatórios para concluir a Issue.
 
 ## Estratégia
 
+US-052/#52: identidade visual explicitamente solicitada e imagem aprovada pelo
+usuário em 2026-10-13. PNG RGB quadrado local em `assets/branding/tear-icon.png`,
+ícone Android/iOS, favicon web e config plugin expo-splash-screen
+alinhado ao SDK 57. Sem timer, animação ou áudio; ocultação padrão do Expo Router
+quando a primeira tela está pronta. O quadro mantém marca textual escalável e a
+imagem decorativa não duplica o anúncio do leitor. Máscaras nativas e abertura a
+frio precisam ser verificadas no APK Release, não somente em Expo Go/web.
+
 Entregar uma Issue por branch, preservando `main` integrável. A Issue de bootstrap cria apenas
 a base vazia e ferramentas; as Issues #1–#5 implementam incrementos por história seguindo
 seus critérios de aceite. Inicializar e validar fluxos offline antes de expandir a feature.

@@ -280,3 +280,22 @@ shell-quote), também presentes na branch US-003 anterior à instalação dos no
 módulos. O registro anterior de 13 moderadas é histórico, não o estado atual.
 Não aplicado `audit fix --force` nem downgrade do Expo; revisão de dependências
 continua necessária antes de release. Nenhum build local executado.
+
+## US-052 — Ícone e Inicialização
+
+Imagem gerada a partir da capa fornecida pelo usuário, explicitamente aprovada
+como ícone. PNG RGB quadrado 1254x1254 em `assets/branding/tear-icon.png`, copiado
+sem edição; origem/prompt em [branding](../../assets/branding/README.md).
+Configuração global de ícone usa o arquivo inteiro (sem foreground adaptativo
+com zoom adicional); o launcher ainda pode aplicar sua própria máscara.
+SplashScreen usa a mesma imagem local, fundo azul e escala contain. Ocultação
+padrão quando o Router está pronto, sem espera artificial, som ou fade adicionado.
+Marca decorativa no quadro mantém nome TEAr textual/escalável e evita anúncio duplo.
+
+Configuração/PNG e regressões testadas com Jest; lint, typecheck, Doctor 21/21,
+46 testes tooling e validador aprovados. Build remoto e verificação da máscara/
+abertura a frio no APK são evidências distintas, ainda pendentes em T042.
+Não houve build local. Atualização no Samsung usa `adb install -r` e não limpa
+dados. Favoritos/US-005 permanecem em desenvolvimento em worktree separado.
+Auditoria após SplashScreen: 66 alertas (16 moderados, 49 altos, uma crítica);
+Issue #51 acompanha a revisão, sem aprovar release ou ocultar alertas.
