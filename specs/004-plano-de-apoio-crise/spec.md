@@ -11,7 +11,7 @@ source_checked: 2026-10-13
 
 Milestone GitHub: [P0 — Plano de Apoio / Crise](https://github.com/Nosso-Espectro/aplicativo/milestone/12) (número 12).
 
-Milestone e Issues #11/#12/#13 abertas. US-011 refinada no GitHub e pronta para implementação; #12/#13 conservam questões próprias pendentes. Nenhuma entrega desta milestone concluída.
+Milestone aberta. Editor US-011 implementado e testado; #12/#13 conservam questões próprias pendentes. Builds e validações nativas/assistivas permanecem no gate; milestone não concluída.
 
 ## Contexto
 

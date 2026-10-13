@@ -41,13 +41,14 @@ atuais, não copiados. Contato/mensagem e visualização em cartão ficam nas #1
 
 ## Persistência
 
-Andamento inicial da US-011: `support-plan.ts` implementa modelo/normalização,
-quatro sugestões originais, seleção vazia, IDs validados e referências sem texto
-copiado do perfil. Seis testes unitários aprovados, lint/typecheck verdes. Editor,
-SQLite, navegação e cenários de persistência/erro ainda não implementados; nenhuma
-task de entrega marcada concluída e Issue #11 permanece aberta.
+US-011 implementada em `SupportPlanScreen.tsx`, `support-plan.ts` e
+`support-plan-database.ts`: texto livre, quatro sugestões originais e referências
+opcionais aos campos atuais do perfil. Rota `/support-plan` acessada pelo quadro,
+salvar/cancelar explícitos e remoção integral confirmada apenas do plano. Modelo,
+SQLite real do Node, componentes e rotas verificam os fluxos; validações
+nativas/assistivas e de backup permanecem pendentes em T006.
 
-US-011 planeja banco privado `tear-support-plan.db`, schema próprio inicial,
+US-011 usa banco privado `tear-support-plan.db`, schema próprio versão1,
 singleton de texto e tabelas separadas de IDs das sugestões/referências. Operações
 parametrizadas em fila/transação exclusiva; ler resultado antes do commit,
 publicar somente após sucesso, rollback preserva versão confirmada. Schema futuro
@@ -67,7 +68,14 @@ Editor e reabertura do plano devem operar com SQLite local sem rede. Erro manté
 draft/confirmado e permite retry/cancelar; abertura falha não habilita gravação.
 Se leitura de referências do perfil falhar, não publicar conteúdo antigo nem
 substituir orientações salvas. Recuperação/interrupção e política de backups
-exigem evidência no SQLite Expo antes do gate.
+exigem evidência no SQLite Expo antes do gate. A prévia web informa indisponibilidade
+do armazenamento nativo, sem substituir persistência por dados simulados.
+
+No editor, a leitura do perfil usa inicialização compartilhada, resultados ligados
+à seleção exata e descarte de requisições obsoletas. Desmarcar um campo não exibe
+resultado que chegaria depois; alterar seleção oculta o conteúdo anterior até a
+leitura atual. Retry é independente e uma falha do perfil não impede editar ou
+salvar as próprias orientações/IDs; nenhum dado antigo é publicado no erro.
 
 Recursos locais não devem depender de autenticação ou API. Capacidades externas explicitamente solicitadas devem informar indisponibilidade sem impedir os recursos locais; não confundir falta de backend próprio com ausência de qualquer serviço externo futuro.
 

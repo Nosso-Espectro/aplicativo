@@ -33,6 +33,11 @@ export default function StartupScreen() {
         style={{ minHeight: 48, flexDirection: 'row', gap: 8, alignItems: 'center', padding: 12 }}>
         <MaterialIcons name="person-outline" size={24} color="#16634D" accessible={false} />
         <Text style={{ color: '#16634D', fontSize: 18, flexShrink: 1 }}>Perfil de comunicação</Text>
+      </Pressable>
+      <Pressable accessibilityRole="button" accessibilityLabel="Abrir plano de apoio" onPress={() => router.push('/support-plan')}
+        style={{ minHeight: 48, flexDirection: 'row', gap: 8, alignItems: 'center', padding: 12 }}>
+        <MaterialIcons name="assignment" size={24} color="#16634D" accessible={false} />
+        <Text style={{ color: '#16634D', fontSize: 18, flexShrink: 1 }}>Plano de Apoio</Text>
       </Pressable></View>}
       cards={[...initialCards, ...custom.cards.map((card) => ({
         ...card, pictogram: card.imageUri ? { uri: card.imageUri } : undefined,
