@@ -16,6 +16,14 @@ on:
           - android
           - ios
           - both
+      android_backend:
+        description: Android build backend
+        type: choice
+        required: true
+        default: ssh
+        options:
+          - ssh
+          - github
 
 permissions:
   contents: read
@@ -63,33 +71,68 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Node.js
+        if: inputs.android_backend == 'github'
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
       - name: Set up Java
+        if: inputs.android_backend == 'github'
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
       - name: Set up Android SDK
+        if: inputs.android_backend == 'github'
         uses: android-actions/setup-android@v3
         with:
           packages: platform-tools
       - name: Install Android build tools
+        if: inputs.android_backend == 'github'
         run: sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.1.12297006"
       - name: Install locked dependencies
+        if: inputs.android_backend == 'github'
         run: npm ci --include=dev
       - name: Generate Android project
+        if: inputs.android_backend == 'github'
         run: npx --no-install expo prebuild --platform android --no-install
       - name: Build Android with isolated JVM lifecycle
+        if: inputs.android_backend == 'github'
         working-directory: android
         run: ./gradlew --no-daemon --max-workers=2 -Pkotlin.compiler.execution.strategy=in-process assembleRelease
+      - name: Collect GitHub runner APK
+        if: inputs.android_backend == 'github'
+        run: |
+          mkdir -p build/android
+          cp android/app/build/outputs/apk/release/app-release.apk build/android/app-release.apk
+      - name: Build Android over SSH and retrieve APK
+        if: inputs.android_backend == 'ssh'
+        env:
+          BUILD_HOST: ${{ secrets.TEAR_BUILD_HOST }}
+          BUILD_SSH_KEY: ${{ secrets.TEAR_BUILD_SSH_KEY }}
+          BUILD_KNOWN_HOSTS: ${{ secrets.TEAR_BUILD_KNOWN_HOSTS }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${BUILD_HOST:?Missing TEAR_BUILD_HOST}" "${BUILD_SSH_KEY:?Missing TEAR_BUILD_SSH_KEY}" "${BUILD_KNOWN_HOSTS:?Missing TEAR_BUILD_KNOWN_HOSTS}"
+          umask 077
+          key=$(mktemp "$RUNNER_TEMP/tear-key.XXXXXX")
+          hosts=$(mktemp "$RUNNER_TEMP/tear-hosts.XXXXXX")
+          trap 'rm -f "$key" "$hosts"' EXIT
+          printf '%s\n' "$BUILD_SSH_KEY" > "$key"
+          printf '%s\n' "$BUILD_KNOWN_HOSTS" > "$hosts"
+          unset BUILD_SSH_KEY BUILD_KNOWN_HOSTS
+          options=(-T -i "$key" -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o "UserKnownHostsFile=$hosts" -o ConnectTimeout=20 -o ServerAliveInterval=30 -o ServerAliveCountMax=6)
+          ssh "${options[@]}" "tear-build@$BUILD_HOST" "build $GITHUB_SHA"
+          mkdir -p build/android
+          ssh "${options[@]}" "tear-build@$BUILD_HOST" "artifact $GITHUB_SHA" > build/android/app-release.apk.part
+          test -s build/android/app-release.apk.part
+          mv build/android/app-release.apk.part build/android/app-release.apk
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
           name: tear-android-${{ github.sha }}
-          path: android/app/build/outputs/apk/release/*.apk
+          path: build/android/*.apk
           if-no-files-found: error
           retention-days: 14
 
