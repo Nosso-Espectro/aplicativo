@@ -8,12 +8,18 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 
 ## US-006 — Issue #6
 
-- [ ] T001 [US-006] Em `src/features/routines/routine-editor`, atender RF-001 (critério 1 de #6): Deve ser possível criar uma rotina com nome. Verificar com o cenário correspondente no PR.
-- [ ] T002 [US-006] Em `src/features/routines/routine-editor`, atender RF-002 (critério 2 de #6): Cada etapa deve aceitar título e imagem opcional. Verificar com o cenário correspondente no PR.
-- [ ] T003 [US-006] Em `src/features/routines/routine-editor`, atender RF-003 (critério 3 de #6): O usuário deve poder adicionar, editar e remover etapas. Verificar com o cenário correspondente no PR.
-- [ ] T004 [US-006] Em `src/features/routines/routine-editor`, atender RF-004 (critério 4 de #6): A rotina deve ficar disponível offline após ser salva. Verificar com o cenário correspondente no PR.
-- [ ] T005 [US-006] Adicionar testes de comportamento de RF-001, RF-002, RF-003, RF-004 em `tests/features/routines/routine-editor`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
+- [x] T001 [US-006] Em `src/features/routines/RoutineEditor.tsx`, atender RF-001 (critério 1 de #6): Deve ser possível criar uma rotina com nome. Evidência: validação e gravação de rotina nomeada vazia verificadas em componentes e SQLite.
+- [x] T002 [US-006] Em `src/features/routines/RoutineEditor.tsx`, atender RF-002 (critério 2 de #6): Cada etapa deve aceitar título e imagem opcional. Evidência: imagem omitida, seleção/cancelamento/negação simulados e cópia privada testados; permissões reais em T006.
+- [x] T003 [US-006] Em `src/features/routines/RoutineEditor.tsx`, atender RF-003 (critério 3 de #6): O usuário deve poder adicionar, editar e remover etapas. Evidência: edição, confirmação de remoção e IDs estáveis verificados.
+- [x] T004 [US-006] Em `src/features/routines/routine-database.ts`, atender RF-004 (critério 4 de #6): A rotina deve ficar disponível offline após ser salva. Evidência: SQLite real do Node 24, reabertura, SQL parametrizado e rollback, sem rede. Binário Expo offline em T006.
+- [x] T005 [US-006] Adicionar testes de comportamento de RF-001, RF-002, RF-003, RF-004 em `tests/features/routines/`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais. Evidência: 15 testes de rotina e uma regressão de isolamento de imagens; suíte total 101 testes/19 suítes aprovada.
 - [ ] T006 [US-006] Revisar RNF-001 a RNF-004 na interface/dados de #6, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+
+Revisão estática de rótulos, foco de campo inválido, texto escalável, alvos de 48dp,
+contraste, controle de mídia, mensagens sanitizadas e persistência local realizada.
+Lint/typecheck, 47 testes de tooling e validador estrutural passaram. T006 mantém
+pendentes revisão assistiva, permissões, reinício offline e imagens no aparelho.
+Ver [quickstart](quickstart.md). Não confundir mocks/SQLite do host com Expo nativo.
 
 ## US-007 — Issue #7
 

@@ -1,14 +1,14 @@
 # Plano de implementação — Rotina Visual
 
-Spec: [spec.md](spec.md). Milestone #10; Issues #6, #7, #8. Plano proposto, sujeito às questões em aberto.
+Spec: [spec.md](spec.md). Milestone #10; Issues #6, #7, #8. Plano da US-006 atualizado em 2026-10-13; #7/#8 continuam sujeitos às questões em aberto.
 
 ## Stack
 
-Inspeção em 2026-09-23: repositório sem código de aplicação, package.json, dependências ou ferramentas de build/teste. React Native e primeira versão sem backend são diretrizes explícitas do projeto, ainda não implementadas. Expo, linguagem, navegação e biblioteca de persistência não foram escolhidos. Não assumir stack web, banco ou servidor.
+Inspeção em 2026-10-13: Expo SDK 57, React Native 0.86.3, React 19.2.3, TypeScript strict, Expo Router, SQLite, FileSystem e ImagePicker já integrados. Node 24.21.0/npm 11.19.0, Jest/RNTL e ESLint existentes. US-006 não adiciona dependências, backend, permissões ou sincronização. Builds apenas remotos, manualmente no GitHub Actions, Android via SSH dedicado.
 
 ## Arquitetura atual
 
-Somente README e licença antes desta preparação. Não há componentes, modelos ou serviços existentes para reutilizar. Os caminhos abaixo são propostas de organização e não arquivos já criados.
+Comunicação, frases, fala local, cartões personalizados, favoritos e identidade visual já integrados. Reutilizar o seletor contextual de imagens e a cópia privada existente; parametrizar o namespace de imagem para impedir que a limpeza de cartões alcance rotinas e vice-versa. Provider de rotinas somente no layout `/routines`, sem alterar o estado da frase nem iniciar mídia.
 
 ## Estratégia
 
@@ -18,9 +18,9 @@ Não implementar a milestone inteira em uma branch. A inicialização técnica p
 
 ## Componentes envolvidos
 
-Módulo proposto: `src/features/routines/`.
+Módulo: `src/features/routines/`. Rotas `/routines`, `/routines/new` e `/routines/[id]`; acesso direto pelo quadro de comunicação, lista com nome e quantidade de etapas e editor rolável.
 
-- `src/features/routines/routine-editor` — [US-006] Criar uma rotina visual.
+- `src/features/routines/RoutineEditor.tsx`, `RoutineProvider.tsx`, `routine-model.ts`, `routine-storage.ts`, `routine-database.ts` — [US-006] Criar uma rotina visual.
 - `src/features/routines/step-order` — [US-007] Reordenar etapas da rotina.
 - `src/features/routines/routine-player` — [US-008] Executar rotina com Agora e Depois.
 
@@ -28,7 +28,7 @@ Módulo proposto: `src/features/routines/`.
 
 Rotina (identificador, nome); etapa (identificador estável, título, imagem opcional, posição, estado); execução (rotina, etapa atual, progresso). Reordenação preserva identificadores e conteúdo.
 
-Representação física, tipos e migrações serão definidos após a escolha técnica; não instalar banco por antecipação.
+US-006: banco privado `tear-routines.db`, versão 1; `routines(id, name)` e `routine_steps(id, routine_id, title, image_uri, position)`, FK com cascata, posição única por rotina e títulos/nomes não vazios. Identificadores das etapas sobrevivem a edição. Sem estado de execução antecipado. SQLite separado preserva o schema de comunicação. Cada salvamento substitui as etapas da rotina dentro da mesma transação exclusiva; fila de operações e publicação somente após commit. SQL parametrizado, sem ORM. Imagens em `routine-images`, cópia antes do commit e remoção de cópias novas em falha; órfãs antigas limpas ao reabrir o módulo. Reordenação/status/progresso serão definidos nas Issues próprias.
 
 ## Persistência
 
@@ -62,21 +62,21 @@ Aplicar RNF-002 e RNF-004. Usar dados sintéticos nos testes; evitar dados pesso
 - Verificar em dispositivo/simulador os fluxos que dependem de voz, áudio, permissões ou notificações; mocks isolados não comprovam suporte nativo.
 - Selecionar E2E para fluxos críticos quando a infraestrutura existir. Executar testes, lint, typecheck quando aplicável e build antes de concluir.
 
-Hoje não existem runner, scripts de qualidade ou build do aplicativo. A validação da documentação não equivale a testes do produto e não habilita release.
+Comandos leves existentes: `npm test -- --ci --runInBand`, `npm run lint`, `npm run typecheck`, `npx --no-install expo-doctor`, unittest de tooling e `scripts/validate-workflow.py`. SQLite real do Node 24 cobre transações/reabertura; componentes e picker/FileSystem usam fronteiras simuladas. Não equivalem a validação do Expo em Android/iOS. Builds remotos e testes em dispositivo permanecem evidências separadas, sem aprovar release.
 
 ## Dependências técnicas
 
-Base React Native ainda a inicializar. Selecionar somente as bibliotecas necessárias aos critérios da história, documentando suporte offline, plataformas e permissões. Integrações funcionais estão em spec.md; reuso de temporizador/áudio pode ser avaliado quando houver código, sem criar framework antecipado.
+Base integrada da US-041 e fronteiras locais de imagem da US-004 reutilizadas. Sem nova biblioteca ou ferramenta. Permissão de câmera permanece contextual; descrição passa a mencionar etapas de rotina. Sem microfone ou acesso amplo à biblioteca. Mínimos Android API24/iOS16.4 herdados da configuração existente, não comprovados por testes no host.
 
 ## Riscos
 
 Rotina vazia, imagem ausente, falha de persistência e etapa removida durante edição; preservar ordem/status (#6–#8).
 
-As questões em aberto da spec, a ausência de plataforma-alvo definida e a falta de comandos de qualidade impedem afirmar prontidão de implementação/release. Ver [auditoria](../../docs/backlog-audit.md).
+Questões em aberto de #7/#8 impedem sua execução, não a US-006 refinada na Issue. Validação de imagens, persistência e acessibilidade em Android/iOS permanece necessária para o gate; a base/host não comprovam suporte em todas as versões mínimas. Ver [auditoria](../../docs/backlog-audit.md).
 
 ## Decisões arquiteturais
 
 - Diretriz confirmada: React Native; MVP sem backend.
 - Proposta: módulos por capacidade em `src/features/`, sem fixar extensão/linguagem nem arquitetura de estado.
-- Pendente: plataformas e versões mínimas, bootstrap, navegação, persistência e ferramentas de qualidade.
+- US-006: reutilizar a stack efetiva, navegação Router e persistência SQLite privada; refinamento funcional registrado na Issue #6 sob delegação do usuário, preservando critérios originais. Questões de #7/#8 permanecem pendentes.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.
