@@ -29,7 +29,7 @@ class SSHBuildTests(unittest.TestCase):
         self.assertIn("packages: platform-tools", android)
         self.assertIn('"platforms;android-36" "build-tools;36.0.0" "ndk;27.1.12297006"', android)
         self.assertIn("./gradlew --no-daemon --max-workers=2 -Pkotlin.compiler.execution.strategy=in-process assembleRelease", android)
-        self.assertIn("path: build/android/*.apk", android)
+        self.assertRegex(android, r"path:\s*\|\s+build/android/\*\.apk\s+build/android/THIRD_PARTY_NOTICES\.txt")
         self.assertIn("name: tear-android-${{ github.sha }}", android)
 
     def test_manual_builds_have_sha_scoped_non_cancelling_concurrency(self):

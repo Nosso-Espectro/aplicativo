@@ -3,7 +3,7 @@ milestone: 12
 priority: P0
 tag: m004-plano-de-apoio-crise
 status: draft
-ready_stories: ["US-011"]
+ready_stories: ["US-011", "US-013"]
 source_checked: 2026-10-13
 ---
 
@@ -11,7 +11,7 @@ source_checked: 2026-10-13
 
 Milestone GitHub: [P0 — Plano de Apoio / Crise](https://github.com/Nosso-Espectro/aplicativo/milestone/12) (número 12).
 
-Milestone aberta. Editor US-011 implementado e testado; #12/#13 conservam questões próprias pendentes. Builds e validações nativas/assistivas permanecem no gate; milestone não concluída.
+Milestone aberta. US-011 integrada pelo PR #67; US-013 implementada e testada com abertura voluntária. #12 depende do painel #10 ainda não implementado, sem simular/fechar esse critério. Builds e validações nativas/assistivas permanecem no gate; milestone não concluída.
 
 ## Contexto
 
@@ -110,7 +110,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-US-011 implementa somente o editor local do plano e referências voluntárias ao perfil. Cartão em tela cheia/painel/contato/WhatsApp pertencem a #12/#10/#13; nenhuma exportação, transmissão, diagnóstico, IA ou backend nesta branch.
+US-011 entregou somente o editor local do plano e referências voluntárias ao perfil. US-013 mantém contato/mensagem locais e handoff voluntário ao WhatsApp; não compartilha plano/perfil nem envia mensagens automaticamente. Cartão/painel pertencem a #12/#10; sem exportação adicional, diagnóstico, IA ou backend.
 
 ## Dependências funcionais
 
@@ -127,7 +127,7 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 - Q-APOIO-01 — Resolvida nas #15/#11: referências aos sete IDs estáveis de sensibilidades/estratégias explicitamente escolhidos no editor, seleção inicial vazia; ler valores atuais ao reabrir, sem cópia antiga, alteração do perfil, envio ou dependência circular. Campo removido/vazio é omitido.
 - Q-APOIO-02 — A milestone menciona compartilhar o plano, mas #12 cobre exibição e #13 mensagem ao contato. Falta definir formato/destino do compartilhamento e sua Issue.
-- Q-APOIO-03 — Qual “mecanismo compatível” em #13? Como validar contato e mensagem? Não enviar automaticamente.
+- Q-APOIO-03 — Resolvida na #13: contato local com nome opcional, telefone internacional explícito e mensagem livre obrigatórios para configuração válida; numeração validada por biblioteca de domínio, sem inferir país/conta existente. Link oficial preenchido/handoff ao WhatsApp somente após revisão de destino/mensagem e comando explícito; envio final no app externo. Indisponibilidade/falha informada, sem fallback ou envio automático, leitura de agenda ou permissão de contatos. Salvar/cancelar/editar e remover confirmado apenas este módulo, falha conserva draft/confirmado com retry.
 - Q-APOIO-04 — #12 depende do painel #10 para acesso direto; #10 depende do plano/contato. Implementar editores antes e validar os atalhos em conjunto, sem fundir branches.
 
 US-011 refinada na [Issue #11](https://github.com/Nosso-Espectro/aplicativo/issues/11#issuecomment-6153657288)
@@ -138,6 +138,15 @@ Salvar/cancelar explícitos; editar/limpar escolhas e texto, remoção integral
 confirmada apenas do plano, erros/duplicatas tratados sem apagar o perfil.
 Acesso ao editor pelo quadro. Q-APOIO-02/03/04 não bloqueiam esse editor local e
 permanecem para suas histórias; não substituir os critérios originais de #12/#13.
+
+Sequência registrada nas [#12](https://github.com/Nosso-Espectro/aplicativo/issues/12#issuecomment-6154041373)
+e [#10](https://github.com/Nosso-Espectro/aplicativo/issues/10#issuecomment-6154041858):
+após US-011, executar a história independente US-013, dentro da mesma milestone.
+US-012 permanece aberta até acesso direto pelo painel real, sem simular o critério,
+alterar P0 ou declarar milestone concluída. Refinamento da [US-013](https://github.com/Nosso-Espectro/aplicativo/issues/13#issuecomment-6154059964)
+sob delegação humana define retenção até edição/remoção voluntária, revisão antes
+de sair do TEAr e indisponibilidade sem perda de configuração. Q-APOIO-02/04
+continuam abertas nos fluxos restantes.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 

@@ -29,3 +29,37 @@ integrado; segurança do host #61 permanece pendente e instalação no celular n
 
 Esta entrega não inclui cartão em tela cheia, painel de regulação, contato ou
 WhatsApp (#12/#10/#13), nem afirma diagnóstico ou substituição de acompanhamento.
+
+## US-013 — Contato de confiança
+
+Comunicação → Contato de confiança, inicialmente vazio. Usar somente dados
+sintéticos: telefone internacional com código do país explícito, mensagem livre
+e nome opcional. Salvar não abre WhatsApp, cancelar não grava; reabrir restaura
+conteúdo local. Telefone/mensagem inválidos preservam preenchimento e versão
+salva. Falha de commit/read conserva confirmado e permite retry/cancelar, sem
+sucesso prematuro. Remoção integral exige confirmação mesmo ao limpar todos os
+campos manualmente e preserva plano/perfil.
+
+Revisar pedido de apoio mostra telefone e mensagem SALVOS e as consequências de
+encaminhá-los ao WhatsApp; cancelar não abre nada. Alterar draft invalida revisão.
+Somente Confirmar abertura verifica disponibilidade e solicita link oficial
+preenchido. Não envia mensagem nem afirma recebimento; destino final e envio
+permanecem sob controle da pessoa no aplicativo externo. Indisponibilidade,
+rejeição/cancelamento ou falha mantêm conteúdo local com feedback genérico e retry
+explícito; sem fallback, envio ou tentativa automáticos. Nenhuma cópia do perfil,
+leitura de agenda, permissão de contatos, conta/telemetria/backend ou log pessoal.
+
+Validação usa libphonenumber-js1.13.15/max offline e não comprova pessoa/conta
+WhatsApp. Consultas mínimas Android VIEW/scheme whatsapp e iOS
+LSApplicationQueriesSchemes configuradas; testes com mocks/fixtures, nenhum
+prebuild/build local. Avisos MIT/Apache integrais em docs/third-party-notices,
+pareados com APK/simulador pelo workflow remoto. Licenças de outras dependências
+e auditoria #51 não estão aprovadas por isso.
+
+40 testes específicos e três de licenças/workflow verificados, incluindo SQLite
+real do Node, componentes, Linking e rotas. Evidência em 2026-10-13:243 testes
+Jest/40 suítes, lint/typecheck,Doctor21/21,49 tooling e validador aprovados;
+review concluída sem regressão impeditiva identificada. T017 permanece pendente: handoff
+nativo real, leitores de tela/foco/ampliação/teclado, offline Expo e backups.
+Builds no SHA integrado não equivalem a testes funcionais no aparelho; não foi
+operado WhatsApp nem usado contato/conteúdo pessoal do Samsung.
