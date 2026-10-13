@@ -12,7 +12,7 @@ Na inspeção inicial não havia aplicativo. A [Issue #41](https://github.com/No
 
 ## Stack
 
-**Framework e runtime**: Expo SDK 57 (`expo` 57.0.24), React Native 0.86.3 e React 19.2.3; TypeScript 6.0.3 strict; Hermes padrão confirmado nos projetos gerados por CNG e nos bundles `.hbc` exportados. Expo Router 57.0.22. SDK 58 não faz parte deste bootstrap; upgrades exigem avaliação própria.
+**Framework e runtime**: Expo SDK 57 (`expo` 57.0.28), React Native 0.86.3 e React 19.2.3; TypeScript 6.0.3 strict; Hermes padrão confirmado nos projetos gerados por CNG e nos bundles `.hbc` exportados. Expo Router 57.0.26. Os cinco patches Expo/Jest foram alinhados com Expo Doctor antes da integração da US-001; SDK 58 permanece fora do escopo.
 
 **Ambiente**: Node.js 24.21.0 LTS e npm 11.19.0 (bundled), fixados em `.nvmrc`/CI; usar `package-lock.json` e `npm ci`. Node 24 excede o mínimo 22.13.x publicado pelo Expo SDK 57; validar Expo Doctor e builds no bootstrap. Se houver incompatibilidade comprovada com a cadeia RN/Expo, fallback técnico Node 22.23.3 LTS com npm 10.9.9. `npx expo install` alinha módulos ao SDK.
 
