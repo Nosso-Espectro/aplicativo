@@ -3,7 +3,7 @@ milestone: 9
 priority: P0
 tag: m001-comunicacao-visual-caa
 status: draft
-ready_stories: ["US-041", "US-001", "US-002", "US-003", "US-004"]
+ready_stories: ["US-041", "US-001", "US-002", "US-003", "US-004", "US-005"]
 source_checked: 2026-09-23
 ---
 
