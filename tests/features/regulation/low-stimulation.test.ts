@@ -17,7 +17,7 @@ it.each([
 });
 it('rejects ambiguous/corrupted flags instead of enabling a mode through coercion', () => {
   for (const input of [null, {}, { enabled: 1 }, { enabled: 'false' }]) {
-    expect(() => normalizedLowStimulationPreference(input as LowStimulationPreference)).toThrow('Invalid display preference.');
+    expect(() => normalizedLowStimulationPreference(input as unknown as LowStimulationPreference)).toThrow('Invalid display preference.');
   }
   expect(() => lowStimulationPresentation(defaultLowStimulationPreference, 'false' as unknown as boolean)).toThrow('Invalid motion preference.');
 });
