@@ -3,15 +3,15 @@ milestone: 19
 priority: P1
 tag: m011-sons-para-regulacao
 status: draft
-ready_stories: []
-source_checked: 2026-09-23
+ready_stories: ["US-027"]
+source_checked: 2026-10-13
 ---
 
 # Sons para Regulação
 
 Milestone GitHub: [P1 — Sons para Regulação](https://github.com/Nosso-Espectro/aplicativo/milestone/19) (número 19).
 
-Estado consultado: aberta; todas as histórias abaixo estão abertas. Especificação em revisão, não implementação concluída.
+Milestone e Issues #27/#28 abertas. US-027 implementada/testada localmente na branch própria, aguardando PR/CI/integração; gate nativo pendente. US-028 conserva política própria de término e permanece fora dessa implementação.
 
 ## Contexto
 
@@ -91,11 +91,15 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Implementações de outras milestones, requisitos não rastreados e decisões funcionais listadas como pendentes. Nesta execução apenas documentação e ferramentas de engenharia; nenhuma funcionalidade é implementada.
+US-027 não implementa temporizador de sons #28, painel #10/cartão #12 ou navegação inferior. Sem gravação/microfone, histórico, streaming, backend, IA, diagnóstico, sincronização ou autoplay após processo encerrado. Não alterar ajustes globais de volume/DND/segurança do aparelho.
 
 ## Dependências funcionais
 
-Não há dependência entre milestones explicitamente exigida pelas histórias. A fundação técnica é tratada no plano.
+US-027 entrega o destino real de sons necessário ao painel #10. Contato #13,
+modo #9 e timer visual #17 já estão integrados; não simulam nem entregam o painel.
+Prioridade da voz CAA #3 exige coordenação restrita com o TTS local existente,
+sem copiar frases/perfil/contato para metadados de mídia. Sequência dos destinos
+registrada na [origem](https://github.com/Nosso-Espectro/aplicativo/issues/10#issuecomment-6155218484), sem alterar prioridades.
 
 ## Casos de erro
 
@@ -105,8 +109,19 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-SOM-01 — Reprodução em segundo plano aparece na milestone, mas não tem critérios nas Issues #27/#28. Definir plataformas, interrupções e Issue responsável.
-- Q-SOM-02 — Definir arquivos/licenças dos quatro sons, comportamento de término e interação com TTS (#27/#28). Não iniciar áudio automaticamente.
+- Q-SOM-01 — Resolvida para #27: atribuir reprodução contínua em segundo plano Android/iOS a esta história, após início explícito. Opção inicialmente desativada; ativação exige confirmação de que pode continuar com tela bloqueada e no modo silencioso. Cancelar confirmação mantém desligado. Sem opção, respeitar silêncio/pausar ao background sem retomar automaticamente ao foreground. Dentro dela, capacidade nativa/controles de mídia e política de foco/interrupção do sistema, sem impor continuidade ou prometer sobreviver a force-stop/reboot. Metadados genéricos fixos Som contínuo/TEAr, sem dados pessoais/artwork remoto; pausa explícita não se desfaz automaticamente.
+- Q-SOM-02 — Resolvida para #27: quatro sinais WAV locais distintos, originais/procedurais via DSP versionado do FFmpeg, Ruído branco/Ruído marrom/Chuva sintetizada/Oceano sintetizado. Registrar parâmetros/origem/checksums e Apache2.0 do projeto; não alegar gravação real ou usar voz/amostras de terceiros. Um som por vez, loop nativo, seleção vazia e volume local25% inicialmente; slider0–100 permite zero sem retomar. Selecionar/trocar pausa anterior e não toca novo. Não restaurar sessão para autoplay. TTS tem prioridade: pausar ambiente antes de falar, não retomar ao fim e impedir início enquanto leitura própria ativa, liberando coordenação em conclusão/cancelamento/erro/unmount. Término/timer #28 ainda precisa de refinamento próprio.
+
+Refinamento original e complemento de controle sob delegação explícita do usuário:
+[origem](https://github.com/Nosso-Espectro/aplicativo/issues/27#issuecomment-6156132540)
+e [opção de segundo plano](https://github.com/Nosso-Espectro/aplicativo/issues/27#issuecomment-6156348889).
+Preservar os três critérios originais. Estado de reprodução vem do engine, não de
+uma chamada de método; pedidos antigos/cancelados não iniciam áudio tardiamente.
+Falhas/arquivo ausente têm feedback genérico/retry explícito/sem duplicatas,
+escolhas preservadas e comunicação utilizável. Inicializar capacidade de áudio
+somente sob ação da pessoa, conter falhas no módulo. Volume inicial não é garantia
+de segurança auditiva nem indicação clínica. Alvos48dp/texto escalável/estado não
+só por cor, modo #9 preservado. Nenhuma task concluída pelo refinamento.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 

@@ -75,6 +75,7 @@ describe('US-003 explicit speech controls (RF-009/RF-011)', () => {
     speech.isAvailable.mockImplementation(() => new Promise<boolean>((resolve) => { available = resolve; }));
     render(<SpeechControls text="Ajuda" />);
     fireEvent.press(screen.getByRole('button', { name: 'Ler frase' }));
+    await act(async () => {});
     fireEvent.press(screen.getByRole('button', { name: 'Interromper leitura' }));
     await act(async () => { available(true); });
     expect(speech.speak).not.toHaveBeenCalled();
