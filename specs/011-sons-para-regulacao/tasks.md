@@ -1,6 +1,6 @@
 # Tasks — Sons para Regulação
 
-Milestone #19: [spec.md](spec.md) e [plan.md](plan.md). US-027 Ready após refinamento vivo; tasks permanecem pendentes até comportamento validado. US-028 não pertence à branch #27.
+Milestone #19: [spec.md](spec.md) e [plan.md](plan.md). US027 entregue pelo PR71, gate T005 pendente. US028 implementada e validada localmente; PR/CI/merge ainda devem confirmar entrega, gate T011 pendente.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -24,8 +24,11 @@ sem declarar conformidade completa ou execução em aparelho pelos mocks.
 
 ## US-028 — Issue #28
 
-- [ ] T006 [US-028] Em `src/features/regulation-sounds/sound-timer`, atender RF-004 (critério 1 de #28): Deve ser possível definir uma duração. Verificar com o cenário correspondente no PR.
-- [ ] T007 [US-028] Em `src/features/regulation-sounds/sound-timer`, atender RF-005 (critério 2 de #28): Ao final, a reprodução deve ser encerrada de forma previsível. Verificar com o cenário correspondente no PR.
-- [ ] T008 [US-028] Em `src/features/regulation-sounds/sound-timer`, atender RF-006 (critério 3 de #28): O usuário deve poder cancelar o temporizador sem interromper imediatamente o áudio, se desejar. Verificar com o cenário correspondente no PR.
-- [ ] T009 [US-028] Adicionar testes de comportamento de RF-004, RF-005, RF-006 em `tests/features/regulation-sounds/sound-timer`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
-- [ ] T010 [US-028] Revisar RNF-001 a RNF-004 na interface/dados de #28, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+- [x] T006 [US-028] Modelo puro de duração inteira1-180/draft15/presets5,15,30,60/prazo corrido/revisão/relógio seguro e UI de aplicação explícita sem autoplay (RF-004).
+- [x] T007 [US-028] Integrar prazo/owner/slot ao controller/provider/AppState: expirar invalida intent e pausa alvo, sucesso só por status nativo; falha/retry, factory/status antigos, clock inválido/regressivo/overflow, sem auto-retomar. Timer requer background desligado e impede habilitação até cancelamento; pause ao background sem prometer JS suspenso (RF-005).
+- [x] T008 [US-028] Cancelar somente timer sem pause/play/configure/ganho; invalidar prazo por troca/player destruído/dispose, preservar reprodução quando cancelado, comandos/reaplicar sem duplicatas (RF-006).
+- [x] T009 [US-028] Testes reais modelo/controller/provider/router: duração/fronteiras/prazo/pausa/TTS, cancelamento independente, stale/reaplicar/troca/factory/status tardios, erro de pause/clock/overflow, AppState/guardas/retornos/mode9; regressões sons/voz/timer/Pomodoro/CAA.
+- [x] T010 [US-028] Revisar RNF-001 a RNF-004/privacidade/offline/clean-code/diff e executar Jest serial/lint/tipos/Doctor/tooling/validador/CI leve antes integração. Tasks só após comportamento; sem DB/rede/deps/permissões/estímulos/histórico novos.
+- [ ] T011 [US-028] Gate posterior no SHA integrado Android/iOS: parada/pausa/erro reais, background/lock/processo morto/relógio/offline/TTS e readers/foco/ampliação/insets/alvos/contraste. Mocks/build não comprovam gate; sem instalação automática.
+
+Evidência local US028:36 testes novos/277 relacionados23/694 Jest89, lint/tipos sem warnings,Doctor21/21,56tooling,validador/diffcheck verdes. Revisão de código/privacidade/offline e acessibilidade local no plano, sem conformidade assistiva/nativa por mocks. T010 verificado com PR92 CI38570541825 SUCCESS1m31s no headfa76729; nativos SKIPPED, não builds. T011 permanece pendente. Nenhuma dependência/permissão/DB/rede/voz/som/vibração/notificação nova, sem alteração de configuração global ou operação de aparelho/host. Esta atualização documental exige novo CI antes de integrar.

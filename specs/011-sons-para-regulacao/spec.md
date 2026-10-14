@@ -3,15 +3,26 @@ milestone: 19
 priority: P1
 tag: m011-sons-para-regulacao
 status: draft
-ready_stories: ["US-027"]
-source_checked: 2026-10-13
+ready_stories: ["US-027", "US-028"]
+source_checked: 2026-10-14
 ---
 
 # Sons para Regulação
 
 Milestone GitHub: [P1 — Sons para Regulação](https://github.com/Nosso-Espectro/aplicativo/milestone/19) (número 19).
 
-Milestone e Issues #27/#28 abertas. US-027 implementada/testada localmente na branch própria, aguardando PR/CI/integração; gate nativo pendente. US-028 conserva política própria de término e permanece fora dessa implementação.
+US-027 entregue pelo PR71. US-028 implementada e validada localmente, aguardando PR/CI/integração. Gates nativos pendentes, nenhuma milestone/release pronta.
+
+## Refinamento US-028
+
+Recomendação registrada na [Issue28](https://github.com/Nosso-Espectro/aplicativo/issues/28#issuecomment-6168837850) sob delegação funcional humana; critérios originais preservados.
+
+- Duração inteira de 1 a 180 minutos, draft inicial15, presets5/15/30/60 e controle numérico acessível. Draft não inicia áudio nem arma prazo; Aplicar temporizador é explícito e requer som selecionado/player carregado confirmado, sem operação pendente.
+- Prazo corrido desde aplicar, sem soma de ticks; pausa manual/interrupção/TTS não estende prazo nem retoma áudio. Expiração invalida intent/pedidos antigos e pausa apenas o player vinculado; sucesso somente após status nativo confirmar parada. Falha genérica e retry humano, sem alerta sonoro/vibração/notificação.
+- Cancelar remove somente prazo/callbacks, sem pause/play/configure/ganho. Troca de som, erro que destrói player e dispose invalidam prazo anterior. Revisão/identidade impedem callback antigo de parar som novo; reaplicar explícito e sem duplicatas.
+- Timer somente com segundo plano desativado nesta versão. Preferência ligada exige desligamento voluntário antes de aplicar, sem mudança silenciosa. Prazo ativo impede habilitar background até cancelamento. Ao sair do foreground, pausa pelo controle existente; prazo segue corrido e reconcilia ao retorno sem auto-retomar. Não prometer parada exata com JS suspenso/processo morto: áudio temporizado não continua em background. Reprodução contínua em background de #27 permanece sem timer.
+- Relógio inválido/regressivo/overflow invalida timer e solicita pausa segura, preservando escolha/draft/erro recuperável. Memória efêmera; sem DB/histórico/rede/logs/deps/permissões ou ajustes globais novos. Timer visual/Pomodoro/CAA e prioridade de voz preservados.
+- Gate real posterior inclui parada/pausa/escuta/background/lock/processo morto/offline e recursos assistivos Android/iOS. Mocks/build não comprovam gate; nenhum aparelho autorizado por refinamento.
 
 ## Contexto
 
@@ -108,6 +119,8 @@ Arquivo indisponível, falha de reprodução e interrupção do áudio; cancelam
 São cenários derivados dos critérios e da DoD, não novas funcionalidades. As respostas ainda indefinidas devem ser acordadas antes da implementação correspondente.
 
 ## Questões em aberto
+
+- Q-SOM-03 — Resolvida para #28 pelo refinamento acima: duração/prazo corrido, cancelamento independente, identidade/revisão e limite foreground sem scheduler novo. Término durante suspensão não é prometido; extensão com parada nativa em background requer backlog/refinamento próprio antes de ampliar o escopo.
 
 - Q-SOM-01 — Resolvida para #27: atribuir reprodução contínua em segundo plano Android/iOS a esta história, após início explícito. Opção inicialmente desativada; ativação exige confirmação de que pode continuar com tela bloqueada e no modo silencioso. Cancelar confirmação mantém desligado. Sem opção, respeitar silêncio/pausar ao background sem retomar automaticamente ao foreground. Dentro dela, capacidade nativa/controles de mídia e política de foco/interrupção do sistema, sem impor continuidade ou prometer sobreviver a force-stop/reboot. Metadados genéricos fixos Som contínuo/TEAr, sem dados pessoais/artwork remoto; pausa explícita não se desfaz automaticamente.
 - Q-SOM-02 — Resolvida para #27: quatro sinais WAV locais distintos, originais/procedurais via DSP versionado do FFmpeg, Ruído branco/Ruído marrom/Chuva sintetizada/Oceano sintetizado. Registrar parâmetros/origem/checksums e Apache2.0 do projeto; não alegar gravação real ou usar voz/amostras de terceiros. Um som por vez, loop nativo, seleção vazia e volume local25% inicialmente; slider0–100 permite zero sem retomar. Selecionar/trocar pausa anterior e não toca novo. Não restaurar sessão para autoplay. TTS tem prioridade: pausar ambiente antes de falar, não retomar ao fim e impedir início enquanto leitura própria ativa, liberando coordenação em conclusão/cancelamento/erro/unmount. Término/timer #28 ainda precisa de refinamento próprio.

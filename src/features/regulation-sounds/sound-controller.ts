@@ -1,4 +1,5 @@
 import { initialSoundSettings, normalizedSoundSettings, selectSoundSettings, withBackgroundPlayback, withSoundVolume, type SoundId, type SoundSettings } from './sound-settings';
+import { initialSoundTimer, reduceSoundTimer, type SoundTimer } from './sound-timer';
 
 export type SoundStatus = { loaded: boolean; playing: boolean; buffering: boolean; failed: boolean };
 export type SoundEngine = {
@@ -16,11 +17,12 @@ export type SoundState = {
   phase: 'idle' | 'loading' | 'playing' | 'paused' | 'stopping' | 'error';
   pending: boolean;
   speechActive: boolean;
+  timer: SoundTimer;
 };
 type Slot = { engine: SoundEngine | null; status: SoundStatus | null };
 
-export function createSoundController(factory: SoundEngineFactory) {
-  let state: SoundState = { settings: normalizedSoundSettings(initialSoundSettings), phase: 'idle', pending: false, speechActive: false };
+export function createSoundController(factory: SoundEngineFactory, clock: () => number = () => Date.now()) {
+  let state: SoundState = { settings: normalizedSoundSettings(initialSoundSettings), phase: 'idle', pending: false, speechActive: false, timer: initialSoundTimer() };
   const listeners = new Set<() => void>();
   const speechWaits = new Set<() => void>();
   let slot: Slot | null = null;
@@ -32,6 +34,50 @@ export function createSoundController(factory: SoundEngineFactory) {
   let awaitingPlayback = false;
   let loadWatch: ReturnType<typeof setTimeout> | null = null;
   let modeQueue: Promise<void> = Promise.resolve();
+  let timerSlot: Slot | null = null;
+  let timerWatch: ReturnType<typeof setTimeout> | null = null;
+  let stopWatch: ReturnType<typeof setTimeout> | null = null;
+
+  function now() { try { return clock(); } catch { return NaN; } }
+  function clearTimerWatch() {
+    if (timerWatch !== null) clearTimeout(timerWatch);
+    timerWatch = null;
+  }
+  function cancelTimer(expectedRevision: number) {
+    if (disposed || expectedRevision !== state.timer.revision) return false;
+    clearTimerWatch(); clearStopWatch(); timerSlot = null;
+    update({ timer: reduceSoundTimer(state.timer, { type: 'cancel', expectedRevision }) });
+    return true;
+  }
+  function clearStopWatch() {
+    if (stopWatch !== null) clearTimeout(stopWatch);
+    stopWatch = null;
+  }
+  function scheduleTimer() {
+    clearTimerWatch();
+    if (!foreground || state.timer.status !== 'armed') return;
+    const target = timerSlot; const expectedRevision = state.timer.revision;
+    timerWatch = setTimeout(() => {
+      if (disposed || target !== slot || target !== timerSlot || expectedRevision !== state.timer.revision) return;
+      reconcileTimer();
+    }, Math.min(1000, state.timer.remainingMs));
+  }
+  function reconcileTimer() {
+    if (disposed || state.timer.status !== 'armed' || !timerSlot || timerSlot !== slot) return;
+    const timer = reduceSoundTimer(state.timer, { type: 'tick', nowMs: now(), expectedRevision: state.timer.revision });
+    update({ timer });
+    if (timer.status === 'stopping' || timer.status === 'error') {
+      clearTimerWatch();
+      pause();
+      // A missing native acknowledgement is an error, not a confirmed stop.
+      if (timer.status === 'stopping' && state.timer.revision === timer.revision) {
+        const revision = state.timer.revision; const target = timerSlot;
+        stopWatch = setTimeout(() => {
+          if (!disposed && target === slot && target === timerSlot && state.timer.revision === revision && state.timer.status === 'stopping') fail();
+        }, 3000);
+      }
+    } else scheduleTimer();
+  }
 
   function update(patch: Partial<SoundState>) {
     if (disposed) return;
@@ -55,11 +101,14 @@ export function createSoundController(factory: SoundEngineFactory) {
   }
   function fail() {
     clearWatch();
+    clearTimerWatch(); clearStopWatch(); timerSlot = null;
+    const timer = ['armed', 'stopping', 'error'].includes(state.timer.status)
+      ? reduceSoundTimer(state.timer, { type: 'failed', expectedRevision: state.timer.revision }) : state.timer;
     generation++;
     intent = false;
     awaitingPlayback = false;
     destroy();
-    update({ phase: 'error', pending: false });
+    update({ phase: 'error', pending: false, timer });
   }
   function observe(candidate: Slot, status: SoundStatus) {
     if (disposed || candidate !== slot) return;
@@ -77,6 +126,10 @@ export function createSoundController(factory: SoundEngineFactory) {
       return;
     }
     const sounding = status.playing && status.loaded && !status.buffering;
+    if (!status.playing && candidate === timerSlot && state.timer.status === 'stopping') {
+      clearTimerWatch(); clearStopWatch(); timerSlot = null;
+      update({ timer: reduceSoundTimer(state.timer, { type: 'finished', expectedRevision: state.timer.revision }) });
+    }
     if (sounding) { awaitingPlayback = false; clearWatch(); }
     update({ pending: state.pending && !sounding,
       phase: sounding ? 'playing' : ((!status.loaded || status.buffering || awaitingPlayback) && intent ? 'loading' : 'paused') });
@@ -109,15 +162,30 @@ export function createSoundController(factory: SoundEngineFactory) {
   return {
     getSnapshot: () => state,
     subscribe(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener); }; },
+    applyTimer(minutes: number, expectedRevision: number) {
+      if (disposed || expectedRevision !== state.timer.revision || state.pending || state.speechActive || !foreground
+        || state.settings.backgroundPlayback || !slot?.engine || !slot.status?.loaded || !['playing', 'paused'].includes(state.phase)) return false;
+      const timer = reduceSoundTimer(state.timer, { type: 'arm', minutes, nowMs: now(), expectedRevision });
+      if (timer === state.timer) return false;
+      clearTimerWatch(); timerSlot = slot; update({ timer });
+      if (timer.status === 'error') { pause(); return false; }
+      scheduleTimer(); return true;
+    },
+    cancelTimer,
     select(id: SoundId) {
       if (disposed) return;
       const settings = selectSoundSettings(state.settings, id);
+      cancelTimer(state.timer.revision);
       pause();
       destroy();
       update({ settings, phase: 'idle', pending: false });
     },
     async play() {
+      const timerWasArmed = state.timer.status === 'armed';
+      reconcileTimer();
+      if (state.timer.status === 'stopping' || (timerWasArmed && state.timer.status !== 'armed')) return;
       if (!permitted() || state.pending || slot?.status?.playing || (state.phase === 'loading' && intent) || state.settings.selectedSoundId === null) return;
+      if (['finished', 'error'].includes(state.timer.status)) cancelTimer(state.timer.revision);
       const token = ++generation;
       intent = true;
       awaitingPlayback = true;
@@ -153,7 +221,7 @@ export function createSoundController(factory: SoundEngineFactory) {
       try { slot?.engine?.volume(value); update({ settings }); } catch { fail(); }
     },
     async background(enabled: boolean) {
-      if (disposed || state.pending) return;
+      if (disposed || state.pending || (enabled && ['armed', 'stopping'].includes(state.timer.status))) return;
       const settings = withBackgroundPlayback(state.settings, enabled);
       pause();
       if (!slot?.engine) { update({ settings }); return; }
@@ -168,6 +236,7 @@ export function createSoundController(factory: SoundEngineFactory) {
     foreground(active: boolean) {
       foreground = active;
       if (!active && !state.settings.backgroundPlayback) pause();
+      if (active) reconcileTimer(); else clearTimerWatch();
     },
     beginSpeech() {
       speechLeases++;
@@ -202,6 +271,7 @@ export function createSoundController(factory: SoundEngineFactory) {
     },
     dispose() {
       if (disposed) return;
+      cancelTimer(state.timer.revision);
       pause();
       disposed = true;
       generation++;

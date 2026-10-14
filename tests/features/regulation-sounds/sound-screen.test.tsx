@@ -15,7 +15,7 @@ beforeEach(() => {
   factory.mockImplementation(async (_id, changed) => { callback = changed; return engine; });
   jest.spyOn(AppState, 'addEventListener').mockImplementation((_type, changed) => { appEvent = changed; return { remove: jest.fn() }; });
 });
-afterEach(() => { jest.restoreAllMocks(); });
+afterEach(() => { jest.restoreAllMocks(); jest.useRealTimers(); });
 async function open() { const view = render(<RegulationSoundsProvider factory={factory}><RegulationSoundsScreen onClose={close} /></RegulationSoundsProvider>); await act(async () => { appEvent('active'); }); return view; }
 async function press(label: string) { await act(async () => { fireEvent.press(screen.getByRole('button', { name: label })); }); }
 async function select(label = 'Ruído branco') { await act(async () => { fireEvent.press(screen.getByRole('radio', { name: label })); }); }
@@ -69,4 +69,39 @@ it('contains missing media capability, keeps return available and retries withou
 it('keeps communication return usable even without a mounted audio provider', () => {
   render(<RegulationSoundsScreen onClose={close} />); fireEvent.press(screen.getByRole('button', { name: 'Voltar ao quadro' }));
   expect(close).toHaveBeenCalled(); expect(screen.queryByRole('radio')).toBeNull(); expect(factory).not.toHaveBeenCalled();
+});
+it('keeps timer drafts independent and rejects invalid duration without autoplay', async () => {
+  await open(); await press('5 minutos para o som'); expect(factory).not.toHaveBeenCalled();
+  await select(); await press('Reproduzir som');
+  fireEvent.changeText(screen.getByLabelText('Duração do temporizador do som em minutos'), '0');
+  await press('Aplicar temporizador do som'); expect(screen.getByText('Informe de 1 a 180 minutos inteiros.')).toBeOnTheScreen();
+  expect(screen.getByText('Sem temporizador ativo.')).toBeOnTheScreen();
+});
+it('arms a timer explicitly, keeps cancel separate and preserves background preference', async () => {
+  await open(); await select(); await press('Reproduzir som'); await press('Aplicar temporizador do som');
+  expect(screen.getByText('Temporizador ativo.')).toBeOnTheScreen();
+  expect(screen.getByLabelText('Continuar som em segundo plano')).toBeDisabled();
+  jest.mocked(engine.pause).mockClear(); await press('Cancelar temporizador sem pausar som');
+  expect(engine.pause).not.toHaveBeenCalled(); expect(screen.getByText('Reproduzindo')).toBeOnTheScreen();
+  expect(screen.getByLabelText('Continuar som em segundo plano')).not.toBeDisabled();
+});
+it('requires voluntary background opt-out before applying without changing the flag silently', async () => {
+  await open(); await background(); await press('Confirmar segundo plano'); await select(); await press('Reproduzir som');
+  expect(screen.getByRole('button', { name: 'Aplicar temporizador do som' })).toBeDisabled();
+  expect(screen.getByLabelText('Continuar som em segundo plano').props.value).toBe(true);
+  expect(screen.getByText('Desligue segundo plano antes de aplicar um temporizador.')).toBeOnTheScreen();
+});
+it('shows end only after native stop and keeps zero/short remaining time accessible without announcements per second', async () => {
+  jest.useFakeTimers({ now: 10000 }); await open(); await select(); await press('Reproduzir som');
+  fireEvent.changeText(screen.getByLabelText('Duração do temporizador do som em minutos'), '1'); await press('Aplicar temporizador do som');
+  expect(screen.getByLabelText('Tempo restante do som: 1 minutos e 0 segundos').props.accessibilityLiveRegion).toBeUndefined();
+  act(() => jest.advanceTimersByTime(60000)); expect(screen.getByText('Temporizador encerrado. Som pausado.')).toBeOnTheScreen();
+  expect(screen.getByText('Pausado')).toBeOnTheScreen(); expect(engine.play).toHaveBeenCalledTimes(1);
+});
+it('reports timer stop failure without claiming end or exposing native details', async () => {
+  jest.useFakeTimers({ now: 10000 }); await open(); await select(); await press('Reproduzir som');
+  fireEvent.changeText(screen.getByLabelText('Duração do temporizador do som em minutos'), '1'); await press('Aplicar temporizador do som');
+  jest.mocked(engine.pause).mockImplementation(() => { throw new Error('synthetic private pause'); });
+  act(() => jest.advanceTimersByTime(60000)); expect(screen.queryByText('Temporizador encerrado. Som pausado.')).toBeNull();
+  expect(screen.getByText('Temporizador interrompido.')).toBeOnTheScreen(); expect(screen.queryByText('synthetic private pause')).toBeNull();
 });
