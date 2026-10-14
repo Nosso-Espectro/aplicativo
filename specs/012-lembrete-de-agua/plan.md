@@ -6,6 +6,8 @@ Spec: [spec.md](spec.md). Milestone #20; Issues #29, #30. Plano proposto, sujeit
 
 ### Fundação em desenvolvimento
 
+CI leve PR93 run38581241689 SUCCESS1m18s no head d1712d413c13e0b62560340c80175f3bce4d68d0, após revisão local; Android/iOS SKIPPED, não builds. T006 verificada. Mudança documental de evidência também requer CI verde no head final antes de integrar. Nenhuma milestone/release pronta.
+
 Checks locais finais: 57 testes novos/5 suítes hidratação, 751 Jest/94 suítes completas, lint e tipos sem warnings, Doctor21/21, 56 testes tooling, validador/diffcheck verdes. Revisão local de escopo/privacidade/offline/erros/ownership sem achado impeditivo restante; CI antes de integração ainda pendente. APIs nativas simuladas, persistência SQLiteNode real, não SQLiteExpo em aparelho. Textos genéricos e controles48dp/escaláveis/retorno/mode9 revisados, sem declarar validação assistiva integral. T012 e testes de delivery/cancel/canais/backups/reboot/background/aparelho pendentes; não houve instalação/build local/host/atualização da prévia8093.
 
 Modelo/configuração e SQLite privado schema1 implementados com estado inicial disabled60, intervalo30-720, revisão safe e journal activate/cancel. Preparação grava ID antes do agendamento; confirmação usa ID/revisão exatos e readback antes de publicar, rollback preserva journal em falha de commit. Cancelamento guarda também ID planejado e nova revisão toma posse de recuperação, impedindo confirmação antiga. Salvar intervalo somente paused/disabled e sem journal; UI futura orienta Pausar/Retomar humanos, conforme complemento registrado na Issue29.
