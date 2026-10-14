@@ -4,6 +4,21 @@ Spec: [spec.md](spec.md). Milestone #21; Issues #31, #32. Plano proposto, sujeit
 
 ## Plano vigente US031
 
+Retomada após97: PR98 MERGED/main2bb0ec7, PRCI38612713569SUCCESS1min53s
+e mainpush38613136392SUCCESS2min10s com Tests serial/Doctor. Main95FAIL
+continua histórico, contenção não é causa comprovada. Branch31 recebeu
+origin/main por merge e7e1618 em árvore limpa/sem conflitos, sem reescrever
+histórico ou reimplementar modelo/provider/UI. Repetir checks neste estado
+antes T005/PR/DoD; registros de bloqueio95/97 abaixo são históricos.
+
+Checks pós-merge97:28 novos/204relacionados17/857Jest99 serial PASS,
+tipos/lint sem warnings, Doctor21/21,56tooling/validadordiffcheck PASS.
+Revisão manual de modelo/provider/tela/rota/testes/RF-RNF/privacidade/offline:
+nenhuma regressão impeditiva identificada. Diff contra main somente meditação
+e atalho drawer/documentos13, sem pacote/config/permissão/banco/voz alterado.
+T005 aguarda PR/CI último head; T011 assistivo/reflow/foco/insets/clockbg
+e offline em binário real permanece PENDENTE. Preview8093/aparelho intactos.
+
 Atualização após manutenção95: PR96 MERGED/main2af9db2 em2026-10-14T17:53Z,
 CI38610210270SUCCESS1min15s e Doctor21/21 da manutenção. Branch31 recebeu
 origin/main por merge d5471c9 somente árvore limpa, sem conflitos/rebase/force.
