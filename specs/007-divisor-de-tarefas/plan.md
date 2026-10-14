@@ -4,11 +4,16 @@ Spec: [spec.md](spec.md). Milestone #15; Issues #19, #20. Plano proposto, sujeit
 
 ## Stack
 
-Inspeção em 2026-09-23: repositório sem código de aplicação, package.json, dependências ou ferramentas de build/teste. React Native e primeira versão sem backend são diretrizes explícitas do projeto, ainda não implementadas. Expo, linguagem, navegação e biblioteca de persistência não foram escolhidos. Não assumir stack web, banco ou servidor.
+Inspeção em 2026-10-14: Expo57.0.28/RN0.86.3/React19.2.3/TypeScript strict,
+Router/SQLite/Jest-RNTL/SQL real do Node existentes, Node24.21.0/npm11.19.0.
+Main2379922 inclui timer/avisos locais; nenhuma dependência/permissão nova para19.
+Builds somente remotos, nunca prebuild/Gradle/Xcode locais.
 
 ## Arquitetura atual
 
-Somente README e licença antes desta preparação. Não há componentes, modelos ou serviços existentes para reutilizar. Os caminhos abaixo são propostas de organização e não arquivos já criados.
+CAA/rotinas/perfil/apoio/regulação/timer/sons integrados. Reusar padrões de
+editor/navegação/SQLite privado/revisão/erro, sem editar dados ou banco de rotinas.
+Subtarefas não são execução de rotina; checkbox/progresso pertencem só a19.
 
 ## Estratégia
 
@@ -25,13 +30,26 @@ Módulo proposto: `src/features/task-breakdown/`.
 
 ## Modelo de dados
 
-Tarefa (identificador, título, subtarefas ordenadas e conclusão); modelo com sequência reutilizável. Instâncias criadas do modelo precisam de identidade independente.
-
-Representação física, tipos e migrações serão definidos após a escolha técnica; não instalar banco por antecipação.
+US-019: tarefa {id,title,revision,steps:[{id,title,completed}]} com IDs locais
+opacos/estáveis, texto livre obrigatório trim não vazio e bool estrito. Lista
+vazia inicialmente, tarefa sem etapas válida/progresso0de0/0%, sem falso sucesso.
+Subir/descer conserva IDs/conteúdo/status, apagar uma etapa recalcula somente
+essa tarefa, conclusão é reversível. Sem coleta de histórico/timestamps por
+conveniência, diagnóstico, mídia ou transformação automática.
+Identidades seguem o padrão local existente e não são credenciais; tests podem
+injetar IDs sintéticos. Cópias/identidades de modelos pertencem a20 e não serão
+criadas por antecipação. Modelo puro deve validar/clonar inputs para que draft
+não altere a versão confirmada.
 
 ## Persistência
 
-Persistir progresso (#19) e modelos reutilizáveis (#20); duplicar conteúdo sem vínculo mutável com o modelo.
+US-019: SQLite privado tear-task-breakdown.db schema1, tarefas/etapas ordenadas,
+revisão segura, fila/transação/readback/rollback/future-schema. CRUD de tarefa,
+edição completa e checkbox de progresso confirmam somente após commit. Alvo
+removido/revisão antiga recusados, sem resurrect por save antigo; erro/retry
+mantém draft/versão confirmada e preserva outros módulos. SQLite Node/reabertura
+testam persistência local; gate precisa SQLite Expo/offline/backups reais.
+Modelos/cópias independentes de20 têm persistência própria a refinar depois.
 
 ## Fluxos principais
 
@@ -59,23 +77,94 @@ Aplicar RNF-002 e RNF-004. Usar dados sintéticos nos testes; evitar dados pesso
 - Usar testes unitários para transformações de estado/dados; componentes para interação e acessibilidade; integração para persistência/capacidades nativas quando pertinentes.
 - Exercitar os casos de erro do spec e regressões das dependências reais.
 - Verificar em dispositivo/simulador os fluxos que dependem de voz, áudio, permissões ou notificações; mocks isolados não comprovam suporte nativo.
-- Selecionar E2E para fluxos críticos quando a infraestrutura existir. Executar testes, lint, typecheck quando aplicável e build antes de concluir.
+- Selecionar E2E para fluxos críticos quando a infraestrutura existir. Executar checks leves por Issue; builds somente remotos na main integrada, após disponibilidade segura do host.
 
-Hoje não existem runner, scripts de qualidade ou build do aplicativo. A validação da documentação não equivale a testes do produto e não habilita release.
+Jest serial,lint/typecheck,Doctor21/21,56tooling/validador/review e CI leve remoto
+antes da entrega. Nenhum teste alegado por esta preparação; tasks só após executar.
+Gate nativo/assistivo/offline continua necessário, sem release automática.
 
 ## Dependências técnicas
 
-Base React Native ainda a inicializar. Selecionar somente as bibliotecas necessárias aos critérios da história, documentando suporte offline, plataformas e permissões. Integrações funcionais estão em spec.md; reuso de temporizador/áudio pode ser avaliado quando houver código, sem criar framework antecipado.
+Stack e APIs locais existentes suficientes; sem nova biblioteca/framework.
+Rota própria e comando no quadro, lista/editor/retorno previsíveis. Checkbox e
+subir/descer explícitos, alvos48dp/texto escalável/contraste/modo9 preservados.
+Nenhum player/timer/aviso ou configuração global de outro módulo.
 
 ## Riscos
 
 Tarefa sem etapas, falha ao salvar progresso e modelo removido; cópia não deve modificar original (#19/#20).
 
-As questões em aberto da spec, a ausência de plataforma-alvo definida e a falta de comandos de qualidade impedem afirmar prontidão de implementação/release. Ver [auditoria](../../docs/backlog-audit.md).
+US-019 Ready após refinamento na Issue19; questões de modelos/catálogo da20
+continuam abertas e impedem afirmar milestone completa. Segurança61/auditoria51,
+builds e consentimento de instalação permanecem no monitor separado. Não operar
+celular, dados pessoais ou scripts autônomos não revisados para validar19.
 
 ## Decisões arquiteturais
 
 - Diretriz confirmada: React Native; MVP sem backend.
-- Proposta: módulos por capacidade em `src/features/`, sem fixar extensão/linguagem nem arquitetura de estado.
-- Pendente: plataformas e versões mínimas, bootstrap, navegação, persistência e ferramentas de qualidade.
+- US-019: TypeScript em src/features/task-breakdown, modelo/SQLite/editor/lista/rota pequenos, alinhados às convenções atuais.
+- Pendente para20: edição/exclusão de modelos e catálogo comum, sem redefinir seus critérios na19.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.
+
+## Progresso inicial US-019
+
+task-model.ts preparado com títulos explícitos/clonagem/IDs únicos/bool estrito,
+reordenação com IDs/texto/status preservados, remoção do alvo/conclusão reversível
+e progresso0de0/0% sem conclusão falsa. newTaskStep cria draft vazio com status
+false, sem sugerir conteúdo; operações de draft preservam texto ainda não salvo,
+normalizedTaskDraft exige títulos não vazios só ao salvar. IDs seguem convenção
+local existente Date.now/Math.random com injeção sintética nos testes; não são
+credenciais, UUIDs criptográficos ou timestamps de histórico. Nenhuma task
+concluída: SQLite/editor/progresso confirmado/rotas/fluxos ainda faltam. Seis
+testes unitários,lint/typecheck verdes; não comprovam UI, persistência ou nativo.
+
+Persistência inicial em task-database.ts: arquivo privado schema1, filas/transações,
+lista/save/complete/remove com revisão esperada e readback antes de commit.
+IDs/textos/status/ordem validados no read; removido não ressuscita, progresso
+reversível não sobrescreve outra tarefa, overflow de revisão recusado. Nenhuma
+dependência/permissão/alteração do banco de outro módulo. SDK SQLite instalado
+abre outra conexão em withExclusiveTransactionAsync: remove apaga filhos
+explicitamente na mesma transação, sem presumir herança de foreign_keys.
+Nove testes SQLite real do Node cobrem reabertura/offline/ordem/status, tarefas
+vazias, stale target/remoção, rollback de create/edit/complete/delete/readback/
+commit, fila, schema futuro/corrupção/overflow e exclusão com FKoff isolada.
+Editor/lista/retorno/checkbox confirmado e integração UI ainda faltam; todas
+tasksUS019 pendentes, nenhum PR/aparelho/build/validação SQLite Expo alegados.
+
+Provider e editor isolados preparados: TaskProvider reutiliza abertura em efeito,
+descarta publicação após desmontagem, bloqueia operações duplicadas e publica
+somente o resultado confirmado do banco. save/complete/remove recebem revisão
+capturada; falha mantém tarefas confirmadas. TaskEditor mantém draft separado e
+revisão inicial, valida/foca títulos obrigatórios, adiciona/edita/reordena com
+IDs/status preservados e confirma remoção inclusive de etapa concluída. Cancelar
+descarta draft; salvar aguarda commit sem navegação prematura. Controles de 48dp,
+texto escalável, SafeArea/KeyboardAvoidingView/scroll e feedback textual neutro,
+sem animação/voz/rede. Nove testes de componentes/provider com banco falso:
+validação/vazio, edição/ordem/remoção, cancelamento, erro/retry/draft, duplicata/
+commit tardio/desmontagem, stale removido, StrictMode/abertura e progresso/removal
+confirmados. Lista/detail/checkbox visível/rotas/entrada no quadro ainda faltam;
+editor não está exposto no aplicativo e todas tasks de aceitação permanecem
+pendentes. Testes de UI não provam leitor de tela, foco ou SQLite Expo nativos.
+
+Fluxo US-019 agora integrado: /tasks com TaskProvider em layout próprio e animação
+do modo global; entrada Abrir tarefas no quadro, lista inicial vazia, criação,
+detail/checkbox reversível, editor e retornos/fallback reais. Progresso explícito
+0de0/0% em tarefa vazia; nenhum início automático. Remoção da tarefa confirma
+snapshot/revisão e só apaga seus dados; falha/commit pendente não alteram checkbox
+nem afirmam exclusão. Confirmação de etapa continua só no draft até salvar.
+Seis testes navigation usam Expo Router real e SQLite Node temporário: entrada/
+CRUD/ordem/progresso/reabertura offline, vazio/isolamento, rollback/retry,
+duplicata/pending antes commit, erro de abertura/fallback e modo9/draft cancel.
+Total30relacionados/4suítes. Revisão local: texto202124/branco, controles48dp,
+semântica checkbox/header/alert/polite, fonte escalável/scroll/SafeArea/teclado,
+sem animação/som inesperado, contraste e feedback independente de cor; sem PII
+em rotas (apenasID), rede/permissão/dependência nova ou alteração de outro banco.
+Preservar contratos de revisão/commit e repetir suíte completa/checks/CI antes
+integrar. T001–T006 verificadas; T012 nativo/assistivo/SQLiteExpo/offline/backups
+pendente, sem alegar conformidade WCAG completa. PR/Issue ainda não concluídos
+neste registro; US-020/modelos/catálogo continuam fora do escopo.
+
+Verificação de entrega local: 527 testes Jest/71 suítes completos, 30 relacionados/
+4 suítes, lint/typecheck sem warnings, Doctor21/21, 56 testes Python de tooling,
+validador e diff-check aprovados. Origin/main confirmado2379922 antes do PR;
+nenhuma dependência/nativo/build/host/aparelho operados nesta entrega.
