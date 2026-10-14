@@ -3,7 +3,7 @@ milestone: 17
 priority: P1
 tag: m009-scripts-de-comunicacao
 status: draft
-ready_stories: ["US-023"]
+ready_stories: ["US-023", "US-024"]
 source_checked: 2026-10-14
 ---
 
@@ -11,7 +11,7 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P1 — Scripts de Comunicação](https://github.com/Nosso-Espectro/aplicativo/milestone/17) (número 17).
 
-Estado consultado: aberta; todas as histórias abaixo estão abertas. Especificação em revisão, não implementação concluída.
+Estado consultado em2026-10-14: #23 entregue pelo PR80/fechada; #24 implementada e verificada localmente, integração/CI ainda a confirmar na entrega. Gates nativos/assistivos pendentes, sem release pronta.
 
 ## Contexto
 
@@ -113,6 +113,17 @@ Catálogo local inicial de textos originais, um por categoria:
 - Entrada no quadro/rota própria/retorno fallback/48dp/escalável/mode9. Editor/persistência/favoritos/TTS de #24 são escopo separado.
 - Delegação funcional não amplia celular, segurança, operações destrutivas ou tags/releases.
 
+## Refinamento recomendado de US-024 (2026-10-14)
+
+Adotado sob delegação humana funcional sem aguardar nova aprovação, preservando critérios originais. [Registro em #24](https://github.com/Nosso-Espectro/aplicativo/issues/24#issuecomment-6164868003).
+
+- Catálogo inicial23 permanece imutável; Criar cópia gera script pessoal independente para adaptar texto/categoria. Scripts pessoais criáveis/editáveis/excluíveis com confirmação do alvo; favoritos persistidos para iniciais e pessoais.
+- Filtro Favoritos mantém ordem inicial fixa e pessoais em ordem estável de criação. Categoria pessoal entre cinco existentes e Outros; texto livre obrigatório trim não vazio, sem título obrigatório adicional.
+- Draft separado/salvarcancelar/revisão inicial/retry genérico/commit antesUI; stale/removido recusado, sem ressurreição. Exclusão remove só script próprio/favorito correspondente, sem afetar perfil/CAA/tarefas.
+- SQLite privado `tear-communication-scripts.db` schema1, FIFO/transação/readback/rollback/revisões safe e reabertura offline. Identidade fonte+ID separa iniciais de pessoais; não mutar DBs de outros módulos.
+- Voz localptBR existente, com guard de prioridade de sons, somente por comando humano em script confirmado. Parar explicitamente/ao sair, ausência de voz/falha mantém texto/cópia úteis. Não falar drafts automaticamente/sem TTS remoto/permissão nova. Ownership precisa ser revisado nos fluxos reais.
+- Clipboard23 preservado, sem leitura/clear/cópia automática/envio. Editor/detalhe com rotas próprias/retornos fallback/48dp/escalável/mode9. Nativo/assistivo permanece gate separado; não autoriza instalar aparelho.
+
 ## Dependências funcionais
 
 - [P0 — Comunicação Visual / CAA](../001-comunicacao-visual-caa/spec.md): relação de uso/integração descrita nas histórias ou nas questões abaixo; não altera a prioridade original.
@@ -125,8 +136,8 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-SCRIPT-01 — #23 resolvida pelo catálogo original recomendado acima; ordenação de favoritos/destino da edição de #24 exige refinamento documentado antesReady, sob delegação humana vigente.
-- Q-SCRIPT-02 — A leitura de scripts depende do contrato de TTS de #3; definir erro quando voz estiver indisponível (#24).
+- Q-SCRIPT-01 — Resolvida para23/24 pelo catálogo e refinamentos acima; catálogo inicial não é alterado por personalização.
+- Q-SCRIPT-02 — Resolvida para24: reutilizar TTSlocalptBR/guardsons, ação explícita em script confirmado, parar/ausência/falha mantém texto/cópia úteis, sem leitura automática/diagnóstico.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 

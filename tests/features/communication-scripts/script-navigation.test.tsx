@@ -15,12 +15,14 @@ import { CustomCardsProvider } from '../../../src/features/communication/custom-
 import { openCardDatabase } from '../../../src/features/communication/storage/card-database';
 import { openDisplayPreferencesDatabase } from '../../../src/features/regulation/display-preferences-database';
 import { localSpeech } from '../../../src/features/communication/speech/local-speech';
+import { openScriptDatabase } from '../../../src/features/communication-scripts/script-database';
 jest.mock('expo-clipboard', () => ({ setStringAsync: jest.fn(), getStringAsync: jest.fn(), addClipboardListener: jest.fn(), StringFormat: { PLAIN_TEXT: 'plainText' } }));
 jest.mock('../../../src/features/communication/storage/card-database', () => ({ openCardDatabase: jest.fn() }));
 jest.mock('../../../src/features/regulation/display-preferences-database', () => ({ openDisplayPreferencesDatabase: jest.fn() }));
 jest.mock('../../../src/features/communication/custom-cards/local-image-storage', () => ({ localImages: { prune: jest.fn() } }));
 jest.mock('../../../src/features/communication/speech/local-speech', () => ({ localSpeech: { isAvailable: jest.fn(), speak: jest.fn(), stop: jest.fn() } }));
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
+jest.mock('../../../src/features/communication-scripts/script-database', () => ({ openScriptDatabase: jest.fn() }));
 function GlobalLayout() {
   return <LowStimulationProvider><LowStimulationControl /><SentenceProvider><CustomCardsProvider><Slot /></CustomCardsProvider></SentenceProvider></LowStimulationProvider>;
 }
@@ -31,6 +33,8 @@ beforeEach(() => {
   jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
   jest.mocked(openCardDatabase).mockResolvedValue({ list: async () => [], listFavorites: async () => [], setFavorite: jest.fn(), save: jest.fn(), remove: jest.fn() });
   jest.mocked(openDisplayPreferencesDatabase).mockResolvedValue({ read: async () => ({ enabled: false }), save: async value => ({ ...value }) });
+  const unused = async () => { throw new Error('Unexpected personal-script mutation in US023 fixture'); };
+  jest.mocked(openScriptDatabase).mockResolvedValue({ read: async () => ({ personal: [], favorites: [] }), save: unused, remove: unused, setFavorite: unused });
 });
 afterEach(() => jest.restoreAllMocks());
 async function mount(initialUrl = '/scripts', override = ScriptsRoute) {

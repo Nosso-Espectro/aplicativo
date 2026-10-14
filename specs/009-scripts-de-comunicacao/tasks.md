@@ -1,6 +1,6 @@
 # Tasks — Scripts de Comunicação
 
-Milestone #17: [spec.md](spec.md) e [plan.md](plan.md). US023 verificada em2026-10-14; US024 e gate nativo pendentes.
+Milestone #17: [spec.md](spec.md) e [plan.md](plan.md). US023/US024 verificadas em2026-10-14; gates nativos pendentes.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -18,12 +18,15 @@ Ready após recomendação funcional documentada sob delegação humana. Cinco t
 
 ## US-024 — Issue #24
 
-- [ ] T006 [US-024] Em `src/features/communication-scripts/script-editor`, atender RF-004 (critério 1 de #24): Deve ser possível criar, editar, excluir e favoritar scripts. Verificar com o cenário correspondente no PR.
-- [ ] T007 [US-024] Em `src/features/communication-scripts/script-editor`, atender RF-005 (critério 2 de #24): Os scripts personalizados devem ficar salvos localmente. Verificar com o cenário correspondente no PR.
-- [ ] T008 [US-024] Em `src/features/communication-scripts/script-editor`, atender RF-006 (critério 3 de #24): O usuário deve poder usar um script no Text-to-Speech. Verificar com o cenário correspondente no PR.
-- [ ] T009 [US-024] Adicionar testes de comportamento de RF-004, RF-005, RF-006 em `tests/features/communication-scripts/script-editor`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
-- [ ] T010 [US-024] Revisar RNF-001 a RNF-004 na interface/dados de #24, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+Refinamento recomendado documentado sob delegação funcional vigente: scripts pessoais locais/cópia inicial independente/categoria cinco+Outros/draftsavecancel/removeconfirmado/favoritos iniciais e pessoais/filtroordemestável. Modelo/SQLite privado/provider/rotas/TTS confirmado/guardsons/stop/indisponível/testesreais e revisão antes marcar tasks. Sem inicial mutável/DB de outro módulo/autoplay/voz de drafts/rede/history/permissão nova.
+
+- [x] T006 [US-024] RF-004: ScriptEditor/Detail/Provider/rotas reais permitem criar/editar/cancelar/cópia inicial independente/excluir alvo confirmado/favoritos iniciais+pessoais/filtro/ordem. Texto obrigatório/category5+Outros, draft/revisão capturada/no resurrect/busydup/commit antes UI/falha mantém confirmado e draft.
+- [x] T007 [US-024] RF-005: SQLite privado schema1/FIFO/TX/readback/rollback/IDs/revisões safe/favoritos fonteID com revisão até desmarcados/ABA/stale/future-schema/corrupção/órfãos/tabela ausente recusados/reaberturaoffline/isolamento. Criação ID exato, snapshot publicado só apóscommit/owner ativo.
+- [x] T008 [US-024] RF-006: SpeechControls/localSpeech/guardsons existentes só no detalhe focado/confirmado, ação humana/stop/saída; sem leitura de drafts/autoplay. Ausência/falha mantém texto+cópia, prioridade pausa sons antes voz e não retoma automaticamente; query tardia descartada após saída. Nativo real continua T012.
+- [x] T009 [US-024] 24testesnovos (modelo3,DB9,fluxos/provider12) com SQLiteNode real/ExpoRouter real: CRUD/cópia/cancel/validação/fav/reopen/ordem/isolamento/pendingdup/rollbackretry/stale/remove/futurecorruptoverflow/StrictMode/exactID/unmount/retornos/mode9/voz explícita-prioridade-stop-indisponível-latequery. Fronteiras SDK/voz/engine simuladas explicitamente, não testes de aparelho.
+- [x] T010 [US-024] RNF001-004/review: 609Jest/81suítes,57relacionados/8,lint/tipossemwarnings/Doctor21/21/56tooling/validador/diffcheck verdes; sem regressão impeditiva conhecida. SafeArea/Scroll/KeyboardAvoiding/escalável/48dp/headers/checkboxradio/contraste/polite/errosgenéricos/foco em texto inválido. DB privado/sem redes/logs de textos/params sóIDs/nenhuma dep-perm nova/sem estímulo inesperado. SDKclipboard limites/documentos/notices preservados. GatesT011/T012nativeSQLiteExpo/vozreal/backups/readers/foco/ampliação/insets/alvos pendentes, não release pronta.
 
 ## Gate nativo separado
 
 - [ ] T011 [US-023] No SHA integrado, verificar clipboard literal real/copiar com um toque/retornos offline/readers/foco/ampliação/insets/alvos/mode9/sem estímulos inesperados. Mocks/build não comprovam essas validações; instalação em aparelho continua requerendo autorização específica.
+- [ ] T012 [US-024] No SHA integrado, verificar SQLiteExpo/reaberturaoffline/backups/favoritos/isolamento, vozlocalptBR/prioridadesons/stop/ownership/foco/readers/ampliação/insets/alvos/modo9 em aparelho/simulador. Build/mocks/SQLiteNode não comprovam; instalação exige autorização específica.
