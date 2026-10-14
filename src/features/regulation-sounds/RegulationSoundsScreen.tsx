@@ -5,6 +5,7 @@ import Slider from '@react-native-community/slider';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRegulationSounds } from './RegulationSoundsProvider';
 import { soundOptions } from './sound-settings';
+import { SoundTimerControls } from './SoundTimerControls';
 
 const phaseLabels = { idle: 'Parado', loading: 'Carregando som', playing: 'Reproduzindo', paused: 'Pausado', stopping: 'Interrompendo som', error: 'Não foi possível confirmar o controle do som.' };
 export function RegulationSoundsScreen({ onClose, backLabel = 'Voltar ao quadro' }: { onClose(): void; backLabel?: string }) {
@@ -14,6 +15,7 @@ export function RegulationSoundsScreen({ onClose, backLabel = 'Voltar ao quadro'
   const state = sounds?.state;
   const percent = Math.round((state?.settings.volume ?? 0.25) * 100);
   const unavailable = !sounds || state?.pending || state?.speechActive;
+  const backgroundDisabled = !!unavailable || confirmBackground || !!state && ['armed', 'stopping'].includes(state.timer.status);
   const canPause = !!state && (state.pending || ['playing', 'loading', 'stopping'].includes(state.phase));
   function gain(value: number) {
     if (confirmBackground) return;
@@ -51,8 +53,8 @@ export function RegulationSoundsScreen({ onClose, backLabel = 'Voltar ao quadro'
       </View>
       <View style={styles.background}>
         <Text style={[styles.text, styles.flexLabel]}>Continuar em segundo plano</Text>
-        <Switch accessibilityLabel="Continuar som em segundo plano" style={styles.switch} accessibilityState={{ disabled: !!unavailable || confirmBackground }}
-          value={state.settings.backgroundPlayback} disabled={!!unavailable || confirmBackground}
+        <Switch accessibilityLabel="Continuar som em segundo plano" style={styles.switch} accessibilityState={{ disabled: backgroundDisabled }}
+          value={state.settings.backgroundPlayback} disabled={backgroundDisabled}
           onValueChange={enabled => { if (enabled) setConfirmBackground(true); else void sounds.controller.background(false); }} />
       </View>
       {confirmBackground && <View style={styles.confirmation}>
@@ -60,6 +62,7 @@ export function RegulationSoundsScreen({ onClose, backLabel = 'Voltar ao quadro'
         <Command icon="check" label="Confirmar segundo plano" disabled={!!unavailable} onPress={() => { setConfirmBackground(false); void sounds.controller.background(true); }} />
         <Command icon="close" label="Manter segundo plano desligado" onPress={() => setConfirmBackground(false)} />
       </View>}
+      <SoundTimerControls controller={sounds.controller} state={state} disabled={!!unavailable || confirmBackground} />
     </>}
   </ScrollView></SafeAreaView>;
 }

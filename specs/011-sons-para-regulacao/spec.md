@@ -11,7 +11,7 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P1 — Sons para Regulação](https://github.com/Nosso-Espectro/aplicativo/milestone/19) (número 19).
 
-US-027 entregue pelo PR71. US-028 Ready após refinamento sob delegação funcional; ainda sem código. Gates nativos pendentes, nenhuma milestone/release pronta.
+US-027 entregue pelo PR71. US-028 implementada e validada localmente, aguardando PR/CI/integração. Gates nativos pendentes, nenhuma milestone/release pronta.
 
 ## Refinamento US-028
 

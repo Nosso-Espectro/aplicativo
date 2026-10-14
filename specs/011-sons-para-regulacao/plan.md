@@ -1,8 +1,16 @@
 # Plano de implementação — Sons para Regulação
 
-Spec: [spec.md](spec.md). Milestone #19; Issues #27, #28. US027 entregue pelo PR71; US028 refinada e Ready em 2026-10-14, ainda sem código.
+Spec: [spec.md](spec.md). Milestone #19; Issues #27, #28. US027 entregue pelo PR71; US028 implementada e validada localmente em 2026-10-14, aguardando PR/CI/integração.
 
 ## Plano vigente US028
+
+### Implementação local verificada
+
+`sound-timer.ts` valida duração1-180, prazo/última amostra/inteiros seguros e revisões. Expiração passa a stopping, não finished; confirmação exige status nativo sem reprodução. Clock inválido/regressivo/overflow invalida prazo sem inventar término. `sound-controller.ts` liga deadline à identidade do slot, usa clock injetável e callbacks foreground revisados, preserva prazo corrido durante pause/TTS. Arm exige engine carregado, estado playing/paused, foreground/backgroundOFF e ausência de pending/voz; comando antigo/duplicado é recusado. Cancel remove somente watches/estado do timer, sem chamar engine. Seleção/dispose/falha invalidam alvo e relógio; expiração usa pause com geração invalidada, watchdog técnico3s para ack ausente, erro e descarte do engine em falha. Replay humano após término limpa resultado antigo, não rearma nem retoma automaticamente. Watchdog de carregamento30s existente permanece: teste de configure pendente posiciona retomada no segundo59 para exercitar expiração antes desse watchdog, sem suprimir comportamento.
+
+`SoundTimerControls` usa draft separado/presets/entrada numérica/aplicar/cancelar/estado polite e countdown sem anúncio por segundo. Limite background explícito, opção não desligada silenciosamente e bloqueada enquanto timer ativo; guardas repetidas no controller. Provider/AppState existentes reconciliam no retorno, nenhuma nova dependência/DB/permissão/rede/alerta/áudio automático. Testes de modelo/controller/engine falso e Expo Router real cobrem prazo/cancelamento/owner/stale/status tardio/falhas/TTS/background/retornos/offline JS/mode9. Testes não comprovam playback/pausa/reader real nem T011. Tasks ainda aguardam checks finais e CI; nenhuma entrega nativa/instalação/host operado nesta implementação.
+
+Checks finais locais: 36 testes novos (15 modelo,14 controller,5 tela,2 Router),277 relacionados/23 suítes,694 Jest/89 suítes completos, lint/tipos sem warnings, Doctor21/21,56tooling,validador/diffcheck verdes. Revisão restrita aos RF004-RF006/RNF: alvos48dp/textos escaláveis/wrap/controles nomeados/estado independente de cor, sem anúncio por segundo, nenhuma nova transmissão/retenção/estímulo; prioridade de voz e timer/foco/CAA preservados. Nenhuma regressão impeditiva identificada na revisão local. Não houve preview novo/aparelho/teste assistivo real: servidor8093/us002 intocado, T011 continua pendente. CI do PR ainda deve confirmar integração.
 
 Base main340390c; ler controller/provider/engine/UI e testes reais de sons/TTS/AppState antes de código. Modelo puro de duração/draft/prazo/revisão e clock seguro em `src/features/regulation-sounds/`, sem banco ou framework genérico. Integrar o prazo ao controller proprietário do slot: callbacks capturam revisão/identidade, expiração invalida intent antes de pause e usa status nativo para confirmar parada; cancelamento de timer não chama engine. Factory/status tardios, troca/player destruído/dispose e TTS não podem ressuscitar reprodução ou encerrar slot novo.
 
