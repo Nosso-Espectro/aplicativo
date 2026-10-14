@@ -1,5 +1,5 @@
 expo-audio 57.0.5
-expo-asset 57.0.19 (required native peer, already present transitively)
+expo-asset 57.0.20 (required native peer, already present transitively)
 Source: https://github.com/expo/expo/tree/sdk-57/packages/expo-audio
 Source: https://github.com/expo/expo/tree/sdk-57/packages/expo-asset
 The identical license text is preserved from both locked npm package LICENSE files.

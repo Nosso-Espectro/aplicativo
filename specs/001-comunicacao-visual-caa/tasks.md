@@ -190,6 +190,13 @@ Evidência US085: quatro testes novos de Expo Router/providers reais, 633 Jest/8
 - [x] T041 [US-052] Implementar RF-020: configurar ícone Android/iOS, favicon e tela de inicialização nativa via Expo SplashScreen, usando o asset local sem áudio, animação ou timer artificial. Evidência: teste de configuração/PNG, fonte local e padrão automático Expo Router, sem timers ou alteração da comunicação.
 - [ ] T042 [US-052] Testar configuração/asset e regressões do quadro; executar checks leves, acionar build remoto e atualizar o app por USB com `adb install -r`, sem apagar dados; registrar evidências e limitações em quickstart.
 
+## Manutenção SDK57 — US-095 / Issue #95
+
+- [x] T054 [US-095] RF-024: atualizar só os seis patches recomendados, manifest/lock coerentes/ignore-scripts; preservar dependências funcionais/pessoais/US031 e revisar transitive churn. Evidência: install/ci ignore-scripts, 12 versões alteradas (6 diretas + 6 exigidas), nenhuma entrada adicionada/removida; xcpretty/drawer preservados.
+- [x] T055 [US-095] RF-025: fontes/changelogs/version-integrity/licenças/notices exatos e contratos reais notifications(timestamp-nextdate-DAILY)/Router; sem falsa aprovação nativa ou causa histórica de crash. Evidência: fontes npm/SDK57 e licença upstream blob30b20e3b5f0f470947ba9480d90587ba07c137b4; notices integrais/regressões de contrato aprovados.
+- [x] T056 [US-095] RF-026: related/fullJestserial/linttipos/Doctor21/21/56toolingvalidadordiffcheck/review e CIleve verdes sem suprimir check, PR própria antesintegração. Evidência: 50 relacionados/4 suítes, 828 Jest/96 suítes, tipos/lint, Doctor21/21, 56tooling/validadordiffcheck/review PASS; PR96 anexado, CI38609833005 SUCCESS 1min49s no head af8c04d. CI do último commit documental deve permanecer verde antes squash; Android/iOS SKIPPED, NÃO builds.
+- [x] T057 [US-095] RF-027: registrar ambos nativos/artefatos/licenças/assinatura/fluxos reais pendentes no SHA integrado, sem APKantigo/installauto/hostjobsphone/buildlocal/preview/tagrelease. Evidência: plano US095 registra gate ainda PENDENTE; esta task comprova o registro, NÃO executa ou aprova build/assinatura/fluxos nativos.
+
 ## Fase 8: Polish e verificações transversais
 
 **Objetivo**: verificar coerência entre histórias implementadas e Definition of Done, sem antecipar

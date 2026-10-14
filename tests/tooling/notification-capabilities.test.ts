@@ -18,7 +18,7 @@ beforeAll(() => {
   expect(native.map(path => existsSync(path))).toEqual(before);
 }, 35000);
 it('pins the local-notification SDK and explicitly disables remote background support', () => {
-  expect(dependencies.dependencies['expo-notifications']).toBe('57.0.22');
+  expect(dependencies.dependencies['expo-notifications']).toBe('57.0.23');
   expect(app.expo.plugins).toContainEqual(['expo-notifications', { enableBackgroundRemoteNotifications: false }]);
   expect(app.expo.plugins).toContain('./plugins/with-local-notifications.cjs');
   expect(JSON.stringify(app)).not.toContain('googleServicesFile');

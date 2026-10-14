@@ -3,11 +3,13 @@ milestone: 9
 priority: P0
 tag: m001-comunicacao-visual-caa
 status: draft
-ready_stories: ["US-041", "US-001", "US-002", "US-003", "US-004", "US-005", "US-052", "US-085", "US-087", "US-088"]
-source_checked: 2026-09-23
+ready_stories: ["US-041", "US-001", "US-002", "US-003", "US-004", "US-005", "US-052", "US-085", "US-087", "US-088", "US-095"]
+source_checked: 2026-10-14
 ---
 
 # Feature Specification: P0 — Comunicação Visual / CAA
+
+Manutenção técnica vigente95: Doctor online passou a exigir seis patchesSDK57 publicados2026-10-14. [Issue95](https://github.com/Nosso-Espectro/aplicativo/issues/95) registra escopo separado e Ready antes de código; nenhum pacote ainda atualizado nesta preparação. Preservar entregas existentes/US031 em branch própria e todos gates nativos/segurança. Seções históricas abaixo não instruem reimplementar histórias já integradas.
 
 Milestone GitHub: [P0 — Comunicação Visual / CAA](https://github.com/Nosso-Espectro/aplicativo/milestone/9) (número 9).
 
@@ -340,6 +342,23 @@ Correção humana em 2026-10-14 com duas imagens: primeira na principal, segunda
 
 **Teste independente**: compor diretamente na home; abrir menu, escolher ferramenta e retornar com frase preservada. RF-023, T050–T053. Não instalar celular nem implementar navegação inferior/sharing.
 
+### US-095 — Alinhar patches do Expo SDK 57 (Priority: P0)
+
+GitHub Issue: [#95](https://github.com/Nosso-Espectro/aplicativo/issues/95)
+
+Como mantenedor, quero alinhar os patches existentes do Expo SDK 57, para restaurar os checks de qualidade sem misturar manutenção da base e funcionalidades novas.
+
+Escopo técnico necessário ao gate: expo57.0.29/asset57.0.20/constants57.0.22/linking57.0.13/notifications57.0.23/router57.0.27, mesmas dependências diretas; sem SDK major/React/RN upgrade, nova feature/permissão/conta/rede/auditfixforce/buildlocal/host/phone. Revisar fontes/changelogs/licenças/notices/API antes de aceitar; não ocultar check nem atribuir causa a crashes históricos. US031 permanece separada na branch própria/checkpoint8931ead e só integra após repetir checks na main com95.
+
+#### Critérios de aceite
+
+- [ ] Manifest/lockfile coerentes com os seis patches SDK57 esperados, instalacao ignore-scripts e sem alteracoes pessoais/funcionais alheias.
+- [ ] Revisar fontes/changelogs/licencas/notices e contratos das APIs usadas, sobretudo notifications timestamp/getNextTriggerDateAsync/DAILY e Router; nao prometer compatibilidade nativa sem build remoto.
+- [ ] Jest serial completo/linttipos/Doctor21/21/56tooling/validadordiffcheck/review e CI leve verdes, sem suprimir checks.
+- [ ] Registrar ambos builds/artefatos/licencas/assinatura/fluxos reais pendentes no SHA integrado; nao usar APK antigo como novo e nenhuma instalacao automatica.
+
+**Teste independente**: fontes/lock/notices e regressões existentes com SDK57 alinhado, checks reais sem exclusões; build/assistivo/API Expo em binário somente no gate remoto autorizado. RF-024 a RF-027, T054 a T057. Ready técnico pela necessidade/recomendação conservadora registrada no GitHub, não entrega/validação de vulnerabilidades ou host.
+
 ### Definition of Done original (comum às Issues #1, #2, #3, #4, #5)
 
 - Critérios de aceite atendidos.
@@ -408,6 +427,10 @@ Os IDs RF existentes são preservados para não romper o vínculo com plano e ta
 - **RF-021** — Reorganizar a home com frase no header, ações preservadas e quadro Comunicação em drawer lateral acessível, sem alterar contratos de dados/composição/voz. (#85.)
 - **RF-022** — Permitir a prévia web navegável, reconciliando o contrato de armazenamento de imagens da plataforma sem simular capacidades nativas. (#87.)
 - **RF-023** — Manter cartões/categorias na principal e atalhos de ferramentas no drawer, conforme correção humana por imagens; Frase no header e contratos existentes preservados. (#88.)
+- **RF-024** — Alinhar manifest/lockfile aos seis patches SDK57 recomendados, ignore-scripts e sem alterações alheias. (#95, critério1.)
+- **RF-025** — Revisar fontes/changelogs/licenças/notices/API utilizadas, sem falsa aprovação nativa. (#95, critério2.)
+- **RF-026** — Executar checks locais/CI leve reais verdes sem suprimir falhas. (#95, critério3.)
+- **RF-027** — Manter builds/artefatos/fluxos reais no gate integrado, sem APK antigo ou instalação automática. (#95, critério4.)
 
 Detalhamento de RF-008 aprovado em Clarify (2026-09-23, US-002/#2): a composição
 permanece durante a sessão, inclusive em segundo plano sem encerramento. Após encerramento
@@ -602,6 +625,10 @@ Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma
 | RF-021 | [#85](https://github.com/Nosso-Espectro/aplicativo/issues/85) | US-085 | T043 |
 | RF-022 | [#87](https://github.com/Nosso-Espectro/aplicativo/issues/87) | US-087 | T047 |
 | RF-023 | [#88](https://github.com/Nosso-Espectro/aplicativo/issues/88) | US-088 | T050 |
+| RF-024 | [#95](https://github.com/Nosso-Espectro/aplicativo/issues/95) | US-095 | T054 |
+| RF-025 | [#95](https://github.com/Nosso-Espectro/aplicativo/issues/95) | US-095 | T055 |
+| RF-026 | [#95](https://github.com/Nosso-Espectro/aplicativo/issues/95) | US-095 | T056 |
+| RF-027 | [#95](https://github.com/Nosso-Espectro/aplicativo/issues/95) | US-095 | T057 |
 | RNF-001 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |
 | RNF-002 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |
 | RNF-003 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |
