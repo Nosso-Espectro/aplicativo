@@ -1,5 +1,25 @@
 # Plano de implementação — Foco / Pomodoro Flexível
 
+## Plano vigente US082
+
+Ready sob delegação funcional, Issue82/refino6176236501, base main20a6efe. Expo57/RN0.86/React19/Router/Node24.21.0/npm11.19.0 reais, sem nova dependência. Preservar #25/#26 e Timer/CAA. Estender modelo Pomodoro com escolha custom validada1-180min inteiros e cópia dos dois tempos no estado da sessão; presets e exports existentes preservados. Todas as fases usam tempos capturados, não draft mutável. Start inválido recusa sem sessão; clock inválido mantém recuperação existente. Provider mantém owner/revisão/AppState, nenhum armazenamento.
+
+UI de escolha em Pomodoro existente: radio Personalizado e edição explícita de dois campos numéricos rotulados/aplicar/cancelar, draft25/5. Validar ambos, erro preserva preenchimento e escolha anterior. Edição incompleta impede iniciar; cancelar retorna escolha anterior. Sessão running/paused/waiting não exibe edição e callback antigo deve conferir inatividade/revisão antes mudar escolha/iniciar. Escolha/draft desaparecem em blur/unmount/saída, reentrada25/5; encerrar na mesma abertura mantém escolha aplicada. Sem som/vibração/TTS/notificação/DB/preferência/rede/permissão nova. Textos18/escaláveis/alvos48dp/mode9/retornos previsíveis, sem anúncio por segundo ou indicação clínica.
+
+Testes modelo limites/NaN/decimal/overflow/cópias/presetregressão/clock/stale/next; Router/provider draft/error/apply/cancel/activeguards/saídas/reentrada/cronômetro/AppState/mode9/CAA/Timer. Related/fullserial/lint/tipos/Doctor56toolingvalidador/diff/review/CI últimohead antes integrar; tasks só comportamento. T018 nativo posterior verifica leitores/teclado/reflow/foco/insets/clockbg/offline no SHA integrado, não aprovado por mocks. Sem host/jobs/buildlocal/phone/preview8093 nesta história.
+
+Seções anteriores abaixo são histórico #25/#26; declarações antigas de ausência de código ou #82 não Ready não substituem este plano.
+
+### Implementação local US082
+
+`pomodoro-model.ts` preserva os exports de presets e acrescenta escolha custom com validação1-180/cópia dos números antes uso; foco e pausa em ms capturados na sessão, usados por resume/next sem ler draft. `PomodoroScreen` mantém escolha/draft apenas na abertura focada, campos numéricos com validação conjunta/aplicar/cancelar e revisão própria de escolha para recusar callbacks de antes da edição. Inatividade do provider e foco também guardam iniciar/editar/abrir cronômetro; blur/unmount descarta estado local e sessão. Preset já selecionado é no-op sem invalidar callbacks. Provider mantém implementação/owner/AppState anteriores; seu tipo de comando deriva do modelo, sem API nova inventada.
+
+25 testes novos (12modelo/13Router),248relacionados20/901Jest102 completos PASS na versão corrigida. Review RF-007 a RF-009/RNF/UIprivacyofflineclean não encontrou regressão impeditiva restante: texto18/escalável/alvos48dp, radios/campos rotulados/erros e comandos explícitos, nenhum estímulo/dado externo/DB/dependência/permissão novo. Leitores/teclado/reflow/insets/clockbg/offline reais ainda T018, sem alegar conformidade integral por mocks. T013-T016 verificadas; T017 aguarda checks finais/PR/CI. Nenhum host/jobs/buildlocal/phone/preview8093 operado.
+
+Checks locais encerrados: typecheck e lint finais sem warnings PASS; Doctor21/21,56tooling (4.996s), validador16specs/48Issues/48stories/263tasks/20skills e diffcheck PASS. Doctor/tooling não foram alterados pela correção pontual do controle; related/full/tipos/lint repetidos na versão corrigida. PR/CI últimohead ainda pendentes; nenhuma aprovação nativa/build/release.
+
+PR101 anexado; CI38624474209 SUCCESS1min45s no head03724f79785dcf576782b752e3e91a6e3ac0ea99. T013-T017 verificadas, aguardar CI novo head documental antes squash; Android/iOS SKIPPED não são builds. T018 nativo e anteriores permanecem pendentes.
+
 Spec: [spec.md](spec.md). Milestone #18; Issues #25, #26. US025 entregue pelo PR83; US026 refinada e Ready em 2026-10-14.
 
 ## Plano vigente US026

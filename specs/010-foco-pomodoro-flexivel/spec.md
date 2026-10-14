@@ -3,7 +3,7 @@ milestone: 18
 priority: P1
 tag: m010-foco-pomodoro-flexivel
 status: draft
-ready_stories: ["US-025", "US-026"]
+ready_stories: ["US-025", "US-026", "US-082"]
 source_checked: 2026-10-14
 ---
 
@@ -11,7 +11,27 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P1 — Foco / Pomodoro Flexível](https://github.com/Nosso-Espectro/aplicativo/milestone/18) (número 18).
 
-Estado consultado: milestone aberta; #25 entregue pelo PR83, #26 Ready após refinamento sob delegação funcional. Gates nativos continuam pendentes; nenhuma milestone/release pronta.
+Estado consultado: milestone aberta; #25 entregue pelo PR83, #26 entregue pelo PR91. #82 Ready após refino sob delegação funcional, ainda não implementada. Gates nativos continuam pendentes; nenhuma milestone/release pronta.
+
+## Refinamento US-082
+
+Issue [#82](https://github.com/Nosso-Espectro/aplicativo/issues/82), origem Q-FOCO-01/#25, refinada sob delegação funcional em [6176236501](https://github.com/Nosso-Espectro/aplicativo/issues/82#issuecomment-6176236501). Como usuário, quero definir tempos próprios de foco e pausa, para organizar uma sessão sem penalizações ou metas impostas.
+
+### US-082 — Personalizar intervalos do Pomodoro
+
+GitHub Issue: [#82](https://github.com/Nosso-Espectro/aplicativo/issues/82)
+
+Como usuário, quero definir tempos próprios de foco e pausa, para organizar uma sessão sem penalizações ou metas impostas.
+
+#### Critérios de aceite
+
+- [ ] Preservar presets25/5 e50/10; opção Personalizado com foco e pausa de1 a180 minutos inteiros cada, draft inicial25/5, sem indicação clínica.
+- [ ] Editar/aplicar/cancelar somente sem sessão. Running, paused e waiting impedem alterar escolha. Aplicar valida os dois campos juntos sem iniciar; erro mantém draft e escolha anterior; cancelar descarta edição.
+- [ ] Iniciar captura cópia imutável dos dois intervalos. Pausar/retomar/encerrar e próxima fase por comando humano preservam os tempos; nenhuma alteração tardia por draft/preset/owner antigo.
+- [ ] Escolha/draft apenas em memória da ferramenta: sair/desmontar/reabrir começa25/5. Sem DB/preferência persistida/histórico/rede/deps/permissões/som/vibração/TTS/notificação novos.
+- [ ] Preservar clock/AppState/revisão/saída confirmada/reentrada vazia, cronômetro26, Timer/CAA, modo9, alvos48dp e texto ampliável. Testes de limites/erro/draft/cancel/captura/stale/retornos/regressões; gates nativos separados.
+
+RF-007 [US-082] corresponde à opção/validação/draft (T013); RF-008 à captura e guardas (T014); RF-009 à UI/retornos/retensão efêmera (T015). RNF-001 a RNF-004 aplicam-se também à #82; testes T016, review/checks T017 e gate nativo T018. Estes IDs são locais a spec010. Prontidão não comprova implementação.
 
 ## Refinamento US-026
 
@@ -22,7 +42,7 @@ Recomendação registrada na Issue #26 sob delegação funcional de 2026-10-14; 
 - Finalizar mantém o decorrido da sessão nesta tela até nova sessão explícita ou saída, sem histórico/pontuação/meta/mínimo de duração. Nova sessão começa em zero.
 - Memória apenas, sem DB/rede/logs de sessão/dependência/permissão nova. Saída explícita ativa confirma descarte; saída externa/blur/unmount/processo morto descarta. Reentrada vazia. Não mudar de modo enquanto ativo sem finalizar/sair conforme confirmação.
 - Relógio inválido/regressivo ou cálculo fora de inteiro seguro pausa preservando último decorrido confirmado; recuperação por retomada humana ou finalização. Revisões/owner descartam comandos e callbacks antigos. Nenhum limite competitivo inventado, inferência ou diagnóstico.
-- Personalização #82 não Ready e Pomodoro #25 integrado fora da implementação desta branch; preservar seus fluxos.
+- Personalização #82 separada e Pomodoro #25 integrado fora da implementação daquela branch #26; preservar seus fluxos.
 
 ## Refinamento US-025
 
@@ -34,7 +54,7 @@ Decisão registrada em [#25](https://github.com/Nosso-Espectro/aplicativo/issues
 - Estado local somente em memória, sem histórico, DB, rede, logs de sessão ou novas permissões. Em segundo plano, comparar o prazo ao retornar, sem replay ou avanço por múltiplas fases. Reinício do app começa vazio.
 - A sessão pertence ao layout da ferramenta. Sair encerra e descarta; fluxo explícito de saída de sessão ativa confirma antes de abandonar. Saída externa/desmontagem descarta sem executar ações tardias. Nenhuma promessa de execução em processo morto.
 - Relógio inválido/regressivo pausa com erro genérico e recuperação humana, sem tempo negativo ou transição inferida. Rótulos, estado, comandos e modo de baixa estimulação permanecem acessíveis; alvos mínimos 48dp e texto escalável.
-- Personalização de intervalos está registrada separadamente na [#82](https://github.com/Nosso-Espectro/aplicativo/issues/82), não Ready, e não pertence à branch #25. Cronômetro livre #26 também não pertence a esta entrega.
+- Personalização de intervalos está registrada separadamente na [#82](https://github.com/Nosso-Espectro/aplicativo/issues/82) e não pertence à branch #25. Cronômetro livre #26 também não pertence à entrega daquela branch.
 
 ## Contexto
 
@@ -100,6 +120,9 @@ Esta história deve priorizar autonomia, previsibilidade, baixa carga cognitiva 
 - **RF-004** — O cronômetro deve iniciar em zero e contar o tempo decorrido. (#26, critério 1.)
 - **RF-005** — Deve permitir pausar, retomar e finalizar. (#26, critério 2.)
 - **RF-006** — O recurso não deve penalizar o usuário por sessões curtas ou interrompidas. (#26, critério 3.)
+- **RF-007** — Escolha personalizada com foco/pausa1-180 inteiros, draft/aplicar/cancelar/erro sem início automático. (#82, critérios 1/2.)
+- **RF-008** — Capturar intervalos na sessão e preservar fases humanas/clock/guards, sem edição ativa. (#82, critérios 2/3.)
+- **RF-009** — Escolha efêmera/UI/retornos/reentrada/mode9 sem novos dados/estímulos. (#82, critérios 4/5.)
 
 Os termos qualitativos do backlog foram preservados; limites ainda não definidos estão em “Questões em aberto”. RFs são locais a esta spec; use o caminho da spec junto ao ID ao referenciá-los.
 
@@ -114,7 +137,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Implementações de outras milestones, personalização #82, histórico, notificações/som/vibração automáticos, backend, IA, sincronização e diagnóstico. Uma branch por Issue: #25 não implementa cronômetro #26; #26 preserva o comportamento Pomodoro integrado. Refinamento/Ready não comprova implementação.
+Implementações de outras milestones, histórico, preferências persistidas, notificações/som/vibração automáticos, backend, IA, sincronização e diagnóstico. Uma branch por Issue: #25 não implementa cronômetro #26 nem personalização #82; #82 preserva #25/#26 integradas. Refinamento/Ready não comprova implementação.
 
 ## Dependências funcionais
 
@@ -128,7 +151,7 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-FOCO-01 — Escopo separado na #82, não Ready; limites, edição e retenção de preferências devem ter critérios antes de implementar personalização. Não bloqueia os presets de #25.
+- Q-FOCO-01 — Resolvida na #82 sob delegação funcional: limites1-180 inteiros, edição apenas sem sessão, escolha efêmera conforme refinamento vigente. Não altera os presets da #25; implementação e gates da #82 ainda pendentes.
 - Q-FOCO-02 — Resolvida para #25 e #26 conforme refinamentos: próximo período Pomodoro iniciado explicitamente; cronômetro livre sem períodos, apenas contagem local. Background reconcilia relógio ao retorno sem estímulos automáticos; memória efêmera e saída descartável.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
@@ -143,6 +166,9 @@ Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma
 | RF-004 | [#26](https://github.com/Nosso-Espectro/aplicativo/issues/26) | US-026 | T006 |
 | RF-005 | [#26](https://github.com/Nosso-Espectro/aplicativo/issues/26) | US-026 | T007 |
 | RF-006 | [#26](https://github.com/Nosso-Espectro/aplicativo/issues/26) | US-026 | T008 |
+| RF-007 | [#82](https://github.com/Nosso-Espectro/aplicativo/issues/82) | US-082 | T013 |
+| RF-008 | [#82](https://github.com/Nosso-Espectro/aplicativo/issues/82) | US-082 | T014 |
+| RF-009 | [#82](https://github.com/Nosso-Espectro/aplicativo/issues/82) | US-082 | T015 |
 | RNF-001 | #25, #26 | Todas acima | Revisão por história em tasks.md |
 | RNF-002 | #25, #26 | Todas acima | Revisão por história em tasks.md |
 | RNF-003 | #25, #26 | Todas acima | Revisão por história em tasks.md |

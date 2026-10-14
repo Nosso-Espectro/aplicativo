@@ -207,3 +207,87 @@ it('preserves the free final result when restarting with a failing clock and rec
   act(() => { stopwatch.act({ type: 'start', expectedRevision: stopwatch.revision }); });
   expect(stopwatch.session?.elapsedMs).toBe(0); expect(stopwatch.error).toBeNull();
 });
+
+async function editCustom(focus: string, pause: string) {
+  await act(async () => fireEvent.press(screen.getByRole('radio', { name: 'Personalizado' })));
+  await act(async () => fireEvent.changeText(screen.getByLabelText('Foco em minutos'), focus));
+  await act(async () => fireEvent.changeText(screen.getByLabelText('Pausa em minutos'), pause));
+}
+function capturedPress(name: string) {
+  let node = screen.getByRole('button', { name });
+  while (node.parent && typeof node.props.onPress !== 'function') node = node.parent;
+  expect(typeof node.props.onPress).toBe('function'); return node.props.onPress as () => void;
+}
+it('applies custom times without autoplay, freezes pause/resume and waits at each custom boundary', async () => {
+  const fetch = jest.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('offline synthetic'));
+  await mount(); await editCustom('1', '2');
+  expect(screen.queryByRole('button', { name: 'Iniciar foco' })).toBeNull();
+  await press('Aplicar intervalos'); expect(screen.getByText('1 minutos de foco / 2 de pausa')).toBeOnTheScreen();
+  expect(screen.queryByText('01:00')).toBeNull(); await press('Iniciar foco');
+  act(() => jest.advanceTimersByTime(5000)); await press('Pausar sessão');
+  expect(screen.queryByRole('radio', { name: 'Personalizado' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Editar intervalos' })).toBeNull();
+  act(() => jest.advanceTimersByTime(20000)); expect(screen.getByText('00:55')).toBeOnTheScreen();
+  await press('Retomar sessão'); act(() => jest.advanceTimersByTime(55000));
+  expect(screen.getByRole('button', { name: 'Iniciar pausa' })).toBeOnTheScreen();
+  expect(screen.queryByLabelText('Foco em minutos')).toBeNull(); await press('Iniciar pausa'); expect(screen.getByText('02:00')).toBeOnTheScreen();
+  act(() => jest.advanceTimersByTime(120000)); await press('Iniciar foco'); expect(screen.getByText('01:00')).toBeOnTheScreen();
+  expect(fetch).not.toHaveBeenCalled();
+});
+it.each(['', '0', '181', '1.5', 'abc', '1e2'])('preserves invalid draft %s and previous preset until cancel', async invalid => {
+  await mount(); await act(async () => fireEvent.press(screen.getByRole('radio', { name: '50 minutos de foco / 10 de pausa' })));
+  await editCustom(invalid, '5'); await press('Aplicar intervalos');
+  expect(screen.getByLabelText('Foco em minutos')).toHaveProp('value', invalid);
+  expect(screen.getByRole('alert')).toHaveTextContent('Informe foco e pausa em minutos inteiros de 1 a 180.');
+  await press('Cancelar edição'); expect(screen.getByRole('radio', { name: '50 minutos de foco / 10 de pausa' })).toBeChecked();
+  await press('Iniciar foco'); expect(screen.getByText('50:00')).toBeOnTheScreen();
+});
+it('validates both fields and preserves applied choice after cancelling another edit', async () => {
+  await mount(); await editCustom('3', '181'); await press('Aplicar intervalos'); expect(screen.getByRole('alert')).toBeOnTheScreen();
+  await act(async () => fireEvent.changeText(screen.getByLabelText('Pausa em minutos'), '4')); await press('Aplicar intervalos');
+  await press('Editar intervalos'); await act(async () => fireEvent.changeText(screen.getByLabelText('Foco em minutos'), '9'));
+  await press('Cancelar edição'); expect(screen.getByText('3 minutos de foco / 4 de pausa')).toBeOnTheScreen();
+  await press('Iniciar foco'); await press('Encerrar sessão'); await press('Confirmar encerramento');
+  expect(screen.getByText('3 minutos de foco / 4 de pausa')).toBeOnTheScreen();
+});
+it('rejects old start, apply and cancel callbacks after editing or a new choice', async () => {
+  await mount(); const oldStart = capturedPress('Iniciar foco');
+  await editCustom('2', '3'); const oldApply = capturedPress('Aplicar intervalos'); const oldCancel = capturedPress('Cancelar edição');
+  await act(async () => fireEvent.changeText(screen.getByLabelText('Foco em minutos'), '4'));
+  act(() => { oldStart(); oldApply(); oldCancel(); });
+  expect(screen.getByLabelText('Foco em minutos')).toHaveProp('value', '4');
+  await press('Aplicar intervalos'); const start = capturedPress('Iniciar foco'); await press('Iniciar foco');
+  act(() => start()); expect(screen.getByText('04:00')).toBeOnTheScreen();
+});
+it('discards custom draft and choice on retained blur, returns with defaults and preserves mode9', async () => {
+  renderRouter({ ...routes, 'focus/other': () => <Text>Other synthetic route</Text> }, { initialUrl: '/focus' }); await act(async () => {});
+  await act(async () => fireEvent(screen.getByRole('switch', { name: 'Modo de baixa estimulação' }), 'valueChange', true));
+  await editCustom('6', '7'); const apply = capturedPress('Aplicar intervalos');
+  await act(async () => router.push('/focus/other')); act(() => apply()); await act(async () => router.back());
+  expect(screen.queryByLabelText('Foco em minutos')).toBeNull(); expect(screen.getByRole('radio', { name: '25 minutos de foco / 5 de pausa' })).toBeChecked();
+  expect(screen.getByRole('switch', { name: 'Modo de baixa estimulação' })).toBeChecked();
+  await editCustom('6', '7'); await press('Aplicar intervalos'); await press('Iniciar foco'); await press('Voltar ao quadro'); await press('Manter sessão');
+  expect(screen.getByText('06:00')).toBeOnTheScreen(); await press('Voltar ao quadro'); await press('Confirmar saída e encerrar');
+  await press('Abrir Pomodoro'); expect(screen.getByRole('radio', { name: '25 minutos de foco / 5 de pausa' })).toBeChecked();
+});
+it('starts the upper custom boundary and resets choice after visiting the free stopwatch', async () => {
+  await mount(); await act(async () => fireEvent.press(screen.getByRole('radio', { name: 'Personalizado' })));
+  expect(screen.getByLabelText('Foco em minutos')).toHaveProp('value', '25');
+  expect(screen.getByLabelText('Pausa em minutos')).toHaveProp('value', '5');
+  await act(async () => fireEvent.changeText(screen.getByLabelText('Foco em minutos'), '180'));
+  await act(async () => fireEvent.changeText(screen.getByLabelText('Pausa em minutos'), '180'));
+  await press('Aplicar intervalos'); await press('Iniciar foco'); expect(screen.getByText('180:00')).toBeOnTheScreen();
+  await press('Encerrar sessão'); await press('Confirmar encerramento'); await press('Abrir cronômetro livre');
+  elapsed(0, 0, 0); await press('Voltar ao foco');
+  expect(screen.getByRole('radio', { name: '25 minutos de foco / 5 de pausa' })).toBeChecked();
+});
+it('refuses an old free navigation callback after editing and a custom apply callback after unmount', async () => {
+  const view = await mount(); const free = capturedPress('Abrir cronômetro livre'); await editCustom('3', '4');
+  act(() => free()); expect(screen.getByLabelText('Foco em minutos')).toBeOnTheScreen();
+  const apply = capturedPress('Aplicar intervalos'); view.unmount(); act(() => apply());
+});
+it('keeps controls usable when pressing the already selected preset', async () => {
+  await mount();
+  await act(async () => fireEvent.press(screen.getByRole('radio', { name: '25 minutos de foco / 5 de pausa' })));
+  await press('Iniciar foco'); expect(screen.getByText('25:00')).toBeOnTheScreen();
+});
