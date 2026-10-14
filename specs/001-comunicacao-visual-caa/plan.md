@@ -8,6 +8,41 @@ Antes de editar versão: conferir registry/version-integrity/licença/changelogs
 
 Jestserial completo/linttipos/Doctor21/21/56tooling/validadordiffcheck/review/CIleve reais antesintegração; tasks somente verificadas. Ambos nativos/artefatos/noticesassinatura/manifestlicençasrede/assistivo/offline no SHAintegrado continuam gates pendentes; acessoadminfresh ausente jáavisado12:40Z não repetirnemrecuperarsegredos/CIkey/wrappersondagem. Nenhumhost/jobs/phone/preview8093/tagrelease nesta manutenção. Apósmerge95, sincronizar rootFFpreservandopessoais e integrar originmain na31 somenteárvorelimpa, repetir checks31 antesPR/DoD. Nenhum código/pacote95 implementado neste refinamento.
 
+### Execução US095 (2026-10-14)
+
+Os seis patches diretos foram instalados com npm install/ci --ignore-scripts.
+Lockfile mantém o mesmo conjunto de pacotes: seis transitivos exigidos pelos novos
+parents também mudaram (metro-runtime, prebuild-config, ui, autolinking, core e
+CLI). xcpretty/drawer-layout foram preservados nas versões anteriores porque
+seus patches não são necessários. Sem lifecycle/build local ou pacote funcional novo.
+Audit continua com 66 alertas (16 moderate, 49 high, 1 critical), sem fix automático.
+
+Changelogs oficiais sdk-57 dos seis pacotes consultados: patches publicados em
+2026-10-14; notifications registra backport para import crash Expo Go Android,
+sem atribuir causa aos crashes SSH anteriores. Fontes instaladas reconferidas:
+NotificationRecords.swift mantém evento iOS em segundos fracionários; serializer
+Android usa getTime(ms); mapNotification não converte date. SchedulerModule.swift
+e NotificationScheduler.kt retornam next-date em ms. DAILY Android serializa
+daily/hour/minute e usa Calendar local; iOS usa UNCalendar/dateComponents/repeats.
+Exports Router/useRouter/useFocusEffect continuam presentes; regressões Router
+dependem também da suíte real, não apenas de inspeção de tipos.
+
+Notices asset20/notifications23 atualizados, licenças integrais comparadas com npm;
+expo-sdk-57.txt inclui o cohort e tooling conservadoramente, sem afirmar bundle
+de tooling. Router/ui omitem LICENSE no npm; MIT declarado e texto completo da
+licença raiz oficial sdk-57 confirmado igual ao expo/LICENSE, proveniência registrada.
+Doctor após instalação passou 21/21 com DNS IPv4 somente por comando, sem bypass.
+Suíte completa serial 828 testes/96 suítes PASS; tipos/lint sem warnings,
+56 tooling/validador/diffcheck PASS. As duas expectativas antigas de versão em
+audio/notification-capabilities foram corrigidas sem remover checks de capacidades;
+suíte completa repetida e verde. Revisão do diff: manifest/lock/notices/testes/docs
+somente, nenhuma configuração/permissão ou código funcional alterado. CI leve do
+último head e PR ainda pendentes; T056 não é concluída antes dessas evidências.
+
+Ambos builds remotos/artefatos/notices/assinatura e fluxos nativos no novo SHA
+integrado ficam PENDENTES; APK/aparelho c265d4f não validam estes patches.
+Nenhum host/jobs/telefone/preview/tag/release operado pela manutenção.
+
 ## Organização vigente US088
 
 Pedido humano por imagens substitui a posição escolhida em US085: CommunicationBoard na home abaixo de SentenceComposer/header; drawer contém apenas os atalhos existentes. Estado de abertura pertence à rota home para fechar antes de router.push; Home mantém lifecycle/foco/back/backdrop e não altera contratos de dados. Quadro embutido evita SafeArea duplicada. Testes passam a abrir menu para ferramentas e compor diretamente na principal. Prévia web via US087, desktop/mobile, sem instalar celular; T053 nativo pendente. Seções US085 abaixo são histórico da organização anterior.

@@ -29,7 +29,7 @@ beforeAll(() => {
 
 it('pins only the SDK-compatible audio/slider capabilities and explicitly opts out of recording', () => {
   expect(dependencies.dependencies['expo-audio']).toBe('57.0.5');
-  expect(dependencies.dependencies['expo-asset']).toBe('57.0.19');
+  expect(dependencies.dependencies['expo-asset']).toBe('57.0.20');
   expect(dependencies.dependencies['@react-native-community/slider']).toBe('5.2.0');
   expect(app.expo.plugins).toContainEqual(['expo-audio', {
     microphonePermission: false, recordAudioAndroid: false,
