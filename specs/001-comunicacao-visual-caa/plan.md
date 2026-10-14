@@ -1,5 +1,23 @@
 # Implementation Plan: P0 — Comunicação Visual / CAA
 
+## Correção de comandos desmontados US003
+
+Refino #3/Ready antes código: reproduzir stop antigo após desmontagem atingindo
+outra instância e read antigo adquirindo guarda/pausando som após desmontagem.
+Proteger entrada de activate antes de qualquer efeito, reutilizando active
+existente. Sem owner/foco/abstração nova; não muda blur/background ou cleanup
+normal. Preservar tokens, retry de stop, leases de som27/28 e alternativa visual.
+Componentes e integração RegulationSoundsProvider/controlador real, engine/TTS
+sintéticos; StrictMode e comandos atuais. Checks leves/fullserial/review/CI antes
+integração. T022/T024 nativos pendentes, sem host/build/preview/phone/tag/release.
+
+Execução: dois RED reproduzidos antes do fix (stop adicional após desmontagem,
+pausa indevida do som por read antigo). Uma guarda active na entrada de activate,
+sem mudança de cleanup/token/lease/provider/nativo/políticas de blur/background.
+Três testes novos,112relacionados/11PASS e962completos/105PASS141.327s;
+lint/tipos sem warnings,Doctor21/21,56toolingPASS4.730s/validador/diffreviewPASS.
+Sem mudanças visuais/alvos48dp/rótulos/estímulos/deps/perms/rede/logs. CI pendente.
+
 ## Correção de controle do editor US004
 
 Refino #4 antes do código, preservando PR48 existente: reproduzir save pendente

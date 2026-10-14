@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { StrictMode } from 'react';
 import { SpeechControls } from '../../../../src/features/communication/speech/SpeechControls';
 import { localSpeech } from '../../../../src/features/communication/speech/local-speech';
 import StartupScreen from '../../../../src/app';
@@ -18,6 +19,11 @@ jest.mock('../../../../src/features/communication/speech/local-speech', () => ({
 }));
 
 const speech = jest.mocked(localSpeech);
+function commandCallback(name: string): () => void {
+  let node = screen.getByRole('button', { name });
+  while (node.parent && typeof node.props.onPress !== 'function') node = node.parent;
+  expect(typeof node.props.onPress).toBe('function'); return node.props.onPress as () => void;
+}
 
 describe('US-003 explicit speech controls (RF-009/RF-011)', () => {
   beforeEach(() => {
@@ -104,6 +110,39 @@ describe('US-003 explicit speech controls (RF-009/RF-011)', () => {
     fireEvent.press(screen.getByRole('button', { name: 'Interromper leitura' }));
     await act(async () => { complete(); });
     expect(speech.stop).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not stop a newer instance through a callback captured before unmount', async () => {
+    let oldDone!: () => void, newDone!: () => void;
+    speech.speak.mockReturnValueOnce(new Promise<void>(resolve => { oldDone = resolve; }))
+      .mockReturnValueOnce(new Promise<void>(resolve => { newDone = resolve; }));
+    const oldView = render(<SpeechControls text="Mensagem antiga sintética" />);
+    fireEvent.press(screen.getByRole('button', { name: 'Ler frase' }));
+    await waitFor(() => expect(speech.speak).toHaveBeenCalledTimes(1));
+    const oldStop = commandCallback('Interromper leitura'); oldView.unmount();
+    await act(async () => {}); expect(speech.stop).toHaveBeenCalledTimes(1);
+    render(<SpeechControls text="Mensagem nova sintética" />);
+    fireEvent.press(screen.getByRole('button', { name: 'Ler frase' }));
+    await waitFor(() => expect(speech.speak).toHaveBeenCalledTimes(2));
+    await act(async () => oldStop());
+    expect(speech.stop).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('button', { name: 'Interromper leitura' })).toBeOnTheScreen();
+    await act(async () => { oldDone(); newDone(); });
+  });
+
+  it('keeps current read and stop usable after StrictMode effect replay', async () => {
+    let complete!: () => void;
+    speech.speak.mockReturnValue(new Promise<void>(resolve => { complete = resolve; }));
+    const view = render(<StrictMode><SpeechControls text="Mensagem sintética" /></StrictMode>);
+    fireEvent.press(screen.getByRole('button', { name: 'Ler frase' }));
+    await waitFor(() => expect(speech.speak).toHaveBeenCalledTimes(1));
+    fireEvent.press(screen.getByRole('button', { name: 'Interromper leitura' }));
+    await waitFor(() => expect(speech.stop).toHaveBeenCalledTimes(1));
+    await act(async () => complete());
+    const oldRead = commandCallback('Ler frase'); view.unmount();
+    await act(async () => oldRead());
+    expect(speech.isAvailable).toHaveBeenCalledTimes(1); expect(speech.speak).toHaveBeenCalledTimes(1);
+    expect(speech.stop).toHaveBeenCalledTimes(1);
   });
 
   it('keeps the selected sentence visible when local voice is unavailable', async () => {
