@@ -4,6 +4,24 @@ Spec: [spec.md](spec.md). Milestone #21; Issues #31, #32. Plano proposto, sujeit
 
 ## Plano vigente US031
 
+Atualização após manutenção95: PR96 MERGED/main2af9db2 em2026-10-14T17:53Z,
+CI38610210270SUCCESS1min15s e Doctor21/21 da manutenção. Branch31 recebeu
+origin/main por merge d5471c9 somente árvore limpa, sem conflitos/rebase/force.
+Bloqueio Doctor20/21 do checkpoint abaixo é HISTÓRICO/resolvido pela95.
+Nenhum modelo/provider/UI31 reimplementado ou dependência adicional31.
+Repetir related/fullJestserial/tiposlintDoctor56tooling/validadordiffreview e
+CI do último head31 antes concluir T005/PR/DoD. Contagens anteriores não são
+atestação do estado pós-merge; T011 nativo continua PENDENTE.
+
+Pós-merge95:203relacionados16/856Jest98/linttipossemwarnings/Doctor21/21 PASS.
+Main95push38610475617 teve825PASS/3FAIL: dois testes de navegação excederam
+5000ms e houve falha subsequente; PR96CI verde não oculta esse run. Workflow
+usa paralelismo padrão Jest. [Issue97](https://github.com/Nosso-Espectro/aplicativo/issues/97)
+separa execução serial do CI leve com mesmos testes/asserts/timeouts/gates.
+Contenção é hipótese, não causa comprovada ou defeito funcional descartado.
+Preservar31 em checkpoint/semPR/DoD enquanto manutenção97 é validada;
+após main97 repetir checks31. Não rerun/cancelar jobs nem ampliar timeout.
+
 Checkpoint de qualidade:855Jest98/200relacionados15/tipos/lint semwarnings/56tooling/validadordiffcheck PASS. Doctor ATUAL20/21 FALHA por seis patches ExpoSDK57 novos, não regressão atribuída à31 (manifest/lock idênticos àmain3172bbd). Primeiro timeout de schema resolvido com DNSIPv4 somente no comando; mismatch permanece. [Issue95](https://github.com/Nosso-Espectro/aplicativo/issues/95) separa manutenção da base/patches/changelogs/licenças/API/lock/gates, sem suprimir checks. T005 NÃO verificada/semPR/DoD/entrega31. Preservar código em checkpoint na branch31, integrar main após95 somente árvore limpa e repetir checks antes PR. Nenhuma dependência atualizada31/host/phone/preview/build operado. Falha anterior lint owner/setState corrigida via publicação assíncrona guardada e ready/StrictMode testados; não repetir nem esconder bloqueio Doctor atual.
 
 Implementação31: meditation-model.ts/provider/tela/rota /meditation/Ferramentas reais. Duração1-180/draft10/presets5,10,20,30/start explícito/minimal/restante/pausa-retomada/encerrar/nova prática/geração/clockinvalid-regressivo-overflow/finishúnico/resultado efêmero; aviso visual defaultOFF/optinpolite/dismiss sem replay, nenhum áudio/vibração/TTS/notificação. Provider publica owner assíncrono guardado após cleanup inicialStrictMode; comandos bloqueados até ready, callbacks capturam owner/revisão, intervalo obsoleto não atinge retomada; AppState reconcilia sem promessaJSsuspenso/processomorto. Backfocado/gestosdesabilitados/confirmarsaída/blurdiscard/reentradavazia/fallback/48dp/input-switchhitSlop/wrap/textoescalável/mode9; quadroHome/headerFrase/drawer preservados.
