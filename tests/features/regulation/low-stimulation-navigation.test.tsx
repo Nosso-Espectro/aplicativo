@@ -22,6 +22,7 @@ jest.mock('../../../src/features/routines/RoutineProvider', () => ({ RoutineProv
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
 const mockPush = jest.fn(); const mockBack = jest.fn();
 jest.mock('expo-router', () => ({
+  useFocusEffect: (effect: () => void) => jest.requireActual('react').useEffect(effect, [effect]),
   useRouter: () => ({ push: mockPush, back: mockBack, canGoBack: () => true }),
   Stack: ({ screenOptions }: { screenOptions: { animation: string } }) => {
     const { Text } = jest.requireActual('react-native');
@@ -66,8 +67,10 @@ it('also disables the nested routines Stack; system motion is not mistaken for a
   expect(screen.getByText('Stack:none')).toBeOnTheScreen();
 });
 it('retains sentences, saved favorites and navigation across a global mode change — spec005/RF-003', async () => {
-  render(<Screens />); await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Favorito: Sim' })).toBeEnabled());
-  fireEvent.press(screen.getByRole('button', { name: 'Sim' })); expect(screen.getByLabelText('1. Sim')).toBeOnTheScreen();
+  render(<Screens />); fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
+  await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Favorito: Sim' })).toBeEnabled());
+  fireEvent.press(screen.getByRole('button', { name: 'Sim' }));
+  fireEvent.press(screen.getByRole('button', { name: 'Fechar Comunicação' })); expect(screen.getByLabelText('1. Sim')).toBeOnTheScreen();
   fireEvent(toggle(), 'valueChange', true); await waitFor(() => expect(toggle()).toBeChecked());
   expect(screen.getByLabelText('1. Sim')).toBeOnTheScreen(); expect(localSpeech.speak).not.toHaveBeenCalled();
   fireEvent.press(screen.getByRole('button', { name: 'Abrir favoritos' }));
@@ -77,13 +80,14 @@ it('retains sentences, saved favorites and navigation across a global mode chang
   fireEvent.press(screen.getByRole('button', { name: 'Ler frase' }));
   await waitFor(() => expect(localSpeech.speak).toHaveBeenCalledWith('Sim'));
   fireEvent.press(screen.getByRole('button', { name: 'Voltar ao quadro' }));
-  expect(screen.getByRole('header', { name: 'Comunicação' })).toBeOnTheScreen(); expect(toggle()).toBeChecked();
+  expect(screen.getByRole('header', { name: 'Frase' })).toBeOnTheScreen(); expect(toggle()).toBeChecked();
   fireEvent(toggle(), 'valueChange', false); await waitFor(() => expect(toggle()).not.toBeChecked());
   expect(screen.getByLabelText('1. Sim')).toBeOnTheScreen();
 });
 it('keeps card preview, its essential image and return usable in low stimulation', async () => {
   render(<Screens />); await waitFor(() => expect(toggle()).toBeEnabled());
   fireEvent(toggle(), 'valueChange', true); await waitFor(() => expect(toggle()).toBeChecked());
+  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
   fireEvent.press(screen.getByRole('button', { name: 'Mostrar cartão: Sim' }));
   expect(screen.getByRole('header', { name: 'Sim' })).toBeOnTheScreen();
   const modal = screen.UNSAFE_getAllByType(SafeAreaView).find((view) => view.props.accessibilityViewIsModal);
@@ -92,5 +96,6 @@ it('keeps card preview, its essential image and return usable in low stimulation
   expect(images).toHaveLength(1);
   expect(images[0].props.source).toEqual(initialCards.find((card) => card.id === 'yes')?.pictogram);
   fireEvent.press(screen.getByRole('button', { name: 'Voltar ao quadro' }));
-  expect(screen.getByRole('button', { name: 'Sim' })).toBeOnTheScreen(); expect(toggle()).toBeChecked();
+  expect(screen.getByRole('button', { name: 'Sim' })).toBeOnTheScreen();
+  fireEvent.press(screen.getByRole('button', { name: 'Fechar Comunicação' })); expect(toggle()).toBeChecked();
 });

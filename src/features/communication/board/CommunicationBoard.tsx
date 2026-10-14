@@ -24,7 +24,7 @@ import {
   type CommunicationCard,
 } from './initial-cards';
 
-type BoardProps = {
+export type BoardProps = {
   cards?: readonly CommunicationCard[];
   onSelectCard?: (card: CommunicationCard) => void;
   sentence?: ReactNode;
@@ -41,10 +41,12 @@ type BoardProps = {
   emptyMessage?: string;
   navigation?: ReactNode;
   feedback?: ReactNode;
+  showBrand?: boolean;
+  toolbar?: ReactNode;
 };
 
 export function CommunicationBoard({ cards = initialCards, onSelectCard, sentence, customCardIds = [], onNewCard, onEditCard, storageStatus, onRetryStorage,
-  favoriteIds = [], onFavorite, favoriteDisabled = false, heading = 'Comunicação', showCategories = true, emptyMessage = 'Nenhum cartão disponível.', navigation, feedback }: BoardProps) {
+  favoriteIds = [], onFavorite, favoriteDisabled = false, heading = 'Comunicação', showCategories = true, emptyMessage = 'Nenhum cartão disponível.', navigation, feedback, showBrand = true, toolbar }: BoardProps) {
   const [category, setCategory] = useState<CategoryId | 'all'>('all');
   const [selectedCard, setSelectedCard] = useState<CommunicationCard | null>(null);
   const { showBrandImage } = useLowStimulationPresentation();
@@ -60,11 +62,12 @@ export function CommunicationBoard({ cards = initialCards, onSelectCard, sentenc
 
   return (
     <SafeAreaView style={styles.screen}>
+      {toolbar && <View style={styles.toolbar}>{toolbar}</View>}
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.brandRow}>
+        {showBrand && <View style={styles.brandRow}>
           {showBrandImage && <Image source={appIcon} accessible={false} resizeMode="contain" style={styles.appIcon} />}
           <Text accessibilityRole="header" style={styles.brand}>TEAr</Text>
-        </View>
+        </View>}
         <Text accessibilityRole="header" style={styles.heading}>{heading}</Text>
         {navigation}
         {sentence}
@@ -202,6 +205,7 @@ export function CommunicationBoard({ cards = initialCards, onSelectCard, sentenc
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#FFFFFF' },
+  toolbar: { paddingHorizontal: 20 },
   content: { padding: 20, gap: 20, maxWidth: 720, width: '100%', alignSelf: 'center' },
   brand: { color: '#16634D', fontSize: 24, fontWeight: '700' },
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },

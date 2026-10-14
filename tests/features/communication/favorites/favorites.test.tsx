@@ -11,7 +11,8 @@ jest.mock('../../../../src/features/communication/storage/card-database', () => 
 jest.mock('../../../../src/features/communication/custom-cards/local-image-storage', () => ({ localImages: { copy: jest.fn(), remove: jest.fn(), prune: jest.fn() } }));
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
 const mockPush = jest.fn(); const mockBack = jest.fn();
-jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush, back: mockBack, canGoBack: () => true }) }));
+jest.mock('expo-router', () => ({ useFocusEffect: (effect: () => void) => jest.requireActual('react').useEffect(effect, [effect]),
+  useRouter: () => ({ push: mockPush, back: mockBack, canGoBack: () => true }) }));
 let favoriteIds: string[]; let cards: CustomCard[];
 const setFavorite = jest.fn();
 function Session({ initial = 'board' }: { initial?: string }) {
@@ -39,15 +40,19 @@ beforeEach(() => {
 });
 it('offers direct favorites access and an informative empty state — RF-018', async () => {
   render(<Session />);
+  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
   await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Favorito: Sim' })).toBeEnabled());
+  fireEvent.press(screen.getByRole('button', { name: 'Fechar Comunicação' }));
   fireEvent.press(screen.getByRole('button', { name: 'Abrir favoritos' }));
   expect(screen.getByText('Ainda não há cartões favoritos.')).toBeOnTheScreen();
   expect(screen.getByRole('header', { name: 'Favoritos' })).toBeOnTheScreen();
   fireEvent.press(screen.getByRole('button', { name: 'Voltar ao quadro' }));
+  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
   expect(screen.getByRole('button', { name: 'Sim' })).toBeOnTheScreen();
 });
 it('marks, unmarks and refavorites in order, retains the sentence and restores favorites in a new session', async () => {
   const view = render(<Session />);
+  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
   await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Favorito: Sim' })).toBeEnabled());
   fireEvent.press(screen.getByRole('checkbox', { name: 'Favorito: Sim' }));
   await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Favorito: Sim' })).toBeChecked());
@@ -57,6 +62,7 @@ it('marks, unmarks and refavorites in order, retains the sentence and restores f
   await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Favorito: Sim' })).not.toBeChecked());
   fireEvent.press(screen.getByRole('checkbox', { name: 'Favorito: Sim' }));
   await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Favorito: Sim' })).toBeChecked());
+  fireEvent.press(screen.getByRole('button', { name: 'Fechar Comunicação' }));
   fireEvent.press(screen.getByRole('button', { name: 'Abrir favoritos' }));
   expect(screen.getAllByRole('checkbox').map((item) => item.props.accessibilityLabel)).toEqual(['Favorito: Ajuda', 'Favorito: Sim']);
   fireEvent.press(screen.getByRole('button', { name: 'Ajuda' }));
@@ -72,6 +78,7 @@ it('keeps last saved marking and order on failure, hides exception content and r
   favoriteIds = ['yes'];
   setFavorite.mockRejectedValueOnce(new Error('private content'));
   render(<Session />);
+  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
   await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Favorito: Sim' })).toBeChecked());
   fireEvent.press(screen.getByRole('checkbox', { name: 'Favorito: Ajuda' }));
   expect(await screen.findByText(/A ordem salva foi mantida/)).toBeOnTheScreen();
@@ -80,6 +87,7 @@ it('keeps last saved marking and order on failure, hides exception content and r
   expect(screen.getByRole('checkbox', { name: 'Favorito: Ajuda' })).not.toBeChecked();
   fireEvent.press(screen.getByRole('button', { name: 'Tentar salvar favoritos novamente' }));
   await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Favorito: Ajuda' })).toBeChecked());
+  fireEvent.press(screen.getByRole('button', { name: 'Fechar Comunicação' }));
   fireEvent.press(screen.getByRole('button', { name: 'Abrir favoritos' }));
   expect(screen.getAllByRole('checkbox').map((item) => item.props.accessibilityLabel)).toEqual(['Favorito: Sim', 'Favorito: Ajuda']);
 });
@@ -87,6 +95,7 @@ it('never displays success optimistically and prevents duplicate pending request
   let finish!: (ids: string[]) => void;
   setFavorite.mockImplementationOnce(() => new Promise<string[]>((resolve) => { finish = resolve; }));
   render(<Session />);
+  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
   await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Favorito: Sim' })).toBeEnabled());
   fireEvent.press(screen.getByRole('checkbox', { name: 'Favorito: Sim' }));
   expect(screen.getByRole('checkbox', { name: 'Favorito: Sim' })).not.toBeChecked();

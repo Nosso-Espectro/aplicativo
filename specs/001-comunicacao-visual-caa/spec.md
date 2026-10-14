@@ -3,7 +3,7 @@ milestone: 9
 priority: P0
 tag: m001-comunicacao-visual-caa
 status: draft
-ready_stories: ["US-041", "US-001", "US-002", "US-003", "US-004", "US-005", "US-052"]
+ready_stories: ["US-041", "US-001", "US-002", "US-003", "US-004", "US-005", "US-052", "US-085"]
 source_checked: 2026-09-23
 ---
 
@@ -285,6 +285,25 @@ diretamente na conversa. Ready: conteúdo aprovado, base integrada e critérios 
 Os limites de máscara de ícone e splash do Android/iOS devem ser verificados
 em binário real; prévia web não comprova a inicialização nativa.
 
+### US-085 — Reorganizar home com comunicação lateral e frase no header (Priority: P0)
+
+GitHub Issue: [#85](https://github.com/Nosso-Espectro/aplicativo/issues/85)
+
+Como usuário do TEAr, quero Comunicação em um drawer lateral e a frase no header, mantendo as ações na home, para compor mensagens sem perder acesso às ferramentas existentes.
+
+Pedido humano em 2026-10-14: Comunicação deve virar side drawer, Frase deve virar header e ações devem permanecer na home. Ready sob delegação funcional: reutilizar quadro e composição existentes, sem ampliar produto ou instalar aparelho.
+
+#### Critérios de aceite
+
+- [ ] A home mantém todos os atalhos de ações existentes, sem movê-los ao drawer.
+- [ ] A frase e seus controles de limpar, remover e fala explícita passam ao header da home, antes das ações; preservar estado, ordem e contratos de voz local.
+- [ ] Um botão de menu abre Comunicação em drawer lateral esquerdo com categorias, cartões, favoritos e criar/editar cartões existentes. Selecionar cartões adiciona à frase sem fala automática e sem apagar o restante.
+- [ ] Drawer fecha por botão, toque fora ou back; abrir/fechar não apaga frase, cartões ou favoritos. Fechar antes de navegar para editor. Sem animação, dependência ou permissão nova.
+- [ ] Fundo inacessível durante drawer, alvos48dp, SafeArea, texto escalável, largura responsiva, nomes acessíveis e foco de abertura/retorno; preservar modo de baixa estimulação e erro/retry do armazenamento.
+- [ ] Testar fluxo real de router/providers e regressões CAA/voz/atalhos; offline e leitores reais permanecem gate nativo.
+
+**Teste independente**: compor cartões no drawer, fechar/reabrir e revisar frase no header; remover/limpar e navegar para ações sem perda dos contratos existentes. RF-021, tasks T043–T046. Nenhuma dependência, permissão, banco, backend, animação ou áudio automático novo.
+
 ### Definition of Done original (comum às Issues #1, #2, #3, #4, #5)
 
 - Critérios de aceite atendidos.
@@ -350,6 +369,7 @@ Os IDs RF existentes são preservados para não romper o vínculo com plano e ta
 - **RF-018** — Deve existir uma área de favoritos acessível diretamente no módulo. (#5, critério 2.)
 - **RF-019** — A ordem dos favoritos deve ser persistida localmente. (#5, critério 3.)
 - **RF-020** — Usar a imagem aprovada pelo usuário como ícone e na inicialização nativa, disponível localmente, abrindo o quadro sem áudio ou atraso artificial. (#52, critérios 1–4.)
+- **RF-021** — Reorganizar a home com frase no header, ações preservadas e quadro Comunicação em drawer lateral acessível, sem alterar contratos de dados/composição/voz. (#85.)
 
 Detalhamento de RF-008 aprovado em Clarify (2026-09-23, US-002/#2): a composição
 permanece durante a sessão, inclusive em segundo plano sem encerramento. Após encerramento
@@ -541,6 +561,7 @@ Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma
 | RF-018 | [#5](https://github.com/Nosso-Espectro/aplicativo/issues/5) | US-005 | T035 |
 | RF-019 | [#5](https://github.com/Nosso-Espectro/aplicativo/issues/5) | US-005 | T034 |
 | RF-020 | [#52](https://github.com/Nosso-Espectro/aplicativo/issues/52) | US-052 | T041 |
+| RF-021 | [#85](https://github.com/Nosso-Espectro/aplicativo/issues/85) | US-085 | T043 |
 | RNF-001 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |
 | RNF-002 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |
 | RNF-003 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |

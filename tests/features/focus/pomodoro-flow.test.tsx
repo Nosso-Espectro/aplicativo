@@ -65,7 +65,7 @@ it('confirms hardware back and provides a direct-link fallback with low-stimulat
   await mount(); await act(async () => fireEvent(screen.getByRole('switch', { name: 'Modo de baixa estimulação' }), 'valueChange', true));
   await press('Iniciar foco'); act(() => { expect(back?.({ type: 'hardwareBackPress', timeStamp: Date.now() })).toBe(true); });
   expect(screen.getByText('Encerrar a sessão e voltar ao quadro?')).toBeOnTheScreen();
-  await press('Confirmar saída e encerrar'); expect(screen.getByRole('header', { name: 'Comunicação' })).toBeOnTheScreen();
+  await press('Confirmar saída e encerrar'); expect(screen.getByRole('header', { name: 'Frase' })).toBeOnTheScreen();
   expect(screen.getByRole('switch', { name: 'Modo de baixa estimulação' })).toBeChecked();
 });
 it('discards on an external route removal and does not restore session or responses through navigation', async () => {
