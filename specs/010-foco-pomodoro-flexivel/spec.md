@@ -25,11 +25,11 @@ Como usuário, quero definir tempos próprios de foco e pausa, para organizar um
 
 #### Critérios de aceite
 
-- Preservar presets25/5 e50/10; opção Personalizado com foco e pausa de1 a180 minutos inteiros cada, draft inicial25/5, sem indicação clínica.
-- Editar/aplicar/cancelar somente sem sessão. Running, paused e waiting impedem alterar escolha. Aplicar valida os dois campos juntos sem iniciar; erro mantém draft e escolha anterior; cancelar descarta edição.
-- Iniciar captura cópia imutável dos dois intervalos. Pausar/retomar/encerrar e próxima fase por comando humano preservam os tempos; nenhuma alteração tardia por draft/preset/owner antigo.
-- Escolha/draft apenas em memória da ferramenta: sair/desmontar/reabrir começa25/5. Sem DB/preferência persistida/histórico/rede/deps/permissões/som/vibração/TTS/notificação novos.
-- Preservar clock/AppState/revisão/saída confirmada/reentrada vazia, cronômetro26, Timer/CAA, modo9, alvos48dp e texto ampliável. Testes de limites/erro/draft/cancel/captura/stale/retornos/regressões; gates nativos separados.
+- [ ] Preservar presets25/5 e50/10; opção Personalizado com foco e pausa de1 a180 minutos inteiros cada, draft inicial25/5, sem indicação clínica.
+- [ ] Editar/aplicar/cancelar somente sem sessão. Running, paused e waiting impedem alterar escolha. Aplicar valida os dois campos juntos sem iniciar; erro mantém draft e escolha anterior; cancelar descarta edição.
+- [ ] Iniciar captura cópia imutável dos dois intervalos. Pausar/retomar/encerrar e próxima fase por comando humano preservam os tempos; nenhuma alteração tardia por draft/preset/owner antigo.
+- [ ] Escolha/draft apenas em memória da ferramenta: sair/desmontar/reabrir começa25/5. Sem DB/preferência persistida/histórico/rede/deps/permissões/som/vibração/TTS/notificação novos.
+- [ ] Preservar clock/AppState/revisão/saída confirmada/reentrada vazia, cronômetro26, Timer/CAA, modo9, alvos48dp e texto ampliável. Testes de limites/erro/draft/cancel/captura/stale/retornos/regressões; gates nativos separados.
 
 RF-007 [US-082] corresponde à opção/validação/draft (T013); RF-008 à captura e guardas (T014); RF-009 à UI/retornos/retensão efêmera (T015). RNF-001 a RNF-004 aplicam-se também à #82; testes T016, review/checks T017 e gate nativo T018. Estes IDs são locais a spec010. Prontidão não comprova implementação.
 
