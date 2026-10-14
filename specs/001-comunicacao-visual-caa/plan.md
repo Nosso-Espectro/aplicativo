@@ -16,7 +16,9 @@ pausa indevida do som por read antigo). Uma guarda active na entrada de activate
 sem mudança de cleanup/token/lease/provider/nativo/políticas de blur/background.
 Três testes novos,112relacionados/11PASS e962completos/105PASS141.327s;
 lint/tipos sem warnings,Doctor21/21,56toolingPASS4.730s/validador/diffreviewPASS.
-Sem mudanças visuais/alvos48dp/rótulos/estímulos/deps/perms/rede/logs. CI pendente.
+Sem mudanças visuais/alvos48dp/rótulos/estímulos/deps/perms/rede/logs. PR106
+anexado/CI38654075840 SUCCESS2min28s no head980c369; último commit documental e
+main push ainda precisam ser reconferidos. Nativos SKIPPED não são builds.
 
 ## Correção de controle do editor US004
 
