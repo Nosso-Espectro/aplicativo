@@ -84,6 +84,28 @@ Base integrada da US-041 e fronteiras locais de imagem da US-004 reutilizadas. S
 
 ## Riscos
 
+### Correção US-006: continuações do editor
+
+Reprodução inicial: manter save pendente, desmontar o editor e resolver o commit;
+o fechamento antigo não pode navegar. O editor usa useFocusEffect do Router
+real e captura um owner por ativação (montagem/foco), invalidado na
+limpeza; uma nova ativação não aceita o owner anterior. Comandos antigos não
+iniciam save/picker; continuações antigas não publicam feedback nem fechamento.
+O finally libera somente o busy da operação/ativação correspondente. Preservar
+gravações já autorizadas, provider/DAO, schema, permissões e dependências.
+Testar sucesso/falha tardios, unmount/blur/retorno, callbacks antigos, StrictMode
+e sucesso/retry atual. T006/T011/T017 continuam pendentes no gate nativo.
+
+Evidência local 2026-10-14: regressão reproduzida antes da correção (router.back
+chamado após unmount), oito cenários novos aprovados. Dois usam Router/provider
+reais e SQLite do Node com commit retido: a gravação conclui, mas não navega após
+replace ou blur/retorno. Suíte completa 934 testes/104 suítes PASS (140,437s),
+lint/tipos sem avisos, Doctor21/21, 56 testes tooling, validador/diff check PASS.
+Revisão do diff preserva dados/schema/status, layout e alvos de 48dp; nenhuma
+permissão/dependência/rede/estímulo nova. PR103 anexado; CI38639608287 SUCCESS
+2min10s no head6f5921c. Reconferir CI do último commit documental antes squash;
+Android/iOS SKIPPED não são builds. Issue6 permanece aberta para os gates.
+
 Rotina vazia, imagem ausente, falha de persistência e etapa removida durante edição; preservar ordem/status (#6–#8).
 
 Refinamentos de #6/#7/#8 foram registrados nas Issues sob delegação do usuário. Validação de imagens, progresso persistido, operação offline e acessibilidade em Android/iOS permanece necessária para o gate; a base/host não comprovam suporte em todas as versões mínimas. Ver [auditoria](../../docs/backlog-audit.md).

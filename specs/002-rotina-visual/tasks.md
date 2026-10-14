@@ -46,3 +46,8 @@ offline no binário ainda pendentes; testes do host não substituem essas evidê
 T017: revisão estática de contraste, nomes, texto escalável, alvos 48dp, estados
 vazios/erros e nenhuma transmissão de conteúdo realizada. Leitor de tela, foco,
 offline e interrupção/reabertura do binário permanecem pendentes. Nenhum build local.
+
+## Correção de ciclo de vida — US-006 / Issue #6
+
+- [x] T018 [US-006] Reproduzir commit pendente/desmontagem e proteger comandos/continuações do editor por owner de montagem/foco; preservar commit autorizado, save/retry atual e contratos de reordenação, sem novo schema/dependências/permissões. Evidência: teste falhou antes da correção por back tardio; oito regressões novas PASS, incluindo dois fluxos Router/provider/SQLiteNode real com commit retido.
+- [x] T019 [US-006] Testar sucesso/falha tardios, blur/retorno/callbacks antigos/StrictMode; revisar UI/privacidade/diff e executar related/full Jest serial, lint/tipos/Doctor/tooling/validador e CI do último head antes integração. Evidência: oito regressões novas, 934 Jest/104 suítes PASS, lint/tipos sem warnings, Doctor21/21, 56 tooling/validador/diff/review PASS. PR103 anexado; CI38639608287 SUCCESS 2min10s no head6f5921c. Último commit documental deve manter CI verde antes squash. Não fecha #6 nem marca T006/T011/T017 nativos.
