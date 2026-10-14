@@ -1,6 +1,6 @@
 # Tasks — Meditação e Zazen
 
-Milestone #21: [spec.md](spec.md) e [plan.md](plan.md). Todas pendentes; não executadas nesta preparação.
+Milestone #21: [spec.md](spec.md) e [plan.md](plan.md). US031 Ready pelo refinamento GitHub/spec; todas tasks pendentes, nenhum código/aceite implementado. US032 não Ready.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -8,11 +8,12 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 
 ## US-031 — Issue #31
 
-- [ ] T001 [US-031] Em `src/features/meditation/meditation-timer`, atender RF-001 (critério 1 de #31): O usuário deve poder escolher a duração. Verificar com o cenário correspondente no PR.
-- [ ] T002 [US-031] Em `src/features/meditation/meditation-timer`, atender RF-002 (critério 2 de #31): A tela durante a prática deve ser minimalista. Verificar com o cenário correspondente no PR.
-- [ ] T003 [US-031] Em `src/features/meditation/meditation-timer`, atender RF-003 (critério 3 de #31): O final da sessão deve usar um aviso discreto e configurável. Verificar com o cenário correspondente no PR.
-- [ ] T004 [US-031] Adicionar testes de comportamento de RF-001, RF-002, RF-003 em `tests/features/meditation/meditation-timer`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
-- [ ] T005 [US-031] Revisar RNF-001 a RNF-004 na interface/dados de #31, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+- [ ] T001 [US-031] Modelo efêmero duração1-180inteiros/draft10/presets5,10,20,30/revisão/restante/baseline/pausarretomarencerrarnovo/fim único/clockinvalid-regressivo-overflow preservaconfirmado; RF-001 sem horários clínicos/DB/histórico.
+- [ ] T002 [US-031] Provider/clockAppState/owner/stale-dup-dispose e UIrota /meditation/Ferramentas/minimal/restante/comandosessenciais/confirmarsair/hardwarebackfocado/gestos/blurunmountdescarta/reentradavazia/fallback/48dpescalávelmode9; RF-002 sem alterar Timer/CAA/Pomodoro/sons.
+- [ ] T003 [US-031] Aviso final visual discreto configurado antes de iniciar/defaultOFF/polite sóoptin/semfaixaOFF/resultadoapenas tela/semreplay-auto-restart/sem áudio-vib-TTS-notificação-player-permissão; RF-003 sem promessa JSsuspenso/processomorto.
+- [ ] T004 [US-031] Testes modelo/provider/Router para RF-001 a RF-003: duração/draft/avisoON-OFF/pausarretomar/fim único/clockbg-invalid-regressivo-overflow/stale-dup-unmount/saídas-retornos-fallback/mode9/offline/regressões Timer/Pomodoro/cronômetro/sons/CAA; fixtures sintéticas.
+- [ ] T005 [US-031] Review RNF-001 a RNF-004/cleanprivacyoffline/UI; related/fullJestserial/linttipos/Doctor56toolingvalidadordiffcheck/CIleve antesintegração; tasks sócomportamento. Sem buildlocal/host/phone/preview8093.
+- [ ] T011 [US-031] Gate real posterior SHA integrado: assistivo/leitores/foco/textoampliado/insets/alvos/backgestos/clockbackground-lock/AppState/offline; mocks/build/assinatura não aprovam nativo, nenhum aparelho autorizado por refinamento.
 
 ## US-032 — Issue #32
 

@@ -2,6 +2,20 @@
 
 Spec: [spec.md](spec.md). Milestone #21; Issues #31, #32. Plano proposto, sujeito às questões em aberto.
 
+## Plano vigente US031
+
+Base integrada3172bbd/US030. Refino funcional [Issue31](https://github.com/Nosso-Espectro/aplicativo/issues/31#issuecomment-6173145689); Ready somente31, guia32 não Ready. Expo57/RN0.86/React19/TSstrict/Router/Node24.21.0/npm11.19.0 reais; os estados históricos de ausência de stack abaixo não são instruções atuais. Nenhum código31 implementado/tasks verificadas neste refinamento.
+
+Ler e seguir os padrões reais de focus/StopwatchProvider/StopwatchScreen, PomodoroProvider/model e transition-timer/visual-timer sem alterar sessões/avisos/bancos existentes. Modelo próprio de contagem regressiva efêmera: duração1-180min/configuração de aviso visualOFF-ON capturadas no iniciar; restante confirmado/baseline/lastclock/revisões, comandos pause/resume/end/new e finish único. Clock inválido/regressivo/overflow pausa preservando restante confirmado e opção de aviso; recomeço inválido não apaga resultado. Tick somente da sessão running, sem decremento artificial por intervalo ou revisões por render. Sem DB/histórico/player/permissão/deps/rede.
+
+Provider de sessão/owner, clock Date.now e AppState conforme padrões existentes: reconciliação ao retornar, callbacks capturados/revisão/stale/dup/dispose e saída descartam efêmero sem atingir outras ferramentas; não prometer execução JS suspensa/processo morto. Resultado final permanece apenas na tela, aviso visual/polite somente se escolhido antes de iniciar/defaultOFF, nunca mídia/notificação/TTS/haptic. Não criar handler global nem repetir conclusão.
+
+UI/rota fina /meditation, acesso na lista Ferramentas: configuração separada durationdraft10/presets5,10,20,30 e switch aviso defaultOFF, iniciar humano; prática minimalista com restante/pausa-retomada/encerrar, nova sessão explícita; confirmar sair ativa-paused, hardwareback focado/gestos/blur externo/unmount/fallback e reentrada vazia. SafeArea/48dp/wrap/texto escalável/foco/mode9; sem conteúdo clínico/guia32. Preservar headerFrase/boardHome/toolsdrawer88 e todos contratos Timer/Pomodoro/cronômetro/sons/CAA.
+
+Testar modelo/provider/Router reais (fronteiras nativas simuladas apenas onde necessárias): intervalo/overflow/defaultOFF/draft/avisoON-OFF/fim único/clockbg/invalid-regressivo/stale/dup/unmount/saídas/retornos/fallback/mode9/offline e regressões relacionadas, fullJest serial/linttipos/Doctor56toolingvalidadordiffreview/CI leve antes DoD. Task só após comportamento; T011 nativo posterior no SHA integrado verifica leitores/ampliação/insets/alvos/foco/offline/clockbg/lock/backgestos. Sem build local/host/jobs/celular/preview8093 nesta Issue; docs não aprovam release.
+
+As seções seguintes são histórico documental de2026-09-23 e não afirmam ausência atual da stack.
+
 ## Stack
 
 Inspeção em 2026-09-23: repositório sem código de aplicação, package.json, dependências ou ferramentas de build/teste. React Native e primeira versão sem backend são diretrizes explícitas do projeto, ainda não implementadas. Expo, linguagem, navegação e biblioteca de persistência não foram escolhidos. Não assumir stack web, banco ou servidor.

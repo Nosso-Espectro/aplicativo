@@ -3,8 +3,8 @@ milestone: 21
 priority: P2
 tag: m013-meditacao-e-zazen
 status: draft
-ready_stories: []
-source_checked: 2026-09-23
+ready_stories: ["US-031"]
+source_checked: 2026-10-14
 ---
 
 # Meditação e Zazen
@@ -12,6 +12,16 @@ source_checked: 2026-09-23
 Milestone GitHub: [P2 — Meditação e Zazen](https://github.com/Nosso-Espectro/aplicativo/milestone/21) (número 21).
 
 Estado consultado: aberta; todas as histórias abaixo estão abertas. Especificação em revisão, não implementação concluída.
+
+## Refinamento US031
+
+Recomendação conservadora registrada na [Issue31](https://github.com/Nosso-Espectro/aplicativo/issues/31#issuecomment-6173145689) sob delegação funcional humana. US031 Ready após sincronização destes contratos; nenhuma implementação/entrega ou gate nativo aprovado. US032 continua sem Ready, origem/revisão próprias pendentes.
+
+- Duração inteira1-180min, draft10/presets5,10,20,30 e iniciar humano separado. Valores não são recomendação clínica nem protocolo de meditação. Sessão local efêmera, restante/pausar/retomar sem zerar/encerrar/nova sessão explícita; sem DB/histórico/metas/pontuação/penalização.
+- Tela de prática minimalista: restante e comandos essenciais, sem animação/conteúdo de postura ou respiração da32. Aviso final configurado antes de iniciar: texto discreto opcional/defaultOFF, faixa visual/polite somente opt-in. Estado final consultável mesmoOFF sem destaque/aviso repetido/auto-restart. Nenhum som/vibração/TTS/notificação/player/permissão nova.
+- Prazo corrido durante background, AppState reconcilia no retorno; não promete aviso com JS suspenso/processo morto, despertar tela ou entrega exata. Pausa humana preserva restante. Relógio inválido/regressivo/overflow preserva confirmado/pausa recuperável e retomada humana; revisão/owner/stale/duplicatas impedem comando antigo em sessão nova.
+- Saída ativa/pausada confirmada; blur externo/unmount descarta, reentrada vazia sem efeitos em outras ferramentas. Rota própria/Ferramentas/backfallback/gestos coerentes/48dp/texto escalável/SafeArea/foco/mode9. Preservar Timer/avisos/Pomodoro/cronômetro/sons/CAA e preview8093, sem DB/deps/rede/conta/telemetria/dados clínicos novos.
+- Testes modelo/provider/Router para duração/draft/avisoOFF-ON/pausarretomar/fim único/clockbg-invalid-stale/saídas/retornos/fallback/mode9/regressões antes DoD. Gate real assistivo/offline/clock/background permanece pendente; mocks/build não comprovam. Sem instalação/host/build local autorizado.
 
 ## Contexto
 
@@ -105,8 +115,8 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-MEDIT-01 — Definir origem/revisão do guia e forma de aviso discreto configurável (#31/#32).
-- Q-MEDIT-02 — Quais controles de pausa/cancelamento e comportamento em segundo plano serão necessários? #31 não os detalha.
+- Q-MEDIT-01 — Forma de aviso31 resolvida no refinamento acima; origem/revisão do guia32 continua aberta, não Ready.
+- Q-MEDIT-02 — Controles/segundo plano31 resolvidos no refinamento acima; não condicionam aprovação funcional nova.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 
