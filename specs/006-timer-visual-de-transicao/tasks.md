@@ -24,6 +24,10 @@ instalar APK ou declarar release por esta evidência.
 
 ## US-018 — Issue #18
 
+Ready em 2026-10-14 após refinamento na Issue18. T006–T010 ainda pendentes:
+modelo/preferências,identidade/SQLite preservandov1,engine localnotificações/
+permission/cancel-reconcile,provider/UI/avisosvisuais e testes/revisão/gate nativo.
+
 - [ ] T006 [US-018] Em `src/features/transition-timer/progress-alerts`, atender RF-004 (critério 1 de #18): O usuário deve poder ativar avisos em marcos como 10, 5 e 2 minutos. Verificar com o cenário correspondente no PR.
 - [ ] T007 [US-018] Em `src/features/transition-timer/progress-alerts`, atender RF-005 (critério 2 de #18): Os avisos devem respeitar configurações de som e vibração do usuário. Verificar com o cenário correspondente no PR.
 - [ ] T008 [US-018] Em `src/features/transition-timer/progress-alerts`, atender RF-006 (critério 3 de #18): Deve ser possível desabilitar todos os avisos. Verificar com o cenário correspondente no PR.

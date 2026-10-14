@@ -30,6 +30,26 @@ Módulo proposto: `src/features/transition-timer/`.
 
 ## Modelo de dados
 
+US-018 Ready após refinamento na Issue18: boolenabled inicialmente false,
+IDsminutos10/5/2 selecionados inicialmente[], opção avisos do sistema false;
+validação estrita/cópia/deduplicação/ordem e marcosfuturos<duração. Sessão local
+precisa identidade e registro mínimo de marcos/IDs próprios para reconciliar sem
+duplicata; preferências retidas, sem histórico de atividades. Evoluir SQLite do
+timer com migração preservando sessão atualv1,fila/transação/rollback/schemafuturo,
+ações obsoletas/retry sem sucesso prematuro; não escrever por tick. Foreground
+visual; notificações locais voluntárias/confirmadas/permission somente por ação
+humana. Pausa/cancel/conclusão/desativação cancela somenteIDs próprios, resume
+reagendafuturos. Sistema rege som/vibração/canais/silencioso/DND, sem áudio/haptics
+próprios ou alterar configuração global/canais personalizados/alarmes exatos.
+Sem notificação opcional nenhuma permissão/pedido; timer e CAA preservados em
+falha/negação. Metadados genéricos, sem push/backend/rede/dados pessoais.
+MatrizExpo57 sugere expo-notifications~57.0.22, ainda não instalada; fonte/API/
+licenças/audit/manifest avaliados antes integração. Referência primária:
+[SDK Notifications](https://docs.expo.dev/versions/v57.0.0/sdk/notifications/).
+Testar modelo/tempo/identidade/reconciliação/persistência/UI/mocks de capacidades;
+gate nativo deve validar relógio/background/cancelamento/entrega/permissões/som/
+vibração/assistivo/offline, sem promessa após force-stop/reboot/restrições.
+
 US-017: sessão inicialmente null, depois running/paused/finished, duração e
 restante em milissegundos e término absoluto quando running; validação estrita
 de duração1s–24h e estados coerentes. Relógio recebido pelos cálculos para testes,

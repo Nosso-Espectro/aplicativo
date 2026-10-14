@@ -3,15 +3,15 @@ milestone: 14
 priority: P1
 tag: m006-timer-visual-de-transicao
 status: draft
-ready_stories: ["US-017"]
-source_checked: 2026-10-13
+ready_stories: ["US-017", "US-018"]
+source_checked: 2026-10-14
 ---
 
 # Timer Visual de Transição
 
 Milestone GitHub: [P1 — Timer Visual de Transição](https://github.com/Nosso-Espectro/aplicativo/milestone/14) (número 14).
 
-US-017 implementada e verificada nos checks leves, com build remoto e revisão nativa/assistiva pendentes do gate. US-018 conserva questões próprias de avisos/som/vibração e não foi entregue; a milestone não está concluída.
+US-017 integrada pelo PR70. US-018 Ready após refinamento vivo para avisos voluntários/locais, ainda não implementada. Builds e revisão nativa/assistiva permanecem no gate; a milestone não está concluída.
 
 ## Contexto
 
@@ -121,6 +121,28 @@ será integrado em sua própria história. Nenhuma task foi concluída pelo refi
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 
 ## Rastreabilidade
+
+US-018 refinada na [origem](https://github.com/Nosso-Espectro/aplicativo/issues/18#issuecomment-6158294220):
+preferência local inicialmente desativada/marcos10/5/2 não escolhidos, salvar/
+cancelar e Desabilitar todos explícitos. Marcos somente menores que duração
+inicial e futuros no restante, sem aviso imediato/catch-up em rajada. Uma emissão
+por sessão/marco, identidade persistida; pausa/cancelamento/conclusão/desativação
+cancelam pedidos próprios, retomada reagenda futuros do novo deadline. Manter
+escolhas para próximas sessões, migrar SQLite preservando timerv1 sem histórico.
+Foreground visual sem áudio/haptics próprios. Avisos do sistema opção independente
+inicialmente desligada, confirmação de bloqueio/segundo plano e possível som/
+vibração conforme preferências do OS/TEAr/canais; consultar/solicitar permissão só
+nesse comando. Não ignorar silencioso/DND/criar alarmes exatos/críticos/sobrescrever
+canais personalizados; não prometer controles independentes sem API nativa.
+Sem opção não agendar nem solicitar permissão. Falha/negação/restrição conserva
+timer/visuais; cancelamento/agendamento próprio serial/idempotente, sem sucesso
+prematuro ou desativação confirmada em falha, retry/draft/estado preservados.
+Só notificações locais/metadados genéricos Timer de transição/Faltam N minutos,
+sem dado pessoal/tokenpush/rede/backend ou alterar outras notificações. Sem
+garantia após force-stop/reboot/bateria/relógio; reconciliar futuros ao reabrir.
+Preservar modo9/CAA/sons; sound timer28 fora de escopo. Candidataexpo-notifications
+SDK57.0.22 ainda não instalada; revisar APIs/licenças/audit/permissões antes uso.
+Q-TIMER-01/02 para18 resolvidas nesta política, tasks/gates continuam pendentes.
 
 | Requisito | Issue | História | Task principal |
 | --- | --- | --- | --- |
