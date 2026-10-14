@@ -24,6 +24,11 @@ it('preserves the audio package MIT license exactly and the slider upstream noti
   expect(slider).toContain('Copyright (c) 2019 react-native-community');
   expect(slider).toContain('Permission is hereby granted, free of charge');
 });
+it('preserves the clipboard package MIT license in the notices distributed with artifacts', () => {
+  const notice = readFileSync(resolve(root, 'docs/third-party-notices/expo-clipboard.txt'), 'utf8');
+  expect(notice).toContain('expo-clipboard 57.0.2');
+  expect(notice).toContain(readFileSync(resolve(root, 'node_modules/expo-clipboard/LICENSE'), 'utf8').trim());
+});
 it.each([
   { job: 'android-build', binary: 'build/android/*.apk', destination: 'build/android/THIRD_PARTY_NOTICES.txt', upload: 'Upload Android APK' },
   { job: 'ios-build', binary: 'build/tear-ios-simulator.zip', destination: 'build/THIRD_PARTY_NOTICES.txt', upload: 'Upload iOS simulator app' },
