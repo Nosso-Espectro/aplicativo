@@ -47,7 +47,12 @@ async function mount(initialUrl: string) {
   await act(async () => {});
   return view;
 }
-async function press(name: string) { await act(async () => fireEvent.press(screen.getByRole('button', { name }))); }
+async function press(name: string) {
+  if (!screen.queryByRole('button', { name }) && screen.queryByRole('button', { name: 'Abrir ferramentas' })) {
+    await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir ferramentas' })));
+  }
+  await act(async () => fireEvent.press(screen.getByRole('button', { name })));
+}
 async function answer(label: string) { await act(async () => fireEvent.press(screen.getByRole('radio', { name: label }))); }
 function expectUnanswered() { for (const option of screen.getAllByRole('radio')) expect(option).not.toBeChecked(); }
 

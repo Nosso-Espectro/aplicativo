@@ -158,6 +158,15 @@ aprovados antes de incorporar US-052, lint/typecheck e Expo Doctor 21/21.
 T036 permanece pendente de binário offline, TalkBack/VoiceOver e foco em aparelho.
 Os testes SQLite do host e fronteiras Expo simuladas não substituem essa evidência.
 
+## Organização por imagens — US-088 / Issue #88
+
+- [x] T050 [US-088] Implementar RF-023: quadro na principal, frase no header e 12 ferramentas no drawer; fechar antes de navegar, preservar dados e contratos.
+- [x] T051 [US-088] Testar router/composição/menu/retornos/back/erro/favoritos/edição/mode9 e conferir prévia web desktop/mobile.
+- [x] T052 [US-088] Revisar UI/acessibilidade/privacidade/diff e executar checks leves/CI antes integração.
+- [ ] T053 [US-088] Gate nativo posterior: leitores/foco/ampliação/insets/alvos/offline Android/iOS; prévia web/build não comprovam.
+
+Evidência US088: 635 Jest/85 suítes completos,16 relacionados/4; lint/tipos sem warnings, Doctor21/21,56tooling,validador/diffcheck verdes. Testes da home atualizados para cartões diretos e menu exclusivo de ferramentas; regressões de rotas executam o passo real de abrir menu, sem substituir APIs ou enfraquecer contratos. Prévia real localhost:8093 mostra as duas áreas conforme imagens, compõe Sim, abre Pomodoro pelo menu e retorna preservando frase. Drawer fecha antes de navegar; fundo da home usa aria-hidden na web e propriedades nativas de acessibilidade. Desktop1280x900: documentWidth1280, cartões Sim/Não na mesma linha sem overflow; mobile390x844 e painel estreito exibem controles escaláveis/scroll sem perder funções. T053 e gates anteriores pendentes. Imagens anexadas não viraram assets; nenhum aparelho/host operado, dependência/permissão/banco nova ou áudio automático. Persistência nativa indisponível na prévia continua informada; não declarar paridade funcional web/nativa integral.
+
 ## Prévia web — US-087 / Issue #87
 
 - [x] T047 [US-087] Reconciliar contrato web de imagens para RF-022 sem filesystem nativo ou sucesso falso.

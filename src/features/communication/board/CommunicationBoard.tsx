@@ -43,10 +43,11 @@ export type BoardProps = {
   feedback?: ReactNode;
   showBrand?: boolean;
   toolbar?: ReactNode;
+  embedded?: boolean;
 };
 
 export function CommunicationBoard({ cards = initialCards, onSelectCard, sentence, customCardIds = [], onNewCard, onEditCard, storageStatus, onRetryStorage,
-  favoriteIds = [], onFavorite, favoriteDisabled = false, heading = 'Comunicação', showCategories = true, emptyMessage = 'Nenhum cartão disponível.', navigation, feedback, showBrand = true, toolbar }: BoardProps) {
+  favoriteIds = [], onFavorite, favoriteDisabled = false, heading = 'Comunicação', showCategories = true, emptyMessage = 'Nenhum cartão disponível.', navigation, feedback, showBrand = true, toolbar, embedded = false }: BoardProps) {
   const [category, setCategory] = useState<CategoryId | 'all'>('all');
   const [selectedCard, setSelectedCard] = useState<CommunicationCard | null>(null);
   const { showBrandImage } = useLowStimulationPresentation();
@@ -61,7 +62,7 @@ export function CommunicationBoard({ cards = initialCards, onSelectCard, sentenc
     : null;
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <SafeAreaView style={styles.screen} edges={embedded ? [] : undefined}>
       {toolbar && <View style={styles.toolbar}>{toolbar}</View>}
       <ScrollView contentContainerStyle={styles.content}>
         {showBrand && <View style={styles.brandRow}>

@@ -40,7 +40,12 @@ afterEach(() => jest.restoreAllMocks());
 async function mount(initialUrl = '/scripts', override = ScriptsRoute) {
   const view = renderRouter({ ...routes, 'scripts/index': override }, { initialUrl }); await act(async () => {}); return view;
 }
-async function press(name: string) { await act(async () => fireEvent.press(screen.getByRole('button', { name }))); }
+async function press(name: string) {
+  if (!screen.queryByRole('button', { name }) && screen.queryByRole('button', { name: 'Abrir ferramentas' })) {
+    await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir ferramentas' })));
+  }
+  await act(async () => fireEvent.press(screen.getByRole('button', { name })));
+}
 const copyLabel = `Copiar script: ${initialScripts[0].text}`;
 it('opens the real route from the board, filters the catalog and copies each literal script offline with one touch', async () => {
   const fetch = jest.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('offline'));

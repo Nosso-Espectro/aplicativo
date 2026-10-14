@@ -1,5 +1,9 @@
 # Implementation Plan: P0 — Comunicação Visual / CAA
 
+## Organização vigente US088
+
+Pedido humano por imagens substitui a posição escolhida em US085: CommunicationBoard na home abaixo de SentenceComposer/header; drawer contém apenas os atalhos existentes. Estado de abertura pertence à rota home para fechar antes de router.push; Home mantém lifecycle/foco/back/backdrop e não altera contratos de dados. Quadro embutido evita SafeArea duplicada. Testes passam a abrir menu para ferramentas e compor diretamente na principal. Prévia web via US087, desktop/mobile, sem instalar celular; T053 nativo pendente. Seções US085 abaixo são histórico da organização anterior.
+
 ## Prévia web US087
 
 Reconciliar exports `createLocalImageStorage`/`isLocalImage` no arquivo `.web` que impede importar rotinas. Não importar filesystem nativo no navegador; cópia indisponível deve rejeitar como antes, sem fingir arquivo salvo. Manter contratos Android/iOS intactos, sem dependências. Foco web usa a ref DOM/Pressable por `focus()`, evitando `findNodeHandle` indisponível nesta plataforma; foco nativo continua via AccessibilityInfo. Testar exports e abrir a home real via Expo web, drawer/frase/atalhos e viewport desktop/mobile. Capacidades indisponíveis mantêm erros existentes; prévia não comprova gate nativo nem autoriza instalação. Organização visual das imagens corrigida separadamente pela Issue88.

@@ -13,6 +13,7 @@ const save = jest.fn(); const routes = { _layout: RootLayout, index: StartupRout
 beforeEach(() => { jest.clearAllMocks(); jest.mocked(openTrustedContactDatabase).mockResolvedValue({ read: async () => ({ ...emptyTrustedContact }), save }); });
 it('opens configuration from the board, then returns without saving or opening an external app', async () => {
   const { getPathname } = renderRouter(routes, { initialUrl: '/' }); await screen.findByRole('header', { name: 'TEAr' });
+  await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir ferramentas' })));
   await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir contato de confiança' })));
   await screen.findByText('Ainda não há contato de confiança salvo.'); expect(getPathname()).toBe('/trusted-contact');
   fireEvent.changeText(screen.getByLabelText('Nome (opcional)'), 'Rascunho sintético');
