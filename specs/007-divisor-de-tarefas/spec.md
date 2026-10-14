@@ -65,7 +65,7 @@ Como usuário, quero consultar modelos comuns de tarefas e criar uma cópia que 
 #### Critérios de aceite
 
 - [ ] Os três modelos comuns originais do TEAr devem estar disponíveis localmente desde a primeira abertura: Organizar uma mesa, Preparar uma mochila e Organizar uma pequena área do quarto, conforme conteúdo versionado no refinamento.
-- [ ] O catálogo deve ser somente leitura, separado dos modelos pessoais, sem edição/remoção automática ou escrita no banco ao consultar; novas versões não devem modificar cópias existentes.
+- [ ] O catálogo deve ser somente leitura, separado dos modelos pessoais, sem edição/remoção automática ou inserção/alteração de tarefas ou modelos ao consultar; novas versões não devem modificar cópias existentes.
 - [ ] Usar um modelo comum deve abrir rascunho de tarefa editável/cancelável com IDs novos e todas as etapas não concluídas; nenhum salvamento ou execução automática.
 - [ ] Salvar explicitamente deve usar o banco privado de tarefas existente e confirmar somente após commit; erro preserva o rascunho, retry humano e duplicatas/ações antigas não criam sucesso falso.
 - [ ] Leitura do catálogo deve continuar disponível se o banco falhar; gravação deve ficar indisponível com erro/retry explícito. Sair/blur descarta rascunho e callbacks antigos não salvam/navegam.

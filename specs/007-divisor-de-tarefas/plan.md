@@ -18,7 +18,17 @@ Entrada em Modelos de tarefas, catálogo `/tasks/catalog` disponível independen
 
 Save humano usa TaskProvider.save/DAO existente, commit/readback antes confirmação/lista, error/retry/draft/duplicatas/owner preservados. Leitura não depende do banco, criação salva fica indisponível com erro de banco/retry; nenhum fallback falsa escrita web/SQLite. Testes modelo completude/IDs/textos/cópias/factory/frozen, UI/Router/provider/SQLiteNode real: leitura errodb/primeiraabertura/cópia-edit-save-cancel-reopen/pending/rollback/retry/dups/blur/unmount/mode9/isolamento19-20/CAA/Timer. Related/fullserial/linttipos/Doctor56toolingvalidadordiffreview/CI últimohead antes merge. T020 nativo posterior verifica SQLiteExpo/offline/readers/teclado/reflow/foco/insets/back, não aprovado por mocks. Todas tasks76 ainda pendentes; Ready não é entrega.
 
+Precisão de revisão registrada no GitHub: consultar não insere/altera tarefas ou modelos nem semeia catálogo. O layout TaskProvider existente ainda abre/readWorkspace e pode inicializar/migrar seu schema privado, mesmo no caminho de leitura; não alegar ausência total de IO/SQL ou observação SDK. A leitura do recurso estático permanece disponível se essa abertura falhar. Este refinamento não muda o código/banco/migração nem dispensa gate real.
+
 O restante do plano é histórico #19/#20, não substitui este estado nem autoriza outras histórias.
+
+### Implementação local US076
+
+common-task-catalog.ts valida recurso completo/IDs/ordem/quatro etapas e retorna clones congelados; commonTaskDraft reusa taskFromTemplate com freshIDs/statusfalse. CommonTaskCatalogScreen/rotas oferecem leitura, erro neutro sem falso retry, copiar/retornar/fallback/back focado, duplicatas/navegação falha. TaskEditor recebe initialDraft separado de task/template, onSaved explícito e isActive da rota, montado somente focado; blur descarta instância/callbacks. currentDraft é atualizado sincronamente antes render e save compara o snapshot capturado, recusando oldSave após edição. Writes em voo bloqueiam alterações do draft e back focado; operação já iniciada pode confirmar commit após unmount, sem navegação tardia ou nova escrita de callback antigo. Não prometer cancelamento de transação por desmontagem.
+
+25novos12modelo13fluxo/280relacionados21/926Jest103 completos PASS na versão corrigida. Revisão RF008-010/RNF001-004/UI/privacy/offline/clean/isolamento: conteúdo original/read-only/local, sem rede/deps/permissões/estímulos/DB/schema/DAO/provider novos, apenas ID público em rota, editor existente com alvos48dp/fontes18-20/escaláveis/SafeArea/scroll/teclado/mode9. Não foram encontrados problemas impeditivos remanescentes; leitores/reflow/foco/SQLiteExpo/offline/backups reais ainda T020, sem conformidade integral alegada. T015-T018 verificadas; T019 aguarda checks finais/PR/CI. Sem host/jobs/buildlocal/phone/preview8093/tagrelease.
+
+Checks finais locais encerrados: tipos e lint sem warnings PASS, Doctor21/21,56tooling (4.901s), validador16specs/49Issues/49stories/269tasks/20skills e diffcheck PASS. Related280/21 e full926/103 (142.8s) repetidos após mover busyRef para layout effect, sem supressão. T019 ainda aguarda PR/CI último head; nenhum build/assistivo/SQLiteExpo aprovado por estes checks.
 
 Spec: [spec.md](spec.md). Milestone #15; Issues #19, #20. US-019 integrada/PR75; US-020 Ready após aprovação explícita. Registros de progresso abaixo são históricos, não anulam este estado.
 
