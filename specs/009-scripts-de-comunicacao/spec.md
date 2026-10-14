@@ -3,8 +3,8 @@ milestone: 17
 priority: P1
 tag: m009-scripts-de-comunicacao
 status: draft
-ready_stories: []
-source_checked: 2026-09-23
+ready_stories: ["US-023"]
+source_checked: 2026-10-14
 ---
 
 # Scripts de Comunicação
@@ -93,6 +93,26 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 Implementações de outras milestones, requisitos não rastreados e decisões funcionais listadas como pendentes. Nesta execução apenas documentação e ferramentas de engenharia; nenhuma funcionalidade é implementada.
 
+## Refinamento recomendado de US-023 (2026-10-14)
+
+Adotado sob delegação humana explícita de seguir recomendações funcionais sem aguardar nova aprovação. [Registro em #23](https://github.com/Nosso-Espectro/aplicativo/issues/23#issuecomment-6164537064). Critérios originais preservados.
+
+Catálogo local inicial de textos originais, um por categoria:
+
+| Categoria | Texto |
+| --- | --- |
+| Pedir ajuda | Poderia me ajudar, por favor? |
+| Mais tempo | Preciso de mais tempo para responder. |
+| Esclarecimento | Você pode explicar de outra forma, por favor? |
+| Encerrar conversa | Preciso encerrar esta conversa agora. |
+| Sobrecarga | Estou com sobrecarga e preciso de uma pausa. |
+
+- IDs estáveis, categorias explícitas e opção Todos. Catálogo fixo empacotado/offline, sem diagnóstico ou personalização inferida.
+- Um toque explícito copia texto literal pela API nativa compatível com SDK57; sucesso só após confirmação da API. Busy/duplicatas/erro genérico/retry humano e callbacks desmontados descartados. Sem ler/expor/apagar clipboard anterior.
+- Clipboard é recurso do OS: não prometer ausência de sincronização pelo sistema. Sem envio/voz/cópia automática, rede/backend/histórico ou permissões novas.
+- Entrada no quadro/rota própria/retorno fallback/48dp/escalável/mode9. Editor/persistência/favoritos/TTS de #24 são escopo separado.
+- Delegação funcional não amplia celular, segurança, operações destrutivas ou tags/releases.
+
 ## Dependências funcionais
 
 - [P0 — Comunicação Visual / CAA](../001-comunicacao-visual-caa/spec.md): relação de uso/integração descrita nas histórias ou nas questões abaixo; não altera a prioridade original.
@@ -105,7 +125,7 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-SCRIPT-01 — Definir textos/categorias iniciais e revisão editorial (#23), ordenação dos favoritos e destino da edição (#24).
+- Q-SCRIPT-01 — #23 resolvida pelo catálogo original recomendado acima; ordenação de favoritos/destino da edição de #24 exige refinamento documentado antesReady, sob delegação humana vigente.
 - Q-SCRIPT-02 — A leitura de scripts depende do contrato de TTS de #3; definir erro quando voz estiver indisponível (#24).
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.

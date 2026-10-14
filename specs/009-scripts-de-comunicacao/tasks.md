@@ -8,6 +8,8 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 
 ## US-023 — Issue #23
 
+Ready após recomendação funcional documentada sob delegação humana. Cinco textos/categorias definidos emspec; confirmar API/version/licença SDK57 e runtime real antescódigo. Clipboard somente por toque explícito; sem read/clear/autocopy/voz/envio/histórico. Sem implementar24 nesta branch.
+
 - [ ] T001 [US-023] Em `src/features/communication-scripts/script-catalog`, atender RF-001 (critério 1 de #23): Devem existir scripts iniciais para pedir ajuda, pedir mais tempo, pedir esclarecimento, encerrar conversa e informar sobrecarga. Verificar com o cenário correspondente no PR.
 - [ ] T002 [US-023] Em `src/features/communication-scripts/script-catalog`, atender RF-002 (critério 2 de #23): Os scripts devem ser organizados por categoria. Verificar com o cenário correspondente no PR.
 - [ ] T003 [US-023] Em `src/features/communication-scripts/script-catalog`, atender RF-003 (critério 3 de #23): O usuário deve conseguir copiar um script com um toque. Verificar com o cenário correspondente no PR.
@@ -21,3 +23,7 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 - [ ] T008 [US-024] Em `src/features/communication-scripts/script-editor`, atender RF-006 (critério 3 de #24): O usuário deve poder usar um script no Text-to-Speech. Verificar com o cenário correspondente no PR.
 - [ ] T009 [US-024] Adicionar testes de comportamento de RF-004, RF-005, RF-006 em `tests/features/communication-scripts/script-editor`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
 - [ ] T010 [US-024] Revisar RNF-001 a RNF-004 na interface/dados de #24, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+
+## Gate nativo separado
+
+- [ ] T011 [US-023] No SHA integrado, verificar clipboard literal real/copiar com um toque/retornos offline/readers/foco/ampliação/insets/alvos/mode9/sem estímulos inesperados. Mocks/build não comprovam essas validações; instalação em aparelho continua requerendo autorização específica.
