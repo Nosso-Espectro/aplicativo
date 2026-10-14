@@ -117,3 +117,16 @@ local existente Date.now/Math.random com injeção sintética nos testes; não s
 credenciais, UUIDs criptográficos ou timestamps de histórico. Nenhuma task
 concluída: SQLite/editor/progresso confirmado/rotas/fluxos ainda faltam. Seis
 testes unitários,lint/typecheck verdes; não comprovam UI, persistência ou nativo.
+
+Persistência inicial em task-database.ts: arquivo privado schema1, filas/transações,
+lista/save/complete/remove com revisão esperada e readback antes de commit.
+IDs/textos/status/ordem validados no read; removido não ressuscita, progresso
+reversível não sobrescreve outra tarefa, overflow de revisão recusado. Nenhuma
+dependência/permissão/alteração do banco de outro módulo. SDK SQLite instalado
+abre outra conexão em withExclusiveTransactionAsync: remove apaga filhos
+explicitamente na mesma transação, sem presumir herança de foreign_keys.
+Nove testes SQLite real do Node cobrem reabertura/offline/ordem/status, tarefas
+vazias, stale target/remoção, rollback de create/edit/complete/delete/readback/
+commit, fila, schema futuro/corrupção/overflow e exclusão com FKoff isolada.
+Editor/lista/retorno/checkbox confirmado e integração UI ainda faltam; todas
+tasksUS019 pendentes, nenhum PR/aparelho/build/validação SQLite Expo alegados.
