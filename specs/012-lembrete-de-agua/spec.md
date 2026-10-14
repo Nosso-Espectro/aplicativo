@@ -3,15 +3,28 @@ milestone: 20
 priority: P2
 tag: m012-lembrete-de-agua
 status: draft
-ready_stories: []
-source_checked: 2026-09-23
+ready_stories: ["US-029"]
+source_checked: 2026-10-14
 ---
 
 # Lembrete de Água
 
 Milestone GitHub: [P2 — Lembrete de Água](https://github.com/Nosso-Espectro/aplicativo/milestone/20) (número 20).
 
-Estado consultado: aberta; todas as histórias abaixo estão abertas. Especificação em revisão, não implementação concluída.
+Milestone aberta; US029 Ready após refinamento sob delegação funcional, ainda sem código. US030 conserva questões próprias, não Ready. Nenhuma implementação/gate/release concluídos.
+
+## Refinamento US029
+
+Recomendação registrada na [Issue29](https://github.com/Nosso-Espectro/aplicativo/issues/29#issuecomment-6169344492) sob delegação humana de decisões funcionais; critérios originais preservados.
+
+- Intervalo relativo em minutos inteiros30-720, draft inicial60/presets30,60,120. O critério permite intervalo OU horários; horários civis/fuso/DST e silêncio ficam para refino30. Valores não são indicação clínica nem quantidade de água. Default disabled, sem inferir perfil/check-in.
+- Configuração privada local persistida: intervalo/revisão/disabled-paused-active e recibos técnicos dos agendamentos próprios. Draft/savecancel separado do confirmado. Sem histórico de consumo/respostas/conta/servidor/telemetria/PII em conteúdo ou logs.
+- Ativar/retomar explícitos com confirmação de avisos locais e permissão somente depois dessa ação. Negada/indisponível não aparenta ativação, conserva intervalo/retry humano, sem abrir/mudar ajustes OS automaticamente. Pausar cancela próprios/conserva configuração; retomar começa intervalo completo novo. Desativar cancela próprios/conserva intervalo, nunca cancelAll.
+- expo-notifications57.0.22 existente, API local a revisar antes de código. Um agendamento repetitivo por intervalo; primeiro aviso após intervalo completo. Conteúdo genérico Água / Uma pausa para água, se desejar. Solicitar apresentação silenciosa sem som/badge/vibração; OS/canais/preferências regem entrega/comportamento. Sem push/tokens/backend/deps/privilégio exato/voz/player/haptic ou handler global que altere timer.
+- Reabertura verifica configuração/permissão/IDs próprios sem novo pedido de permissão ou recriação silenciosa da agenda. Ausência/estado não confirmado exige pausa recuperável/Retomar humano, sem replay/catch-up. Sem promessa de exatidão/sobrevivência a reboot/force-stop/restrições.
+- FIFO/revisão/owner/namespace e recibos/journal coordenam DB e API nativa, sem fingir transação atômica entre serviços. Active somente após confirmações locais/nativas. Falhas/readback/commit/cancelamento/schedule tardio não aparentam sucesso/duplicata; reconciliar somente próprios, preservar avisos de outras ferramentas. Cancelamento não confirmado informa erro e possível aviso pendente.
+- Foreground: processar somente evento atual próprio/namespace/recibo e mostrar faixa neutra fechável/polite sem som/replay, memória apenas. SDK pode entregar eventos globais do app à fronteira; TEAr filtra metadados antes de processar e não lê/loga conteúdo de outras ferramentas. Rota própria/acesso Ferramentas/backfallback/mode9/48dp/escalável/erroretry.
+- Horário silencioso30 fora desta branch: antes de ativar informar que avisos podem chegar em qualquer horário até pausar/desativar. Gate real SQLiteExpo/backups/offline/permissões/canais/background/delivery/cancel/assistivo pendente; nenhum aparelho/host/build local autorizado.
 
 ## Contexto
 
@@ -107,8 +120,8 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-AGUA-01 — Como tratar intervalo versus horários, fuso, horário silencioso atravessando meia-noite e reinício do dispositivo (#29/#30)?
-- Q-AGUA-02 — Definir experiência para permissão negada e limites de agendamento do sistema operacional, sem prometer entrega exata (#29).
+- Q-AGUA-01 — Resolvida para29 pelo refinamento: intervalo relativo, configuração/recibos locais e reabertura sem reagendamento automático/catch-up. Horários/silêncio/fuso/meia-noite de30 requerem refino próprio, não Ready.
+- Q-AGUA-02 — Resolvida para29: confirmação/permissão sob comando, negação preserva configuração/inativo/retry humano; notificações locais e limites do OS explícitos, sem garantia exata.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 

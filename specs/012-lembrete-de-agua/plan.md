@@ -2,6 +2,18 @@
 
 Spec: [spec.md](spec.md). Milestone #20; Issues #29, #30. Plano proposto, sujeito às questões em aberto.
 
+## Plano vigente US029
+
+Refino de 2026-10-14 sob delegação funcional, Ready somente29; nenhum código. Stack atual Expo57/RN0.86.3/React19.2.3/TypeScript strict/Router/SQLite e expo-notifications57.0.22 existentes. Ler API/types/fontes instaladas e engine de avisos do timer antes de implementar; reusar SDK sem novos deps/permissões/privilégios/handler global/tokens/rede e sem copiar framework inteiro. Não alterar bancos/avisos de timer nem outras ferramentas.
+
+Modelo privado em `src/features/hydration/`: intervalo30-720/draft60/presets30,60,120/revisão/status disabled-paused-active. SQLite privado `tear-hydration-reminders.db` schema1 para configuração e recibos/journal mínimos; fila/TX/readback/rollback/inteiros safe/future-schema/stale e isolamento. OS e SQLite não compartilham transação: coordenador registra etapas e reconcilia IDs/namespace para conter crash/schedule/cancel/commit tardios sem orphan/deduplicação falsa/estado ativo inventado. Não cancelar notificações de timer/terceiras via cancelAll. SDK lazy, permissões consultadas sem request inicial; request somente no ativar/retomar confirmado. Um intervalo repetitivo local, primeiro aviso não imediato; conteúdo genérico/silencioso solicitado sem garantias sobre canais/OS/reboot/force-stop.
+
+Provider local persistido/owner/busy/revisões/retry, confirma agenda+registro antes de active; pausa/desativa só depois de cancelamento confirmado, erro explícito se pendente. Reabertura verifica recibos/permissão sem recriar automaticamente; recuperar com Retomar humano e intervalo novo, sem catch-up. Faixa foreground efêmera só de evento atual próprio, metadados filtrados/sem processar conteúdo de outras ferramentas, fechável48dp/polite/sem som/voz. Tela/rota próprias e entrada Ferramentas, draftsavecancel/erroretry/confirmar permissões/limite sem horário silencioso30/backfallback/mode9/texto escalável. Não implementar30 ou histórico/conta/diagnóstico.
+
+Testes modelo/SQLiteNode real/coordenador/provider/Router/adapter SDK falso: defaultOFF, intervalo inválido/draft, negação/permissão lenta/ownedIDs, cancelamento/schedule tardio/duplicatas/stale/unmount, rollback/readback/reabertura/offline/future-schema/crashjournal/IDs de outros módulos preservados; evento foreground sem replay; regressões timer/CAA. Jest serial/linttipos/Doctor56toolingvalidadordiffreviewCI leve antesDoD. T012spec012 nativo: SQLiteExpo/backups/offline e delivery/cancel/canais/OS/background/reboot/readers; mocks/build não comprovam. Nenhum aparelho/host/build local nesta feature. Se API/OS não confirmar contrato, registrar limite/falha no backlog sem simular sucesso.
+
+As seções seguintes são histórico documental de 2026-09-23, não afirmam ausência atual de stack.
+
 ## Stack
 
 Inspeção em 2026-09-23: repositório sem código de aplicação, package.json, dependências ou ferramentas de build/teste. React Native e primeira versão sem backend são diretrizes explícitas do projeto, ainda não implementadas. Expo, linguagem, navegação e biblioteca de persistência não foram escolhidos. Não assumir stack web, banco ou servidor.

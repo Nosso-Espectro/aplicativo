@@ -1,6 +1,6 @@
 # Tasks — Lembrete de Água
 
-Milestone #20: [spec.md](spec.md) e [plan.md](plan.md). Todas pendentes; não executadas nesta preparação.
+Milestone #20: [spec.md](spec.md) e [plan.md](plan.md). US029 refinada e Ready em 2026-10-14, sem código/tasks verificadas. US030 não Ready; gate T012 pendente.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -8,12 +8,13 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 
 ## US-029 — Issue #29
 
-- [ ] T001 [US-029] Em `src/features/hydration/reminder-settings`, atender RF-001 (critério 1 de #29): O usuário deve poder definir intervalo ou horários. Verificar com o cenário correspondente no PR.
-- [ ] T002 [US-029] Em `src/features/hydration/reminder-settings`, atender RF-002 (critério 2 de #29): As notificações devem ser locais. Verificar com o cenário correspondente no PR.
-- [ ] T003 [US-029] Em `src/features/hydration/reminder-settings`, atender RF-003 (critério 3 de #29): Deve ser possível ativar, pausar e desativar lembretes. Verificar com o cenário correspondente no PR.
-- [ ] T004 [US-029] Em `src/features/hydration/reminder-settings`, atender RF-004 (critério 4 de #29): O recurso não deve exigir criação de conta. Verificar com o cenário correspondente no PR.
-- [ ] T005 [US-029] Adicionar testes de comportamento de RF-001, RF-002, RF-003, RF-004 em `tests/features/hydration/reminder-settings`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
-- [ ] T006 [US-029] Revisar RNF-001 a RNF-004 na interface/dados de #29, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+- [ ] T001 [US-029] Modelo/draft intervalo inteiro30-720/default60/presets30,60,120/revisão/defaultOFF e persistência SQLite privada schema1/configuração/recibos/journal/FIFO/TX/readback/rollback/future-schema (RF-001).
+- [ ] T002 [US-029] Adapter local lazy expo-notifications existente: permissão só após confirmação humana, um intervalo repetitivo/primeiro aviso após intervalo inteiro, conteúdo genérico/silencioso solicitado/IDs namespace próprios/cancelamento específico/limites OS e sem handler global/push/rede (RF-002).
+- [ ] T003 [US-029] Coordenador/provider e UI/rota/Ferramentas: ativar/retomar confirmados, pausar/desativar cancelam próprios, persistência e native confirmados antes de sucesso, falhas/stale/duplicatas/tardio/unmount/journal/reabertura sem agenda auto/catch-up; draftsavecancel e faixa foreground só evento atual próprio (RF-003).
+- [ ] T004 [US-029] Verificar sem conta/backend/logsPII/histórico/consumo/diagnóstico; offline/48dp/escalável/mode9/retornos/erroretry e aviso sem horário silencioso30 antes de ativar (RF-004).
+- [ ] T005 [US-029] Testes reais modelo/SQLiteNode/coordenador/provider/Router e SDK falso: validação/defaultOFF/draft/permissão lenta-negada/IDs próprios/cancel-schedule falhos/tardios/stale/dup/unmount/rollback/reabertura/journal/future-schema/offline/foreground/mode9; regressões timer/CAA.
+- [ ] T006 [US-029] Revisar RNF-001 a RNF-004/cleanprivacyoffline/diff e Jest serial/linttipos/Doctor56toolingvalidador/CI leve antes integração. Tasks só após comportamento.
+- [ ] T012 [US-029] Gate nativo posterior no SHA integrado: SQLiteExpo/backups/offline e permissões/canais/delivery/cancel/foreground/background/reboot/force-stop/readers/foco/ampliação/insets/alvos. Mocks/build não comprovam; nenhum aparelho autorizado por refinamento.
 
 ## US-030 — Issue #30
 
