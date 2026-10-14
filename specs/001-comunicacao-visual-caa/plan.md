@@ -20,7 +20,9 @@ implementadas apenas no CustomCardEditor, sem mudanças de provider/DAO/schema.
 sem warnings, Doctor21/21, 56 tooling/validador/diffcheck PASS. Router/SQLiteNode
 verifica commit retido sem navegação tardia e exclusão revogada sem SQL, mantendo
 favorito. Revisão preserva layouts, alvos48dp, semântica, modo9 e privacidade.
-CI do PR e main push ainda não obtidos; gates nativos intactos.
+PR105 anexado, CI38649085153 SUCCESS2min12s no head ac8b297; CI do último commit
+documental e main push devem ser reconferidos antes concluir integração.
+Android/iOS SKIPPED não são builds; gates nativos intactos.
 
 ## Manutenção SDK57 US095
 

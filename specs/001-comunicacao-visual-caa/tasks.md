@@ -237,12 +237,13 @@ Definition of Done antes de executar e concluir cada Issue.
 ## Correção de controle US004
 
 - [x] T062 [US-004] Reproduzir callbacks antigos e exclusão revogada; proteger editor por foco/ID/intenção, descartando feedback/navegação tardios sem cancelar persistência já autorizada (RF-013–RF-016). Evidência: três testes RED antes da correção, 15 testes do editor PASS e quatro testes Router/provider/SQLiteNode real PASS, incluindo commit retido após saída e confirmação revogada sem SQL.
-- [ ] T063 [US-004] Validar componentes e Router/provider/SQLiteNode com commit retido, frase/favoritos e regressões rotinas; testes/lint/tipos/checks leves/review/CI, mantendo T028/T029/T031 nativos pendentes.
+- [x] T063 [US-004] Validar componentes e Router/provider/SQLiteNode com commit retido, frase/favoritos e regressões rotinas; testes/lint/tipos/checks leves/review/CI, mantendo T028/T029/T031 nativos pendentes. Evidência: PR105 anexado, CI38649085153 SUCCESS2min12s no head ac8b297aaf7e39aefcf0f31d5c0bc3d7642f07a9, todos checks leves verdes. Reconferir CI do último commit documental antes integração.
 
 Evidência local da correção #4 (2026-10-14): 13 testes novos (9 componentes,
 4 Router/SQLiteNode), 55 relacionados/9 suítes PASS; suíte completa 959/105 PASS
 141.970s, lint/tipos sem warnings, Doctor21/21, 56 tooling PASS4.893s,
-validador/diffcheck e revisão PASS. CI do PR ainda pendente; T063 não concluída.
+validador/diffcheck e revisão PASS. CI do PR105 aprovado no head ac8b297;
+CI documental final e main push devem ser reconferidos, sem afirmar resultado futuro.
 T028/T029/T031 continuam nativas pendentes, sem build/preview/aparelho/host.
 
 ## Manutenção US097 — CI leve serial
