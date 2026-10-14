@@ -4,11 +4,17 @@ import { Text } from 'react-native';
 import { TaskEditor } from '../../../src/features/task-breakdown/TaskEditor';
 import { TaskProvider, useTasks } from '../../../src/features/task-breakdown/TaskProvider';
 import { TaskCommand } from '../../../src/features/task-breakdown/TaskUI';
-import { openTaskDatabase, type SavedTask } from '../../../src/features/task-breakdown/task-database';
-jest.mock('../../../src/features/task-breakdown/task-database', () => ({ openTaskDatabase: jest.fn() }));
+import { openTaskWorkspaceDatabase, type SavedTask } from '../../../src/features/task-breakdown/task-database';
+jest.mock('../../../src/features/task-breakdown/task-database', () => ({ openTaskWorkspaceDatabase: jest.fn() }));
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
 let tasks: SavedTask[];
 const save = jest.fn(); const list = jest.fn(); const close = jest.fn();
+function database(operations: { complete?: jest.Mock; remove?: jest.Mock } = {}) {
+  const unused = async () => { throw new Error('Model operations are not used in task editor tests.'); };
+  return { list, readWorkspace: async () => ({ tasks: await list(), templates: [] }), save,
+    complete: operations.complete ?? jest.fn(), remove: operations.remove ?? jest.fn(),
+    createTemplate: unused, saveTemplate: unused, removeTemplate: unused, createTaskFromTemplate: unused };
+}
 let context: ReturnType<typeof useTasks>;
 function Session({ edit = false }: { edit?: boolean }) {
   const value = useTasks();
@@ -27,7 +33,7 @@ beforeEach(() => {
     tasks = expected ? tasks.map(item => item.id === expected.id ? task : item) : [...tasks, task];
     return structuredClone(tasks);
   });
-  jest.mocked(openTaskDatabase).mockResolvedValue({ list, save, complete: jest.fn(), remove: jest.fn() });
+  jest.mocked(openTaskWorkspaceDatabase).mockResolvedValue(database());
 });
 async function open(edit = false) {
   const view = render(<TaskProvider><Session edit={edit} /></TaskProvider>);
@@ -111,12 +117,12 @@ it('does not resurrect a removed task from an old editor', async () => {
   expect(tasks).toEqual([]); expect(close).not.toHaveBeenCalled();
 });
 it('retries an initialization failure and shares database initialization in StrictMode', async () => {
-  jest.mocked(openTaskDatabase).mockRejectedValueOnce(new Error('private data'));
+  jest.mocked(openTaskWorkspaceDatabase).mockRejectedValueOnce(new Error('private data'));
   render(<StrictMode><TaskProvider><Session /></TaskProvider></StrictMode>);
   fireEvent.press(await screen.findByRole('button', { name: 'Tentar abrir' }));
   await screen.findByLabelText('Título da tarefa');
   expect(screen.queryByText('private data')).toBeNull();
-  expect(openTaskDatabase).toHaveBeenCalledTimes(2);
+  expect(openTaskWorkspaceDatabase).toHaveBeenCalledTimes(2);
   await waitFor(() => expect(context.loading).toBe(false));
 });
 it('publishes completion and removal only after commit, with the captured revision', async () => {
@@ -124,7 +130,7 @@ it('publishes completion and removal only after commit, with the captured revisi
   let finish!: (value: SavedTask[]) => void;
   const complete = jest.fn(() => new Promise<SavedTask[]>(resolve => { finish = resolve; }));
   const remove = jest.fn().mockResolvedValue([]);
-  jest.mocked(openTaskDatabase).mockResolvedValue({ list, save, complete, remove });
+  jest.mocked(openTaskWorkspaceDatabase).mockResolvedValue(database({ complete, remove }));
   await open(true);
   let result!: Promise<boolean>;
   const captured = context.tasks[0];
@@ -140,8 +146,8 @@ it('publishes completion and removal only after commit, with the captured revisi
 });
 it('retains confirmed tasks after failed completion or deletion', async () => {
   tasks = [{ id: 'a', revision: 3, title: 'Teste', steps: [{ id: 'one', title: 'Uma', completed: false }] }];
-  jest.mocked(openTaskDatabase).mockResolvedValue({ list, save,
-    complete: jest.fn().mockRejectedValue(new Error('private')), remove: jest.fn().mockRejectedValue(new Error('private')) });
+  jest.mocked(openTaskWorkspaceDatabase).mockResolvedValue(database({
+    complete: jest.fn().mockRejectedValue(new Error('private')), remove: jest.fn().mockRejectedValue(new Error('private')) }));
   await open(true);
   await act(async () => {
     await expect(context.complete(context.tasks[0], 'one', true)).rejects.toThrow('Task change unavailable.');

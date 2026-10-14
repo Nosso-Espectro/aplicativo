@@ -3,7 +3,7 @@ milestone: 15
 priority: P1
 tag: m007-divisor-de-tarefas
 status: draft
-ready_stories: ["US-019"]
+ready_stories: ["US-019", "US-020"]
 source_checked: 2026-10-14
 ---
 
@@ -11,7 +11,7 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P1 — Divisor de Tarefas](https://github.com/Nosso-Espectro/aplicativo/milestone/15) (número 15).
 
-US-019 verificada localmente após refinamento vivo; PR/integração ainda pendentes. US-020 tem questões próprias pendentes, sem aprovação de milestone/release. Gate nativo US-019 permanece aberto.
+US-019 integrada pelo PR75/mainfff768f e Issue fechada. US-020 Ready após aprovação explícita de modelos pessoais; catálogo pronto separado na #76. Gates nativos permanecem abertos, sem aprovação de milestone/release.
 
 ## Contexto
 
@@ -109,8 +109,24 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-TAREFA-01 — Resolvida somente para #19: não há estado em execução; remoção confirmada de subtarefa, inclusive concluída, preserva as demais e recalcula progresso. Editar/remover modelos de #20 continua aberto.
-- Q-TAREFA-02 — A milestone menciona modelos para tarefas comuns; #20 cobre modelos criados pelo usuário. Definir se há catálogo inicial e sua Issue. IA pertence à milestone P3.
+- Q-TAREFA-01 — Resolvida: #19 não tem estado em execução; #20 permite editar e remover modelos pessoais mediante confirmação, sem modificar tarefas já criadas.
+- Q-TAREFA-02 — Separação aprovada: #20 cobre modelos pessoais; catálogo pronto pertence à [#76](https://github.com/Nosso-Espectro/aplicativo/issues/76), não Ready e com conteúdo a definir. IA pertence à milestone P3.
+
+## Refinamento aprovado US-020
+
+O usuário aprovou explicitamente o escopo e a recomendação no chat em2026-10-14,
+registrado na [Issue20](https://github.com/Nosso-Espectro/aplicativo/issues/20#issuecomment-6162554130).
+Salvar uma tarefa real como modelo pessoal local, com título e etapas na ordem
+confirmada, sem guardar progresso. Modelos podem ser editados/removidos com
+confirmação; salvar/cancelar e drafts separados. Cópia cria tarefa independente,
+com IDs próprios e todas etapas não concluídas; editar/excluir modelo não altera
+cópias existentes, nem excluir tarefa apaga modelo. Títulos obrigatórios, modelo
+sem etapas válido conforme tarefa vazia, lista inicialmente vazia. Commit antes
+de sucesso, revisão obsoleta/alvo removido recusados, erro genérico/retry/draft,
+offline e isolamento dos outros módulos preservados. Acesso real por Tarefas,
+48dp/texto escalável/modo9/retornos. Catálogo pronto na #76, sem rede/dependência/
+permissão/IA/histórico/execução automática nesta branch. Critérios RF-005–RF-007
+originais preservados; aprovação de escopo não comprova implementação ou gate.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 

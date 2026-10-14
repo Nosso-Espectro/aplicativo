@@ -6,7 +6,7 @@ import { taskProgress } from './task-model';
 import { useTasks } from './TaskProvider';
 import { TaskCommand, TaskPage, taskStyles as styles } from './TaskUI';
 
-export function TaskDetail({ task, onClose, onEdit }: { task: SavedTask; onClose(): void; onEdit(): void }) {
+export function TaskDetail({ task, onClose, onEdit, onModelCreated }: { task: SavedTask; onClose(): void; onEdit(): void; onModelCreated(): void }) {
   const context = useTasks();
   const [removing, setRemoving] = useState<SavedTask | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -19,6 +19,13 @@ export function TaskDetail({ task, onClose, onEdit }: { task: SavedTask; onClose
     inFlight.current = true; setMessage(null);
     try { const saved = await operation(); if (saved && close && active.current) onClose(); }
     catch { if (active.current) setMessage('Não foi possível alterar a tarefa. Os dados salvos foram mantidos. Tente novamente.'); }
+    finally { inFlight.current = false; }
+  }
+  async function saveModel() {
+    if (disabled || inFlight.current) return;
+    inFlight.current = true; setMessage(null);
+    try { if (await context.createTemplate(task) && active.current) onModelCreated(); }
+    catch { if (active.current) setMessage('Não foi possível salvar o modelo. A tarefa foi mantida. Tente novamente.'); }
     finally { inFlight.current = false; }
   }
   return <TaskPage>
@@ -37,6 +44,7 @@ export function TaskDetail({ task, onClose, onEdit }: { task: SavedTask; onClose
     {context.busy && <Text accessibilityLiveRegion="polite" style={styles.text}>Salvando alteração...</Text>}
     {message && <Text accessibilityRole="alert" style={styles.error}>{message}</Text>}
     <TaskCommand icon="edit" label="Editar tarefa" disabled={disabled} onPress={onEdit} />
+    <TaskCommand icon="library-add" label="Salvar como modelo" disabled={disabled} onPress={() => void saveModel()} />
     <TaskCommand icon="delete-outline" label="Remover tarefa" disabled={disabled} onPress={() => { setRemoving(task); setMessage(null); }} />
     {removing && <View style={styles.confirmation}>
       <Text accessibilityRole="alert" style={styles.text}>Remover esta tarefa e todas as suas etapas? As outras tarefas serão mantidas.</Text>

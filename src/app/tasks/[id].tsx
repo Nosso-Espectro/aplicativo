@@ -7,5 +7,6 @@ export default function TaskScreen() {
   const task = typeof id === 'string' ? context.tasks.find(value => value.id === id) : undefined;
   const close = () => router.replace('/tasks');
   if (context.loading || context.error || !task) return <TaskUnavailable onClose={close} />;
-  return <TaskDetail key={id} task={task} onClose={close} onEdit={() => router.push({ pathname: '/tasks/edit/[id]', params: { id: task.id } })} />;
+  return <TaskDetail key={id} task={task} onClose={close} onModelCreated={() => router.push('/tasks/templates')}
+    onEdit={() => router.push({ pathname: '/tasks/edit/[id]', params: { id: task.id } })} />;
 }
