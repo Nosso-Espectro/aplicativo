@@ -18,6 +18,8 @@ Seções anteriores abaixo são histórico #25/#26; declarações antigas de aus
 
 Checks locais encerrados: typecheck e lint finais sem warnings PASS; Doctor21/21,56tooling (4.996s), validador16specs/48Issues/48stories/263tasks/20skills e diffcheck PASS. Doctor/tooling não foram alterados pela correção pontual do controle; related/full/tipos/lint repetidos na versão corrigida. PR/CI últimohead ainda pendentes; nenhuma aprovação nativa/build/release.
 
+PR101 anexado; CI38624474209 SUCCESS1min45s no head03724f79785dcf576782b752e3e91a6e3ac0ea99. T013-T017 verificadas, aguardar CI novo head documental antes squash; Android/iOS SKIPPED não são builds. T018 nativo e anteriores permanecem pendentes.
+
 Spec: [spec.md](spec.md). Milestone #18; Issues #25, #26. US025 entregue pelo PR83; US026 refinada e Ready em 2026-10-14.
 
 ## Plano vigente US026
