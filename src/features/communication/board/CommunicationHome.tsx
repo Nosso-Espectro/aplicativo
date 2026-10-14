@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, findNodeHandle } from 'react-native';
+import { AccessibilityInfo, Image, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View, findNodeHandle } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -9,6 +9,7 @@ import { useLowStimulationPresentation } from '../../regulation/LowStimulationPr
 
 function focus(ref: View | null) {
   if (!ref) return;
+  if (Platform.OS === 'web') { ref.focus(); return; }
   const tag = findNodeHandle(ref);
   if (tag !== null) AccessibilityInfo.setAccessibilityFocus(tag);
 }
