@@ -24,6 +24,10 @@ comprovam essas verificações em aparelho.
 
 ## US-012 — Issue #12
 
+Ready em 2026-10-14 após painel #10/PR72 e refinamento na Issue12. T007–T011
+continuam pendentes: modelo/read-only, leitura de plano/referências atuais,
+Modal/tela/rota/entrada no painel, recuperação/retorno/testes e gate nativo.
+
 - [ ] T007 [US-012] Em `src/features/support-plan/support-card`, atender RF-005 (critério 1 de #12): Deve existir uma visualização em tela cheia. Verificar com o cenário correspondente no PR.
 - [ ] T008 [US-012] Em `src/features/support-plan/support-card`, atender RF-006 (critério 2 de #12): A visualização deve priorizar texto grande e alto contraste. Verificar com o cenário correspondente no PR.
 - [ ] T009 [US-012] Em `src/features/support-plan/support-card`, atender RF-007 (critério 3 de #12): Deve haver acesso direto a partir do painel de regulação. Verificar com o cenário correspondente no PR.
