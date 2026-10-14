@@ -1,6 +1,6 @@
 # Tasks — Foco / Pomodoro Flexível
 
-Milestone #18: [spec.md](spec.md) e [plan.md](plan.md). US025 entregue pelo PR83 em 2026-10-14. US026 Ready, ainda não implementada; gates nativos T011/T012 pendentes.
+Milestone #18: [spec.md](spec.md) e [plan.md](plan.md). US025 entregue pelo PR83 em 2026-10-14. US026 implementada e validada localmente; PR/CI/merge devem confirmar entrega. Gates nativos T011/T012 pendentes.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -20,9 +20,11 @@ Evidência local US025: 20 testes novos (12 modelo + 8 fluxo/provider); 145 rela
 
 ## US-026 — Issue #26
 
-- [ ] T006 [US-026] Modelo em `src/features/focus/`: zero e decorrido por diferença do relógio + acumulado, inteiro seguro e clock regressivo/falho preservando confirmado (RF-004).
-- [ ] T007 [US-026] Provider separado efêmero/AppState/owner/revisões e iniciar/pausar/retomar/finalizar/novo sem zerar na retomada (RF-005); background e cleanup sem publicação antiga.
-- [ ] T008 [US-026] UI/rota `/focus/free`/entrada/retornos/fallback/mode9/48dp/escalável, confirmação de saída ativa, reentrada vazia e finalizado local sem meta/histórico/pontuação ou penalização (RF-006).
-- [ ] T009 [US-026] Testes modelo/provider/Expo Router: zero/decorrido/acumulado/pausa/retomada/finalizar/novo, interrupção curta, background/clockerror/overflow, stale/duplicatas, saída/manter/desmontagem/reentrada e regressões Pomodoro/timer.
+- [x] T006 [US-026] Modelo em `src/features/focus/`: zero e decorrido por diferença do relógio + acumulado, inteiro seguro e clock regressivo/falho preservando confirmado (RF-004).
+- [x] T007 [US-026] Provider separado efêmero/AppState/owner/revisões e iniciar/pausar/retomar/finalizar/novo sem zerar na retomada (RF-005); background e cleanup sem publicação antiga.
+- [x] T008 [US-026] UI/rota `/focus/free`/entrada/retornos/fallback/mode9/48dp/escalável, confirmação de saída ativa, reentrada vazia e finalizado local sem meta/histórico/pontuação ou penalização (RF-006).
+- [x] T009 [US-026] Testes modelo/provider/Expo Router: zero/decorrido/acumulado/pausa/retomada/finalizar/novo, interrupção curta, background/clockerror/overflow, stale/duplicatas, saída/manter/desmontagem/reentrada e regressões Pomodoro/timer.
 - [ ] T010 [US-026] Revisar RNF-001 a RNF-004, privacidade/offline/clean-code/diff; Jest serial/lint/tipos/Doctor/tooling/validador/CI leve. Tasks só após comportamento; não comprovar native com mocks.
 - [ ] T012 [US-026] Gate nativo posterior no SHA integrado: relógio/background/processo morto/offline, back/gestos e readers/foco/ampliação/insets/alvos/contraste; nenhum aparelho autorizado por refinamento.
+
+Evidência local US026 após integração da main326afa5: 23 testes novos (12 modelo + 11 fluxo/provider), 172 relacionados/13 suítes, 658 Jest/86 suítes completos; lint/tipos sem warnings e Doctor21/21. Revisão de RNF-001 a RNF-004: alvos48dp/texto escalável/sem anúncio por segundo, estado e erros explícitos, nenhuma DB/rede/dependência/permissão/voz/som/notificação ou histórico novo; timer/avisos e CAA preservados. Testes usam relógio/AppState/recursos nativos simulados, não comprovam T012. CI leve do PR ainda pendente.
