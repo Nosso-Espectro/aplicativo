@@ -189,3 +189,11 @@ reais, duplicatas/loading/error/retry/commit antes sucesso/draft/lowmode. Checks
 completos/review/CI leve antes PR; gate nativo/assistivo/SQLiteExpo/offline/backups
 aberto. Builds somente remotos, dispatch adiado pelo host/lock ainda desconhecidos.
 Nenhuma task de US-020 concluída por este refinamento.
+
+Progresso inicial US-020: task-template-model.ts com conteúdo título/etapas sem
+completed, validação/clonagem e taskFromTemplate gerando IDs novos/boolfalse.
+Seis testes verificam ausência de progresso/referências mutáveis, cópias entre
+si/origem independentes, vazio válido, trim/IDs únicos, rejeição de factory que
+reutiliza IDs da origem e edição de draft sem alterar modelo. Nenhum modelo
+persistido/UI alegado: migração/banco/provider/lista/editor/rotas/fluxos ainda
+faltam e todas tasks US-020 permanecem pendentes. Sem dependência/permissão/rede.
