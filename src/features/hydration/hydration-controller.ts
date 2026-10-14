@@ -1,6 +1,7 @@
 import { createExpoHydrationEngine, type HydrationEngine } from './expo-hydration-engine';
 import { openHydrationDatabase, type HydrationDatabase } from './hydration-database';
-import { hydrationNamespace, ownedHydrationIdentifier, type HydrationConfig } from './hydration-model';
+import { ownedHydrationIdentifier, type HydrationConfig } from './hydration-model';
+import { hydrationReceiptGeneration } from './hydration-receipt';
 export type HydrationState = {
   config: HydrationConfig | null; loading: boolean; busy: boolean; confirmed: boolean;
   error: 'storage' | 'permission' | 'operation' | null; banner: boolean;
@@ -42,15 +43,14 @@ export function createHydrationController({ database = openHydrationDatabase, fa
   function alive(token: Intent) { return !disposed && !token.canceled; }
   async function cancelPrepared(storage: HydrationDatabase, prepared: HydrationConfig) {
     const capability = engine(); const observed = await capability.inspect();
-    const target = prepared.journal?.identifier ?? prepared.identifier;
-    const ids = new Set([...observed.scheduled.map(entry => entry.identifier), ...observed.presented, ...(target ? [target] : [])]);
+    const target = prepared.journal?.receipt ?? prepared.receipt;
+    const targets = target?.entries.map(entry => entry.identifier) ?? [];
+    const ids = new Set([...observed.scheduled.map(entry => entry.identifier), ...observed.presented, ...targets]);
     // Recovery must not cancel a newer generation owned by another live controller.
-    for (const id of ids) {
-      if (!ownedHydrationIdentifier(id)) continue;
-      if (Number(id.slice(hydrationNamespace.length + 1)) > prepared.revision) throw new Error('Hydration ownership changed.');
-      await capability.cancel(id);
-    }
-    return storage.confirmCancellation(prepared.revision);
+    const owned = [...ids].filter(ownedHydrationIdentifier);
+    if (owned.some(id => (hydrationReceiptGeneration(id) ?? Infinity) > prepared.revision)) throw new Error('Hydration ownership changed.');
+    for (const id of owned) await capability.cancel(id);
+    return storage.confirmCancellation(prepared.revision, targets);
   }
   async function recover(storage: HydrationDatabase, config: HydrationConfig, status: 'paused' | 'disabled') {
     const prepared = await storage.prepareCancellation(status, config.revision);
@@ -60,8 +60,10 @@ export function createHydrationController({ database = openHydrationDatabase, fa
     await engine().cancel(identifier);
     const current = await storage.read();
     if ((!current.journal && current.identifier === identifier) || (current.journal?.kind === 'activate' && current.journal.identifier === identifier)) {
+      const target = current.journal?.receipt ?? current.receipt;
+      if (target?.entries.length !== 1) return current;
       const prepared = await storage.prepareCancellation('paused', current.revision);
-      return storage.confirmCancellation(prepared.revision);
+      return storage.confirmCancellation(prepared.revision, [identifier]);
     }
     return current;
   }
@@ -110,7 +112,7 @@ export function createHydrationController({ database = openHydrationDatabase, fa
       if (!alive(token)) throw new Error('Hydration intent canceled.'); return storage.saveInterval(minutes, expectedRevision);
     }),
     activate: (expectedRevision: number) => run(expectedRevision, async (storage, config, token) => {
-      if (config.status === 'active' || config.journal || !state.confirmed) throw new Error('Hydration configuration unavailable.');
+      if (config.status === 'active' || config.journal || !state.confirmed || config.quietWindow) throw new Error('Hydration configuration unavailable.');
       const capability = engine(); const allowed = await capability.requestPermission();
       if (!alive(token)) return storage.read();
       if (!allowed) throw new PermissionDenied();

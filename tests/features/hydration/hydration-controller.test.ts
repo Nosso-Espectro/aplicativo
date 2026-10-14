@@ -50,6 +50,19 @@ it('loads disabled configuration without importing native capability, requesting
   expect(h.controller.getSnapshot()).toMatchObject({ confirmed: true, config: { status: 'disabled', intervalMinutes: 60 }, error: null });
   expect(await h.controller.save(120, h.revision())).toBe(true); expect(h.factory).not.toHaveBeenCalled();
 });
+it('does not silently use a repeating interval for quiet settings before daily capability integration', async () => {
+  const h = await harness(); await h.controller.reload(); await h.database.saveQuietWindow({ startMinute: 1320, endMinute: 420 }, h.revision());
+  await h.controller.reload(); expect(await h.controller.activate(h.revision())).toBe(false);
+  expect(h.engine.schedule).not.toHaveBeenCalled(); expect(h.engine.requestPermission).not.toHaveBeenCalled();
+  expect(h.controller.getSnapshot().config).toMatchObject({ status: 'disabled', quietWindow: { startMinute: 1320, endMinute: 420 } });
+});
+it('refuses cancellation of a newer v2 generation before touching any existing older schedule', async () => {
+  const h = await harness(); await h.controller.reload(); await h.controller.activate(h.revision());
+  const current = h.controller.getSnapshot().config!.identifier!; native.set('tear-hydration-v2-99-0', 60);
+  expect(await h.controller.pause(h.revision())).toBe(false); expect(h.engine.cancel).not.toHaveBeenCalled();
+  expect(native.has(current)).toBe(true); expect(native.has('tear-hydration-v2-99-0')).toBe(true);
+  expect(h.controller.getSnapshot()).toMatchObject({ confirmed: false, error: 'operation', config: { status: 'active', journal: { kind: 'cancel' } } });
+});
 it('publishes active only after native scheduling and database confirmation and rejects duplicate commands', async () => {
   const h = await harness(); await h.controller.reload(); const gate = deferred<void>(); let entry!: HydrationSchedule;
   jest.mocked(h.engine.schedule).mockImplementationOnce(async input => { entry = input; await gate.promise; native.set(input.identifier, input.intervalMinutes); });

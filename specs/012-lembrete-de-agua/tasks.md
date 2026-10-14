@@ -1,6 +1,6 @@
 # Tasks — Lembrete de Água
 
-Milestone #20: [spec.md](spec.md) e [plan.md](plan.md). US029 integrada PR93. US030 Ready após refinamento de2026-10-14, nenhum código/tasks30 verificadas; gates T012/T013 pendentes.
+Milestone #20: [spec.md](spec.md) e [plan.md](plan.md). US029 integrada PR93. US030 em implementação; T009 verificada em SQLiteNode, adapter DAILY/UI/aceite e gates T012/T013 pendentes.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -20,7 +20,7 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 
 - [ ] T007 [US-030] Modelo/janela diária civil0-1439/HH:MM/defaultnull/startinclusivo/endexclusivo/meia-noite/start=endinválido, draftsavecancel e UI48dp/escalável/mode9/edição inativa/revisão; atender RF-005 sem impor horário.
 - [ ] T008 [US-030] Plano de slots DAILY nativos fora do silêncio/circular-gaps/primeiro apósintervalo completo/nextdateconfirmado/limite produto48total/noslotsinativo/foregfiltrado; lote journal/native+DBconfirm/ownedIDslegados/latecompensação/cancelerro/ownerdupstale/restoresemagendaauto/fuso-clock-divergente pausa; atender RF-006 sem fingir JSsuspenso/controleOS.
-- [ ] T009 [US-030] Persistência privada de janela/plano/recibos/lote com migração schema1 preservando29, FIFO/TX/CAS/readback/rollback/future-schema/isolamento/reabertura/offline; atender RF-007.
+- [x] T009 [US-030] Persistência privada de janela/plano/recibos/lote com migração schema1 preservando29, FIFO/TX/CAS/readback/rollback/future-schema/isolamento/reabertura/offline; atender RF-007.
 - [ ] T010 [US-030] Tests modelo/boundaries/slots/gaps/clockerror, SQLiteNode real migração/rollback/journal/batchtakeover, SDKfake fiel Androiddaily/iOScalendar/nextms/capacidade/falhas parciais/late/cancel/IDsforeign, controller/provider/Router/draft/meia-noite/fuso/foreg/permission/mode9/retornos e regressões29/Timer/CAA.
 - [ ] T011 [US-030] Revisar RNF-001 a RNF-004/cleanprivacyoffline/diff; Jest serial completo/linttipos/Doctor56toolingvalidador/CI leve antes integração. Sem deps/permissão/handler global/rede/host/aparelho/build local/atualizarprévia. Tasks só após validação.
 - [ ] T013 [US-030] Gate real posterior SHA integrado: não emissão/entrega no silêncio/meia-noite/DST/timezone/clock/Doze/reboot/force-stop/capacidade/cancel/leitores/foco/ampliação/insets/alvos/SQLiteExpo/offline/backups. Mocks/plano/build/assinatura não aprovam critério nativo; nenhum telefone autorizado por delegação funcional.

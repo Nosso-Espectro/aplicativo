@@ -11,7 +11,7 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P2 — Lembrete de Água](https://github.com/Nosso-Espectro/aplicativo/milestone/20) (número 20).
 
-Milestone aberta; US029 integrada pelo PR93, US030 Ready após refinamento sob delegação funcional, ainda sem código. Gates nativos e release não concluídos.
+Milestone aberta; US029 integrada pelo PR93, US030 em implementação na branch própria após refinamento sob delegação funcional. Modelos/persistência verificados localmente; agendamento DAILY/UI ainda pendentes. Gates nativos e release não concluídos.
 
 ## Refinamento US030
 

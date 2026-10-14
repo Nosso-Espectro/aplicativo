@@ -100,6 +100,17 @@ it('serializes cancellation after a pending schedule and compensates a late sche
   const late = engine.schedule(entry); const failed = expect(late).rejects.toThrow(); await new Promise(resolve => setTimeout(resolve, 0));
   engine.dispose(); finish(); await failed; expect(mockScheduled.has(entry.identifier)).toBe(false);
 });
+it.each(['tear-transition-1-5-2', 'tear-hydration-v1-99', 'tear-hydration-v2-99-0'])('never cancels divergent returned identifier %s or a newer owner', async returned => {
+  const engine = await granted();
+  mockScheduled.set(returned, { identifier: returned, content: {}, trigger: null });
+  mockSDK.scheduleNotificationAsync.mockImplementationOnce(async input => {
+    mockScheduled.set(input.identifier!, { ...input, identifier: input.identifier! }); return returned;
+  });
+  await expect(engine.schedule(entry)).rejects.toThrow();
+  expect(mockScheduled.has(returned)).toBe(true); expect(mockScheduled.has(entry.identifier)).toBe(false);
+  expect(mockSDK.cancelScheduledNotificationAsync).toHaveBeenCalledWith(entry.identifier);
+  expect(mockSDK.cancelScheduledNotificationAsync).not.toHaveBeenCalledWith(returned);
+});
 it('preserves already confirmed alarms across dispose and processes only current owned received events', async () => {
   const engine = await granted(); await engine.schedule(entry); let owned: string | null = entry.identifier; const received = jest.fn();
   const stop = engine.onReceived(() => owned, received);

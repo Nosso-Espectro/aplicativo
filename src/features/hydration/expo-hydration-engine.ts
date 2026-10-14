@@ -89,8 +89,7 @@ export function createExpoHydrationEngine() {
             repeats: true, ...(channels ? { channelId } : {}) },
         });
         if (disposed || identifier !== input.identifier) {
-          // This exact returned ID belongs to this schedule call, not a global cancellation.
-          await notifications.cancelScheduledNotificationAsync(identifier);
+          // A mismatched returned ID is not proof that this operation owns another alarm.
           await cancel(input.identifier); throw unavailable();
         }
         const result = await inspect();
