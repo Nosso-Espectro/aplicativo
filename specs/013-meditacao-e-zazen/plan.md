@@ -2,7 +2,39 @@
 
 Spec: [spec.md](spec.md). Milestone #21; Issues #31, #32. Plano proposto, sujeito às questões em aberto.
 
-## Plano vigente US031
+## Plano vigente US032
+
+Issue32 Ready após refino [6175665780](https://github.com/Nosso-Espectro/aplicativo/issues/32#issuecomment-6175665780) e revisão editorial de fontes/direitos/autonomia, antes código. Base main24646a0/US031PR99 integrada, 857Jest99/Doctor21/21 e CI38615605708SUCCESS2min9s; manter T01131 pendente. Stack real Expo57/RN0.86/React19/Router/Node24.21.0/npm11.19.0, sem novas dependências.
+
+Local zazen-guide.ts: conteúdo editorial original curto em pt-BR com revisão,
+introdução de limites, três seções e bibliografia. Pesquisa primária:
+[Sotoshu](https://www.sotozen.com/eng/zazen/howto/) e
+[Zen Studies Society](https://zenstudies.org/teachings/how-to-practice/);
+[copyright Sotoshu](https://www.sotozen.com/eng/copyright/index.html) não autoriza
+republicar seus textos/PDFs/imagens. Nenhum material copiado/tradução literal,
+licença aberta alegada, download ou link externo ativo no app. Fonte não é
+conteúdo licenciado importado; registrar mapa editorial/proveniência em docs.
+Não prometer benefício clínico nem exigir lotus/ritmo respiratório/ritual.
+
+Validação síncrona da estrutura completa antes apresentar; retornar cópia
+imutável de dados locais/sem getters/arrays esparsos incompletos. Ausente,
+malformado ou erro local mantém heading/back e erro neutro; nenhuma carga remota,
+retry falso ou exposição de detalhes. Não introduzir loader assíncrono/provider,
+DB/conta/histórico/telemetria/permissão/mídia/TTS/deps por conteúdo estático.
+
+ZazenGuideScreen leitura unframed/ScrollView/SafeArea/escalável e rota fina
+/meditation/zazen/usePanelReturn, atalho Ferramentas/menu-book. Back hardware
+somente focado, callback removido após blur não navega; sem iniciar/alterar
+meditação31, Timer, Pomodoro, sons, hidratação ou frase. Não tocar prévia8093.
+
+Tests modelo (conteúdo/revisão/referências/sem alegação clínica/clones/ausente/
+malformado/getters/sparse) e Router com fronteiras reais (drawer/voltar/fallback/
+hardwarebackstale/mode9/CAA/offline). Related/fullJestserial/linttipos/Doctor
+56tooling/validadordiffreview/CI último head antes DoD. T012 native posterior
+assistivo/reflow/foco/insets/alvos/offline; mocks não aprovam gate.
+Nenhuma task32 verificada/código32 neste refino; árvore limpa antes branch32.
+
+## Histórico US031 — Integrada PR99
 
 Retomada após97: PR98 MERGED/main2bb0ec7, PRCI38612713569SUCCESS1min53s
 e mainpush38613136392SUCCESS2min10s com Tests serial/Doctor. Main95FAIL

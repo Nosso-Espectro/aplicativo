@@ -1,6 +1,6 @@
 # Tasks — Meditação e Zazen
 
-Milestone #21: [spec.md](spec.md) e [plan.md](plan.md). US031 implementada na branch própria; T001-T005 verificadas com checks locais/CI, aguarda último head verde antes integração. T011 nativo pendente. US032 não Ready/não implementada.
+Milestone #21: [spec.md](spec.md) e [plan.md](plan.md). US031 integrada PR99/main24646a0, T001-T005 verificadas/CI main verde; T011 nativo pendente. US032 Ready, ainda sem código/entrega/tasks verificadas.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -17,8 +17,9 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 
 ## US-032 — Issue #32
 
-- [ ] T006 [US-032] Em `src/features/meditation/zazen-guide`, atender RF-004 (critério 1 de #32): O conteúdo deve explicar postura, respiração e início da prática de maneira introdutória. Verificar com o cenário correspondente no PR.
-- [ ] T007 [US-032] Em `src/features/meditation/zazen-guide`, atender RF-005 (critério 2 de #32): O guia deve funcionar offline. Verificar com o cenário correspondente no PR.
-- [ ] T008 [US-032] Em `src/features/meditation/zazen-guide`, atender RF-006 (critério 3 de #32): O conteúdo não deve apresentar a prática como tratamento médico ou psicológico. Verificar com o cenário correspondente no PR.
-- [ ] T009 [US-032] Adicionar testes de comportamento de RF-004, RF-005, RF-006 em `tests/features/meditation/zazen-guide`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
-- [ ] T010 [US-032] Revisar RNF-001 a RNF-004 na interface/dados de #32, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+- [ ] T006 [US-032] RF-004: zazen-guide.ts texto editorial ORIGINAL pt-BR/revisão/3seções postura-respiração-iníciofim/limites/créditos bibliográficos; documento de proveniência e revisão de fontes/direitos sem copiar materiais restritos.
+- [ ] T007 [US-032] RF-005: recurso estático local/validação íntegra/cópias imutáveis/sem rede ou loader falso; ZazenGuideScreen/rota /meditation/zazen/Ferramentas/backfallback/focado/mode9/escalável48dp, erro neutro+voltar para ausência/corrupção.
+- [ ] T008 [US-032] RF-006: explicitar opcional/não tratamento/não substitui acompanhamento profissional, sem benefício/diagnóstico/postura forçada/meta/ritmo respiratório/ritual obrigatório; nenhum timer31 iniciado implicitamente ou mídia/permissão/deps nova.
+- [ ] T009 [US-032] Tests modelo/conteúdo/Router/offline/revisão/créditos/ausente-malformado-getters-sparse/clones/backfocado-stale/retornos/mode9/CAA e regressões31, sem API falsa/PII/exclusões/timeoutraise.
+- [ ] T010 [US-032] RNF-001 a RNF-004/cleanprivacyoffline/UIreview, related/fullserial/linttiposDoctor56toolingvalidadordiffcheck/CI últimohead antesintegração, tasks só comportamento comprovado; sem hostphonebuildlocal/preview8093/tagrelease.
+- [ ] T012 [US-032] Gate posterior real SHA integrado: leitores/foco/ampliação/reflow/insets/alvos/backgestos/guia offline em binário; mocks/build/assinatura não aprovam nativo e não autorizam aparelho.

@@ -3,7 +3,7 @@ milestone: 21
 priority: P2
 tag: m013-meditacao-e-zazen
 status: draft
-ready_stories: ["US-031"]
+ready_stories: ["US-031", "US-032"]
 source_checked: 2026-10-14
 ---
 
@@ -11,7 +11,16 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P2 — Meditação e Zazen](https://github.com/Nosso-Espectro/aplicativo/milestone/21) (número 21).
 
-Milestone aberta. US031 implementada na branch própria, sem PR/entrega: gate Doctor20/21 bloqueado pelos patches SDK57, manutenção técnica separada na Issue95. US032 sem Ready/implementação. Gates nativos e release não concluídos.
+Milestone aberta. US031 integrada pelo PR99/main24646a0; CI main38615605708 verde, T011 nativo pendente. US032 Ready após refino/revisão editorial próprios abaixo, ainda sem código/entrega. Gates nativos e release não concluídos; bloqueios Doctor/CI anteriores resolvidos pelas Issues95/97 são históricos.
+
+## Refinamento US032
+
+Decisão conservadora registrada na [Issue32](https://github.com/Nosso-Espectro/aplicativo/issues/32#issuecomment-6175665780) sob delegação funcional, sem mudar critérios originais. Revisão editorial/de fontes/autonomia/privacidade antes Ready; não valida clínica ou comportamento nativo.
+
+- Texto original TEAr pt-BR curto: introdução opcional/não tratamento/não substitui acompanhamento profissional; Postura, Respiração, Começar e encerrar. Assento confortável/estável com cadeira como alternativa, respiração natural sem retenção/ritmo imposto, liberdade de ajustar/parar, início/fim por escolha sem metas ou promessas de benefício. Sem postura forçada/rituais/incenso obrigatório.
+- Referências primárias Sotoshu e Zen Studies Society consultadas em2026-10-14; não copiar/traduzir literalmente artigos/PDFs/imagens/áudio ou declarar licença aberta deles. Pesquisa informa princípios; redação/adaptações são editoriais originais. Créditos bibliográficos locais (entidade/título/data), sem link externo ativo/URL acionável no app; URLs/proveniência/limites em documento de engenharia. Não reproduzir materiais restritos.
+- Recurso tipado estático empacotado/revisão/3seções completas/creditos. Validação local, ausência/corrupção mostra orientação neutra e voltar, sem retry remoto/loading falso. Nenhum fetch/Linking/WebView/player/voz/vib/notificação/provider/DB/histórico/permissão/deps novos ou timer31 iniciado implicitamente.
+- Tela de leitura unframed/ScrollView/SafeArea/títulos/texto18escalável/alvos48dp/modo9; rota /meditation/zazen e Ferramentas, retorno/fallback/backfocado/descartarcallbackantigo sem interferir timer/CAA. Modelo/conteúdo/Router/offline/ausência-clones/regressões e checks/CI antes DoD. T012 nativo posterior separado e pendente, sem host/phone/buildlocal/preview8093/tagrelease.
 
 ## Refinamento US031
 
@@ -115,7 +124,7 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-MEDIT-01 — Forma de aviso31 resolvida no refinamento acima; origem/revisão do guia32 continua aberta, não Ready.
+- Q-MEDIT-01 — Forma de aviso31 e origem/redação/revisão editorial32 resolvidas nos refinamentos acima; não aprovam gate nativo ou licença de republicação de fontes.
 - Q-MEDIT-02 — Controles/segundo plano31 resolvidos no refinamento acima; não condicionam aprovação funcional nova.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
