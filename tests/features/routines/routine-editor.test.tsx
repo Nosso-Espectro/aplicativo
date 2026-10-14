@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import RoutinesScreen from '../../../src/app/routines';
 import NewRoutineScreen from '../../../src/app/routines/new';
@@ -15,9 +15,17 @@ jest.mock('../../../src/features/communication/custom-cards/local-image-storage'
 jest.mock('../../../src/features/communication/custom-cards/media-picker', () => ({ pickCardImage: jest.fn() }));
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
 const mockPush = jest.fn(); const mockBack = jest.fn(); const mockReplace = jest.fn();
-let mockId = ''; let routines: Routine[];
+let mockId = ''; let mockFocused = true; let routines: Routine[];
 const save = jest.fn(); const list = jest.fn();
-jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush, back: mockBack, replace: mockReplace, canGoBack: () => true }), useLocalSearchParams: () => ({ id: mockId }) }));
+jest.mock('expo-router', () => ({
+  useRouter: () => ({ push: mockPush, back: mockBack, replace: mockReplace, canGoBack: () => true }),
+  useLocalSearchParams: () => ({ id: mockId }),
+  useFocusEffect: (callback: () => void | (() => void)) => {
+    const { useEffect } = jest.requireActual<typeof import('react')>('react');
+    const focused = mockFocused;
+    useEffect(() => { if (focused) return callback(); }, [callback, focused]);
+  },
+}));
 function Session() {
   const [route, setRoute] = useState('list');
   useEffect(() => {
@@ -29,7 +37,7 @@ function Session() {
   return <RoutineProvider>{route === 'list' ? <RoutinesScreen /> : route === 'new' ? <NewRoutineScreen /> : <EditRoutineScreen />}</RoutineProvider>;
 }
 beforeEach(() => {
-  jest.clearAllMocks(); routines = []; mockId = '';
+  jest.clearAllMocks(); routines = []; mockId = ''; mockFocused = true;
   list.mockReset(); list.mockImplementation(async () => [...routines]);
   save.mockReset(); save.mockImplementation(async (draft, id) => {
     const routine = { ...draft, id: id ?? 'routine-test' };
@@ -42,6 +50,12 @@ beforeEach(() => {
 async function openNew() {
   await waitFor(() => expect(screen.getByRole('button', { name: 'Nova rotina' })).toBeEnabled());
   fireEvent.press(screen.getByRole('button', { name: 'Nova rotina' }));
+}
+function commandCallback(name: string): () => void {
+  let node = screen.getByRole('button', { name });
+  while (node.parent && typeof node.props.onPress !== 'function') node = node.parent;
+  expect(typeof node.props.onPress).toBe('function');
+  return node.props.onPress as () => void;
 }
 it('handles empty state, validates name and saves a named empty routine', async () => {
   render(<Session />); await openNew();
@@ -121,6 +135,86 @@ it('waits for commit before navigating and disables repeated pending saves', asy
   expect(save).toHaveBeenCalledTimes(1); expect(mockBack).not.toHaveBeenCalled();
   await act(async () => { finish([{ id: 'r', name: 'Teste', steps: [] }]); });
   expect(mockBack).toHaveBeenCalledTimes(1);
+});
+it('does not navigate after an authorized save commits after editor unmount', async () => {
+  let finish!: (value: Routine[]) => void;
+  save.mockImplementationOnce(() => new Promise<Routine[]>((resolve) => { finish = resolve; }));
+  const view = render(<Session />); await openNew();
+  fireEvent.changeText(screen.getByLabelText('Nome da rotina'), 'Teste');
+  fireEvent.press(screen.getByRole('button', { name: 'Salvar rotina' }));
+  await waitFor(() => expect(save).toHaveBeenCalledTimes(1));
+  view.unmount();
+  await act(async () => { finish([{ id: 'r', name: 'Teste', steps: [] }]); });
+  expect(mockBack).not.toHaveBeenCalled();
+  expect(mockReplace).not.toHaveBeenCalled();
+});
+it('rejects save, picker and cancel callbacks from an unmounted editor', async () => {
+  const view = render(<Session />); await openNew();
+  fireEvent.changeText(screen.getByLabelText('Nome da rotina'), 'Teste');
+  fireEvent.press(screen.getByRole('button', { name: 'Adicionar etapa' }));
+  fireEvent.changeText(screen.getByLabelText('Título da etapa 1'), 'Etapa');
+  const oldSave = commandCallback('Salvar rotina');
+  const oldPicker = commandCallback('Escolher imagem da etapa 1');
+  const oldCancel = commandCallback('Cancelar');
+  view.unmount();
+  await act(async () => { oldSave(); oldPicker(); oldCancel(); });
+  expect(save).not.toHaveBeenCalled(); expect(pickCardImage).not.toHaveBeenCalled();
+  expect(mockBack).not.toHaveBeenCalled();
+});
+it('does not revive old save callbacks or completions when focus returns', async () => {
+  let finish!: (value: Routine[]) => void;
+  save.mockImplementationOnce(() => new Promise<Routine[]>((resolve) => { finish = resolve; }));
+  const view = render(<Session />); await openNew();
+  fireEvent.changeText(screen.getByLabelText('Nome da rotina'), 'Teste');
+  const oldSave = commandCallback('Salvar rotina');
+  fireEvent.press(screen.getByRole('button', { name: 'Salvar rotina' }));
+  await waitFor(() => expect(save).toHaveBeenCalledTimes(1));
+  mockFocused = false; view.rerender(<Session />);
+  mockFocused = true; view.rerender(<Session />);
+  await act(async () => { finish([{ id: 'r', name: 'Teste', steps: [] }]); oldSave(); });
+  expect(mockBack).not.toHaveBeenCalled(); expect(save).toHaveBeenCalledTimes(1);
+  fireEvent.press(screen.getByRole('button', { name: 'Salvar rotina' }));
+  await waitFor(() => expect(mockBack).toHaveBeenCalledTimes(1));
+  expect(save).toHaveBeenCalledTimes(2);
+});
+it('ignores old failure without clearing the busy state of a new save', async () => {
+  let fail!: (reason: Error) => void; let finish!: (value: Routine[]) => void;
+  save.mockImplementationOnce(() => new Promise<Routine[]>((_, reject) => { fail = reject; }));
+  save.mockImplementationOnce(() => new Promise<Routine[]>((resolve) => { finish = resolve; }));
+  const view = render(<Session />); await openNew();
+  fireEvent.changeText(screen.getByLabelText('Nome da rotina'), 'Teste');
+  fireEvent.press(screen.getByRole('button', { name: 'Salvar rotina' }));
+  await waitFor(() => expect(save).toHaveBeenCalledTimes(1));
+  mockFocused = false; view.rerender(<Session />);
+  mockFocused = true; view.rerender(<Session />);
+  fireEvent.press(screen.getByRole('button', { name: 'Salvar rotina' }));
+  await waitFor(() => expect(save).toHaveBeenCalledTimes(2));
+  await act(async () => { fail(new Error('synthetic old failure')); });
+  expect(screen.queryByText(/Seu preenchimento foi mantido/)).toBeNull();
+  expect(screen.getByRole('button', { name: 'Salvar rotina' })).toBeDisabled();
+  await act(async () => { finish([{ id: 'r', name: 'Teste', steps: [] }]); });
+  expect(mockBack).toHaveBeenCalledTimes(1);
+});
+it('ignores a picker result from the previous focus activation', async () => {
+  let finish!: (result: { uri: string }) => void;
+  jest.mocked(pickCardImage).mockImplementationOnce(() => new Promise((resolve) => { finish = resolve; }));
+  const view = render(<Session />); await openNew();
+  fireEvent.changeText(screen.getByLabelText('Nome da rotina'), 'Teste');
+  fireEvent.press(screen.getByRole('button', { name: 'Adicionar etapa' }));
+  fireEvent.changeText(screen.getByLabelText('Título da etapa 1'), 'Etapa');
+  fireEvent.press(screen.getByRole('button', { name: 'Escolher imagem da etapa 1' }));
+  mockFocused = false; view.rerender(<Session />);
+  mockFocused = true; view.rerender(<Session />);
+  await act(async () => { finish({ uri: 'file:///cache/old.png' }); });
+  expect(screen.queryByLabelText('Imagem da etapa 1')).toBeNull();
+  expect(screen.getByRole('button', { name: 'Salvar rotina' })).toBeEnabled();
+});
+it('saves normally with StrictMode lifecycle replay', async () => {
+  render(<StrictMode><Session /></StrictMode>); await openNew();
+  fireEvent.changeText(screen.getByLabelText('Nome da rotina'), 'Teste');
+  fireEvent.press(screen.getByRole('button', { name: 'Salvar rotina' }));
+  await waitFor(() => expect(mockBack).toHaveBeenCalledTimes(1));
+  expect(save).toHaveBeenCalledTimes(1);
 });
 it('recovers storage initialization failure without exposing details', async () => {
   jest.mocked(openRoutineDatabase).mockRejectedValueOnce(new Error('private path'));

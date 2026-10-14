@@ -87,14 +87,22 @@ Base integrada da US-041 e fronteiras locais de imagem da US-004 reutilizadas. S
 ### Correção US-006: continuações do editor
 
 Reprodução inicial: manter save pendente, desmontar o editor e resolver o commit;
-o fechamento antigo não pode navegar. Rotas fornecem o estado de foco real do
-Router. O editor captura um owner por ativação (montagem/foco), invalidado na
+o fechamento antigo não pode navegar. O editor usa useFocusEffect do Router
+real e captura um owner por ativação (montagem/foco), invalidado na
 limpeza; uma nova ativação não aceita o owner anterior. Comandos antigos não
 iniciam save/picker; continuações antigas não publicam feedback nem fechamento.
 O finally libera somente o busy da operação/ativação correspondente. Preservar
 gravações já autorizadas, provider/DAO, schema, permissões e dependências.
 Testar sucesso/falha tardios, unmount/blur/retorno, callbacks antigos, StrictMode
 e sucesso/retry atual. T006/T011/T017 continuam pendentes no gate nativo.
+
+Evidência local 2026-10-14: regressão reproduzida antes da correção (router.back
+chamado após unmount), oito cenários novos aprovados. Dois usam Router/provider
+reais e SQLite do Node com commit retido: a gravação conclui, mas não navega após
+replace ou blur/retorno. Suíte completa 934 testes/104 suítes PASS (140,437s),
+lint/tipos sem avisos, Doctor21/21, 56 testes tooling, validador/diff check PASS.
+Revisão do diff preserva dados/schema/status, layout e alvos de 48dp; nenhuma
+permissão/dependência/rede/estímulo nova. CI do último head ainda necessária.
 
 Rotina vazia, imagem ausente, falha de persistência e etapa removida durante edição; preservar ordem/status (#6–#8).
 

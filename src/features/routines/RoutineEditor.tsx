@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { Image, Text, TextInput, View } from 'react-native';
 import { pickCardImage } from '../communication/custom-cards/media-picker';
 import { newStep, validateRoutine, type Routine, type RoutineDraft, type RoutineStep } from './routine-model';
@@ -15,11 +16,20 @@ export function RoutineEditor({ routine, onClose }: { routine?: Routine; onClose
   const [removing, setRemoving] = useState<string | null>(null);
   const [orderMessage, setOrderMessage] = useState<string | null>(null);
   const inFlight = useRef(false);
+  const owner = useRef<object | null>(null);
+  const [activation, setActivation] = useState<object | null>(null);
+  useFocusEffect(useCallback(() => {
+    const current = {};
+    owner.current = current; inFlight.current = false;
+    setActivation(current); setBusy(false);
+    return () => { owner.current = null; inFlight.current = false; };
+  }, []));
+  const isCurrent = () => activation !== null && owner.current === activation;
   const nameInput = useRef<TextInput>(null);
   const stepInputs = useRef(new Map<string, TextInput>());
   const unavailable = context.loading || Boolean(context.error);
   function move(id: string, direction: -1 | 1) {
-    if (inFlight.current || unavailable) return;
+    if (!isCurrent() || inFlight.current || unavailable) return;
     const index = draft.steps.findIndex((step) => step.id === id);
     if (index < 0 || index + direction < 0 || index + direction >= draft.steps.length) return;
     setDraft((value) => ({ ...value, steps: moveStep(value.steps, id, direction) }));
@@ -31,16 +41,19 @@ export function RoutineEditor({ routine, onClose }: { routine?: Routine; onClose
     setRemoving(null); setErrors({ name: null, steps: [] }); setOrderMessage(null);
   }
   async function chooseImage(id: string, source: 'file' | 'camera') {
-    if (inFlight.current) return;
+    if (!isCurrent() || inFlight.current || unavailable) return;
     inFlight.current = true; setBusy(true); setMessage(null);
     try {
       const result = await pickCardImage(source);
+      if (!isCurrent()) return;
       if (result.uri) editStep(id, { imageUri: result.uri });
       if (result.message) setMessage(result.message);
-    } finally { inFlight.current = false; setBusy(false); }
+    } catch {
+      if (isCurrent()) setMessage('Não foi possível obter a imagem. Você pode salvar sem imagem.');
+    } finally { if (isCurrent()) { inFlight.current = false; setBusy(false); } }
   }
   async function save() {
-    if (inFlight.current || unavailable) return;
+    if (!isCurrent() || inFlight.current || unavailable) return;
     const validation = validateRoutine(draft);
     setErrors(validation); setMessage(null);
     if (validation.name || validation.steps.some(Boolean)) {
@@ -49,12 +62,12 @@ export function RoutineEditor({ routine, onClose }: { routine?: Routine; onClose
       return;
     }
     inFlight.current = true; setBusy(true);
-    try { await context.save(draft, routine?.id); onClose(); }
-    catch { setMessage('Não foi possível salvar a rotina. Seu preenchimento foi mantido. Tente novamente ou cancele.'); }
-    finally { inFlight.current = false; setBusy(false); }
+    try { await context.save(draft, routine?.id); if (isCurrent()) onClose(); }
+    catch { if (isCurrent()) setMessage('Não foi possível salvar a rotina. Seu preenchimento foi mantido. Tente novamente ou cancele.'); }
+    finally { if (isCurrent()) { inFlight.current = false; setBusy(false); } }
   }
   return <RoutinePage>
-    <RoutineCommand icon="arrow-back" label="Cancelar" disabled={busy} onPress={onClose} />
+    <RoutineCommand icon="arrow-back" label="Cancelar" disabled={busy} onPress={() => { if (isCurrent() && !inFlight.current) onClose(); }} />
     <Text accessibilityRole="header" style={styles.heading}>{routine ? 'Editar rotina' : 'Nova rotina'}</Text>
     {context.loading && <Text accessibilityLiveRegion="polite" style={styles.text}>Abrindo rotinas…</Text>}
     {context.error && <Text accessibilityRole="alert" style={styles.error}>{context.error}</Text>}

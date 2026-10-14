@@ -49,5 +49,5 @@ offline e interrupção/reabertura do binário permanecem pendentes. Nenhum buil
 
 ## Correção de ciclo de vida — US-006 / Issue #6
 
-- [ ] T018 [US-006] Reproduzir commit pendente/desmontagem e proteger comandos/continuações do editor por owner de montagem/foco; preservar commit autorizado, save/retry atual e contratos de reordenação, sem novo schema/dependências/permissões.
+- [x] T018 [US-006] Reproduzir commit pendente/desmontagem e proteger comandos/continuações do editor por owner de montagem/foco; preservar commit autorizado, save/retry atual e contratos de reordenação, sem novo schema/dependências/permissões. Evidência: teste falhou antes da correção por back tardio; oito regressões novas PASS, incluindo dois fluxos Router/provider/SQLiteNode real com commit retido.
 - [ ] T019 [US-006] Testar sucesso/falha tardios, blur/retorno/callbacks antigos/StrictMode; revisar UI/privacidade/diff e executar related/full Jest serial, lint/tipos/Doctor/tooling/validador e CI do último head antes integração. Não fechar #6 nem marcar T006/T011/T017 nativos.
