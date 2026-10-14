@@ -39,6 +39,11 @@ export default function StartupScreen() {
         <MaterialIcons name="checklist" size={24} color="#16634D" accessible={false} />
         <Text style={{ color: '#16634D', fontSize: 18, flexShrink: 1 }}>Tarefas</Text>
       </Pressable>
+      <Pressable accessibilityRole="button" accessibilityLabel="Abrir check-in corporal e sensorial" onPress={() => router.push('/check-in')}
+        style={{ minHeight: 48, flexDirection: 'row', gap: 8, alignItems: 'center', padding: 12 }}>
+        <MaterialIcons name="fact-check" size={24} color="#16634D" accessible={false} />
+        <Text style={{ color: '#16634D', fontSize: 18, flexShrink: 1 }}>Check-in corporal e sensorial</Text>
+      </Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel="Abrir perfil de comunicação" onPress={() => router.push('/profile')}
         style={{ minHeight: 48, flexDirection: 'row', gap: 8, alignItems: 'center', padding: 12 }}>
         <MaterialIcons name="person-outline" size={24} color="#16634D" accessible={false} />

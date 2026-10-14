@@ -3,8 +3,8 @@ milestone: 16
 priority: P1
 tag: m008-check-in-corporal-e-sensorial
 status: draft
-ready_stories: []
-source_checked: 2026-09-23
+ready_stories: ["US-021"]
+source_checked: 2026-10-14
 ---
 
 # Check-in Corporal e Sensorial
@@ -93,7 +93,18 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Implementações de outras milestones, requisitos não rastreados e decisões funcionais listadas como pendentes. Nesta execução apenas documentação e ferramentas de engenharia; nenhuma funcionalidade é implementada.
+Para #21: resumo, sugestões e atalhos de #22, histórico, banco de respostas, IA, backend, sincronização, novas permissões, áudio e animação. #22 ainda não Ready.
+
+## Refinamento aprovado de US-021 (2026-10-14)
+
+Aprovação humana: [registro em #21](https://github.com/Nosso-Espectro/aplicativo/issues/21#issuecomment-6163890493). Critérios originais preservados.
+
+- Oito perguntas locais: sede, fome, dor, cansaço, incômodo com ruído, incômodo com luz, temperatura e vontade de ficar sozinho.
+- Sete perguntas usam Sim/Não/Não sei; temperatura usa Frio/Confortável/Calor/Não sei. Nenhuma opção inicialmente selecionada.
+- Uma pergunta por tela, seleção reversível, continuar explicitamente ou pular. Voltar preserva a resposta na sessão; pular remove eventual resposta anterior, sem inferir resposta.
+- Respostas somente em memória durante o check-in. Sair, finalizar ou desmontar a rota descarta a sessão; nova entrada começa vazia. Não há resumo, diagnóstico nem prescrição nesta história.
+- Entrada pelo quadro, rota própria, retorno ao quadro mesmo por entrada direta. Alvos de pelo menos 48dp, texto escalável, sem áudio/animação inesperada; modo de baixa estimulação preservado.
+- Uso útil sem rede, sem DB/API/permissões novas e sem respostas em parâmetros de navegação, logs ou telemetria.
 
 ## Dependências funcionais
 
@@ -110,9 +121,9 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-CHECK-01 — Quais escalas de resposta e sugestões serão usadas e quem revisará o conteúdo (#21/#22)? Não inferir diagnóstico.
+- Q-CHECK-01 — Escalas de #21 resolvidas pelo refinamento aprovado acima; sugestões e revisão do conteúdo de #22 permanecem pendentes. Não inferir diagnóstico.
 - Q-CHECK-02 — “Água” em #22 é cartão CAA (#1) ou lembretes P2 (#29)? Resolver destino antes de implementar atalho.
-- Q-CHECK-03 — Retenção de respostas não definida; coleta para Histórico P3 (#38) requer decisão explícita.
+- Q-CHECK-03 — #21 resolvida: respostas efêmeras somente em memória na sessão. Retenção/transição para resumo de #22 deve ser refinada nessa história; coleta para Histórico P3 (#38) não autorizada.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 
