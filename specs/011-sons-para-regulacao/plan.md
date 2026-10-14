@@ -1,6 +1,16 @@
 # Plano de implementação — Sons para Regulação
 
-Spec: [spec.md](spec.md). Milestone #19; Issues #27, #28. Plano proposto, sujeito às questões em aberto.
+Spec: [spec.md](spec.md). Milestone #19; Issues #27, #28. US027 entregue pelo PR71; US028 refinada e Ready em 2026-10-14, ainda sem código.
+
+## Plano vigente US028
+
+Base main340390c; ler controller/provider/engine/UI e testes reais de sons/TTS/AppState antes de código. Modelo puro de duração/draft/prazo/revisão e clock seguro em `src/features/regulation-sounds/`, sem banco ou framework genérico. Integrar o prazo ao controller proprietário do slot: callbacks capturam revisão/identidade, expiração invalida intent antes de pause e usa status nativo para confirmar parada; cancelamento de timer não chama engine. Factory/status tardios, troca/player destruído/dispose e TTS não podem ressuscitar reprodução ou encerrar slot novo.
+
+Provider reconcilia clock no foreground/AppState; background com timer armado solicita pausa existente, prazo corrido permanece e não retoma sozinho. Guardar `background(true)` no controller, não somente na UI; armar timer recusa background já habilitado e preserva escolha. Timer não promete execução enquanto JS suspenso/processo morto; nenhuma nova dependência/permissão/scheduler nativo. UI de duração inteira1-180/draft15/presets5,15,30,60/aplicar/cancelar/status/erro/retry, sem autoplay ao editar; texto escalável, alvos48dp, controles semânticos/mode9 e retornos reais. Limite foreground deve ficar explícito sem mudar silenciosamente preferência #27.
+
+Testes unitários e controller/provider/router: duração inválida/fronteiras, prazo corrido/pausa/TTS, cancelamento sem engine calls, prazo expirado/status atrasado/erro/retry, factory antiga/reaplicar/troca/dispose, clock inválido/regressivo/overflow, AppState/backgroundguard/reentrada/mode9. Regressões sons/voz/timer visual/Pomodoro/CAA; Jest serial/lint/tipos/Doctor/tooling/validador/diffreview/CI leve antes DoD. T011spec011 nativo/assistivo/offline separado e pendente. Todas as tasks28 unchecked, sem implementação por refinamento.
+
+As seções seguintes são histórico US027; afirmações antigas de PR/CI pendentes ou #61 aberta não descrevem estado atual. #61 foi fechada not_planned por solicitação humana, investigação/recriação/rotação dispensadas, sem alegar integridade/auditoria ou causalidade. #51 permanece aberta. Nenhuma nova instalação/build local/host autorizado nesta feature.
 
 ## Stack
 
