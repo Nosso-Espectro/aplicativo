@@ -48,7 +48,9 @@ Testar RootLayout/rotas reais e todos quatro fluxos, cancelamento/retorno,
 modo/estado dos módulos preservados e ausência/falhas sem iniciar side-effects,
 sem operar celular/WhatsApp ou usar dados pessoais nos fixtures. Mocks não
 validam assistivo/insets/voz/áudio nativos; checks leves/CI e builds só remotos.
-Nenhuma taskUS010 concluída; implementation ainda falta.
+Modelo inicial quick-panel.ts define quatro destinos e origem estritamente
+allowlisted, com quatro testes. Nenhuma taskUS010 concluída: tela/rota/acesso e
+contratos de retorno/integrados ainda faltam; não confundir mapa com painel útil.
 
 US-009: preferência `{enabled:boolean}`, defaultfalse, validação estrita sem
 coerção. Apresentação remove imagem decorativa somente quando modo ativo; animação
