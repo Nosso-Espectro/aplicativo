@@ -225,10 +225,10 @@ Como usuário de CAA, quero criar cartões próprios com texto e imagem, para ad
 
 #### Critérios de aceite
 
-- Deve ser possível criar cartão com título e categoria.
-- A imagem deve ser opcional e poder vir de arquivo ou câmera quando suportado.
-- Deve ser possível editar e excluir cartões personalizados.
-- Cartões personalizados devem permanecer salvos localmente após fechar o aplicativo.
+- [ ] Deve ser possível criar cartão com título e categoria.
+- [ ] A imagem deve ser opcional e poder vir de arquivo ou câmera quando suportado.
+- [ ] Deve ser possível editar e excluir cartões personalizados.
+- [ ] Cartões personalizados devem permanecer salvos localmente após fechar o aplicativo.
 
 **Why this priority**: prioridade P0 da Issue e da milestone; valor expresso na história original.
 
@@ -242,6 +242,13 @@ Como usuário de CAA, quero criar cartões próprios com texto e imagem, para ad
 4. **Given** um cartão personalizado salvo, **When** fechar e reabrir o aplicativo, **Then** o cartão permanece salvo localmente. (#4, critério 4.)
 5. **Given** a criação ou edição de cartão com título vazio ou composto somente por espaços, ou categoria ausente/inexistente, **When** tentar salvar, **Then** o cartão não é salvo, o preenchimento é preservado e o campo a corrigir é indicado; após corrigir os campos, é possível salvar. (#4, RF-013/RF-015; decisão complementar de validação.)
 
+
+**Refinamento de controle de ações (2026-10-14, #4)**: callbacks pertencem ao foco
+atual do editor. Saída/retorno não revive ações antigas; resultados tardios não
+navegam, alteram draft/feedback nem desbloqueiam operação nova. Manter cartão,
+edição e saída revogam a confirmação de exclusão. Operações de persistência já
+autorizadas podem concluir; não se promete cancelamento SQLite por desmontagem.
+Sem alteração dos critérios originais, DAO/schema, imagens, frase ou favoritos.
 
 ### US-005 — Favoritar cartões de comunicação (Priority: P0)
 

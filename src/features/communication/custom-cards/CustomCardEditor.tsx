@@ -1,4 +1,5 @@
-import { useRef, useState, type ComponentProps } from 'react';
+import { useCallback, useRef, useState, type ComponentProps } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -14,22 +15,49 @@ export function CustomCardEditor({ id, onClose }: { id?: string; onClose(): void
   const [errors, setErrors] = useState<ReturnType<typeof validateCard>>({ title: null, categoryId: null });
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<object | null>(null);
+  const deleteIntent = useRef<object | null>(null);
+  const owner = useRef<object | null>(null);
+  const [activation, setActivation] = useState<object | null>(null);
   const titleInput = useRef<TextInput>(null);
   const inFlight = useRef(false);
+  useFocusEffect(useCallback(() => {
+    const current = { id };
+    owner.current = current; inFlight.current = false; deleteIntent.current = null;
+    setActivation(current); setBusy(false); setConfirmDelete(null); setMessage(null);
+    return () => { owner.current = null; inFlight.current = false; deleteIntent.current = null; };
+  }, [id, setActivation, setBusy, setConfirmDelete, setMessage]));
+  const isCurrent = () => activation !== null && owner.current === activation;
   const unavailable = context.loading || Boolean(context.error) || (Boolean(id) && !existing);
-  const edit = (change: Partial<CardDraft>) => { setDraft((value) => ({ ...value, ...change })); setConfirmDelete(false); };
+  function revokeDelete() { deleteIntent.current = null; setConfirmDelete(null); }
+  function edit(change: Partial<CardDraft>) {
+    if (!isCurrent() || inFlight.current || unavailable) return;
+    setDraft((value) => ({ ...value, ...change })); revokeDelete();
+  }
+  function close() {
+    if (!isCurrent() || inFlight.current) return;
+    owner.current = null; revokeDelete(); onClose();
+  }
+  function askDelete() {
+    if (!isCurrent() || inFlight.current || unavailable) return;
+    const intent = {}; deleteIntent.current = intent; setConfirmDelete(intent);
+  }
   async function chooseImage(source: 'file' | 'camera') {
-    if (inFlight.current) return;
+    if (!isCurrent() || inFlight.current || unavailable) return;
+    revokeDelete();
     inFlight.current = true; setBusy(true); setMessage(null);
     try {
       const result = await pickCardImage(source);
-      if (result.uri) edit({ imageUri: result.uri });
+      if (!isCurrent()) return;
+      if (result.uri) setDraft((value) => ({ ...value, imageUri: result.uri! }));
       if (result.message) setMessage(result.message);
-    } finally { inFlight.current = false; setBusy(false); }
+    } catch {
+      if (isCurrent()) setMessage('Não foi possível obter a imagem. Você pode salvar sem imagem.');
+    } finally { if (isCurrent()) { inFlight.current = false; setBusy(false); } }
   }
   async function save() {
-    if (inFlight.current || unavailable) return;
+    if (!isCurrent() || inFlight.current || unavailable) return;
+    revokeDelete();
     const validation = validateCard(draft);
     setErrors(validation); setMessage(null);
     if (validation.title || validation.categoryId) {
@@ -37,22 +65,22 @@ export function CustomCardEditor({ id, onClose }: { id?: string; onClose(): void
       return;
     }
     inFlight.current = true; setBusy(true);
-    try { await context.save(draft, id); onClose(); }
-    catch { setMessage('Não foi possível salvar. Seu preenchimento foi mantido. Tente salvar novamente ou cancele.'); }
-    finally { inFlight.current = false; setBusy(false); }
+    try { await context.save(draft, id); if (isCurrent()) { owner.current = null; onClose(); } }
+    catch { if (isCurrent()) setMessage('Não foi possível salvar. Seu preenchimento foi mantido. Tente salvar novamente ou cancele.'); }
+    finally { if (isCurrent()) { inFlight.current = false; setBusy(false); } }
   }
   async function remove() {
-    if (!id || inFlight.current || unavailable) return;
+    if (!isCurrent() || !id || inFlight.current || unavailable || confirmDelete === null || deleteIntent.current !== confirmDelete) return;
     inFlight.current = true; setBusy(true); setMessage(null);
-    try { await context.remove(id); onClose(); }
-    catch { setMessage('Não foi possível excluir. O cartão foi mantido. Tente novamente ou cancele.'); }
-    finally { inFlight.current = false; setBusy(false); }
+    try { await context.remove(id); if (isCurrent()) { owner.current = null; revokeDelete(); onClose(); } }
+    catch { if (isCurrent()) setMessage('Não foi possível excluir. O cartão foi mantido. Tente novamente ou cancele.'); }
+    finally { if (isCurrent()) { inFlight.current = false; setBusy(false); } }
   }
   return (
     <SafeAreaView style={styles.screen}>
       <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
-          <Command icon="arrow-back" label="Cancelar" disabled={busy} onPress={onClose} />
+          <Command icon="arrow-back" label="Cancelar" disabled={busy} onPress={close} />
           <Text accessibilityRole="header" style={styles.heading}>{id ? 'Editar cartão' : 'Novo cartão'}</Text>
           {context.loading && <Text style={styles.text}>Abrindo cartões…</Text>}
           {context.error && <Text accessibilityRole="alert" style={styles.error}>{context.error}</Text>}
@@ -85,12 +113,12 @@ export function CustomCardEditor({ id, onClose }: { id?: string; onClose(): void
           {message && <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.error}>{message}</Text>}
           {busy && <Text accessibilityLiveRegion="polite" style={styles.text}>Aguarde…</Text>}
           <Command icon="save" label="Salvar cartão" primary disabled={busy || unavailable} onPress={() => void save()} />
-          {id && !confirmDelete && <Command icon="delete-outline" label="Excluir cartão" disabled={busy || unavailable} onPress={() => setConfirmDelete(true)} />}
+          {id && !confirmDelete && <Command icon="delete-outline" label="Excluir cartão" disabled={busy || unavailable} onPress={askDelete} />}
           {confirmDelete && <View style={styles.confirmation}>
             <Text accessibilityRole="alert" style={styles.text}>Excluir este cartão também remove suas entradas da frase e dos favoritos. Esta ação não pode ser desfeita.</Text>
             <View style={styles.row}>
               <Command icon="delete" label="Confirmar exclusão" disabled={busy} onPress={() => void remove()} />
-              <Command icon="close" label="Manter cartão" disabled={busy} onPress={() => setConfirmDelete(false)} />
+              <Command icon="close" label="Manter cartão" disabled={busy} onPress={() => { if (isCurrent() && !inFlight.current && deleteIntent.current === confirmDelete) revokeDelete(); }} />
             </View>
           </View>}
         </ScrollView>

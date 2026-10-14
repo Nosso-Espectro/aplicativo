@@ -1,5 +1,29 @@
 # Implementation Plan: P0 — Comunicação Visual / CAA
 
+## Correção de controle do editor US004
+
+Refino #4 antes do código, preservando PR48 existente: reproduzir save pendente
+seguido de saída, callbacks antigos e confirmação de exclusão cancelada. Usar
+useFocusEffect/owner por ativação e ID, como nas rotinas, e token de intenção de
+exclusão revogado por cancelamento/edição/saída. Guardar comandos e continuations;
+não cancelar commits já autorizados. Picker tardio não altera draft ou feedback.
+Preservar retry atual, validação, layout/alvos/rótulos, CAA/frase/favoritos/imagens,
+DAO/schema/permissões/dependências. Testes componentes e Router real com provider
+e SQLiteNode, incluindo commit retido; regressões rotinas e CAA. Checks leves/CI
+antes integração. T028/T029/T031 nativos pendentes; nenhuma operação no servidor,
+preview, aparelho ou build local. Critérios literais reconciliados apenas nos
+checkboxes. Branch histórica preservada; fix curta própria sobre origin/main.
+
+Execução local: três RED reproduzidos antes do fix. Guardas por owner e intenção
+implementadas apenas no CustomCardEditor, sem mudanças de provider/DAO/schema.
+13 testes novos, 55 relacionados/9 e 959 completos/105 PASS (141.970s), tipos/lint
+sem warnings, Doctor21/21, 56 tooling/validador/diffcheck PASS. Router/SQLiteNode
+verifica commit retido sem navegação tardia e exclusão revogada sem SQL, mantendo
+favorito. Revisão preserva layouts, alvos48dp, semântica, modo9 e privacidade.
+PR105 anexado, CI38649085153 SUCCESS2min12s no head ac8b297; CI do último commit
+documental e main push devem ser reconferidos antes concluir integração.
+Android/iOS SKIPPED não são builds; gates nativos intactos.
+
 ## Manutenção SDK57 US095
 
 Issue95/Ready/baseoriginmain3172bbd: Doctor online20/21 pede patches publicados2026-10-14, manifests31 iguais àmain; sem atribuir o bloqueio àfeature ou inventar falha nativa. Manutenção isolada na branch chore95, US031 limpa/push/checkpoint8931ead preservado. Somente expo57.0.29/asset57.0.20/constants57.0.22/linking57.0.13/notifications57.0.23/router57.0.27; SDK57/React19/RN0.86/Node24.21.0/npm11.19.0 mantidos, nenhuma dependência funcional nova.
