@@ -40,6 +40,6 @@ export function checkInReducer(state: CheckInState, action: CheckInAction): Chec
   if (action.type === 'next' && !state.answers[question.id]) return state;
   const answers = { ...state.answers };
   if (action.type === 'skip') delete answers[question.id];
-  if (state.index === checkInQuestions.length - 1) return { index: state.index, answers: {}, finished: true };
+  if (state.index === checkInQuestions.length - 1) return { ...state, answers, finished: true };
   return { ...state, index: state.index + 1, answers };
 }

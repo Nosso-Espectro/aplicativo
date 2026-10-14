@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { checkInOptions, checkInQuestions, checkInReducer, emptyCheckIn } from './check-in-model';
+import { checkInSummary, type CheckInTool } from './check-in-summary';
 
 function Command({ label, icon, disabled = false, onPress }: {
   label: string; icon: ComponentProps<typeof MaterialIcons>['name']; disabled?: boolean; onPress(): void;
@@ -16,20 +17,38 @@ function Command({ label, icon, disabled = false, onPress }: {
   </Pressable>;
 }
 
-export function CheckInForm({ onExit }: { onExit(): void }) {
+export function CheckInForm({ onExit, onOpenTool }: { onExit(): void; onOpenTool(tool: CheckInTool): void }) {
   const [state, dispatch] = useReducer(checkInReducer, undefined, emptyCheckIn);
   const scroll = useRef<ScrollView>(null);
-  useFocusEffect(useCallback(() => () => dispatch({ type: 'reset' }), []));
+  const leaving = useRef(false);
+  useFocusEffect(useCallback(() => {
+    leaving.current = false;
+    return () => dispatch({ type: 'reset' });
+  }, []));
   useEffect(() => { scroll.current?.scrollTo({ y: 0, animated: false }); }, [state.index, state.finished]);
   const question = checkInQuestions[state.index];
-  function exit() { dispatch({ type: 'reset' }); onExit(); }
+  const summary = state.finished ? checkInSummary(state.answers) : [];
+  function leave(action: () => void) {
+    if (leaving.current) return;
+    leaving.current = true;
+    dispatch({ type: 'reset' }); action();
+  }
   return <SafeAreaView style={styles.screen}>
     <ScrollView ref={scroll} contentContainerStyle={styles.content}>
-      <Command label="Voltar ao quadro" icon="arrow-back" onPress={exit} />
+      <Command label="Voltar ao quadro" icon="arrow-back" onPress={() => leave(onExit)} />
       <Text accessibilityRole="header" style={styles.heading}>Check-in corporal e sensorial</Text>
       {state.finished ? <>
-        <Text accessibilityRole="header" accessibilityLiveRegion="polite" style={styles.question}>Check-in encerrado.</Text>
-        <Text style={styles.text}>As respostas não foram salvas.</Text>
+        <Text accessibilityRole="header" accessibilityLiveRegion="polite" style={styles.question}>Resumo do check-in</Text>
+        {summary.length === 0 && <Text style={styles.text}>Nenhuma resposta fornecida.</Text>}
+        {summary.map(item => <View key={item.id} accessible accessibilityLabel={`${item.question} ${item.answer}`} style={styles.summaryItem}>
+          <Text style={styles.text}>{item.question}</Text>
+          <Text style={[styles.text, styles.answer]}>{item.answer}</Text>
+        </View>)}
+        <Text accessibilityRole="header" style={styles.question}>Possibilidades</Text>
+        <Command label="Você pode abrir o painel de regulação" icon="dashboard" onPress={() => leave(() => onOpenTool('regulation'))} />
+        <Command label="Você pode revisar seu contato de confiança" icon="chat-bubble-outline" onPress={() => leave(() => onOpenTool('trusted-contact'))} />
+        <Command label="Mostrar cartão Água" icon="local-drink" onPress={() => leave(() => onOpenTool('water'))} />
+        <Text style={styles.note}>Este resumo não é um diagnóstico.</Text>
       </> : <>
         <Text style={styles.text}>{`Pergunta ${state.index + 1} de ${checkInQuestions.length}`}</Text>
         <View key={question.id} style={styles.questionGroup}>
@@ -66,6 +85,8 @@ const styles = StyleSheet.create({
   text: { fontSize: 18, color: '#202124', flexShrink: 1 },
   note: { fontSize: 16, color: '#454A50' },
   questionGroup: { gap: 16 }, options: { gap: 8 },
+  summaryItem: { gap: 8, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#72777D' },
+  answer: { fontWeight: '600' },
   option: { minHeight: 56, padding: 14, borderWidth: 1, borderColor: '#72777D', borderRadius: 4,
     flexDirection: 'row', alignItems: 'center', gap: 12 },
   selected: { backgroundColor: '#EAF3EF', borderColor: '#16634D' },
