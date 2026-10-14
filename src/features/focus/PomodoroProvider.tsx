@@ -5,7 +5,7 @@ const readClock = () => Date.now();
 type Command = Omit<Extract<PomodoroAction, { type: 'start' }>, 'nowMs'>
   | { type: 'pause' | 'resume' | 'next'; expectedRevision: number }
   | { type: 'end'; expectedRevision: number };
-type Value = PomodoroState & { act(command: Command): boolean; discard(): void };
+type Value = PomodoroState & { act(command: Command): boolean; discard(): void; isInactive(expectedRevision: number): boolean };
 const Context = createContext<Value | null>(null);
 export function PomodoroProvider({ children, clock = readClock }: { children: ReactNode; clock?: () => number }) {
   const [state, setState] = useState(initialPomodoroState);
@@ -38,6 +38,7 @@ export function PomodoroProvider({ children, clock = readClock }: { children: Re
   }, [apply, now, foreground, state.revision, state.session?.status]);
   const discard = useCallback(() => { apply({ type: 'end', expectedRevision: current.current.revision }); }, [apply]);
   return <Context.Provider value={{ ...state, discard,
+    isInactive: expectedRevision => Boolean(owner.current && current.current.revision === expectedRevision && !current.current.session),
     act: command => apply(command.type === 'end' ? command : { ...command, nowMs: now() }),
   }}>{children}</Context.Provider>;
 }

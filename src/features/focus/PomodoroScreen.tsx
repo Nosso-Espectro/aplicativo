@@ -10,15 +10,17 @@ function Command({ label, icon, onPress }: { label: string; icon: ComponentProps
     <MaterialIcons name={icon} size={24} color="#16634D" accessible={false} /><Text style={styles.commandText}>{label}</Text>
   </Pressable>;
 }
-export function PomodoroScreen({ onClose }: { onClose(): void }) {
+export function PomodoroScreen({ onClose, onFree }: { onClose(): void; onFree(): void }) {
   const context = usePomodoro(); const { session, revision, discard } = context;
   const [presetId, setPresetId] = useState<PomodoroPresetId>('25-5');
   const [confirmation, setConfirmation] = useState<{ revision: number; leave: boolean } | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const openingFree = useRef(false);
   const requestClose = () => { if (session) setConfirmation({ revision, leave: true }); else onClose(); };
   const closeRef = useRef(requestClose);
   useLayoutEffect(() => { closeRef.current = requestClose; });
   useFocusEffect(useCallback(() => {
+    openingFree.current = false;
     let active = true;
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
       if (!active) return false;
@@ -50,6 +52,11 @@ export function PomodoroScreen({ onClose }: { onClose(): void }) {
         </Pressable>;
       })}
       <Command label="Iniciar foco" icon="play-arrow" onPress={() => { setMessage(null); context.act({ type: 'start', presetId, expectedRevision: revision }); }} />
+      <Command label="Abrir cronômetro livre" icon="schedule" onPress={() => {
+        if (openingFree.current || !context.isInactive(revision)) return;
+        openingFree.current = true;
+        try { onFree(); } catch { openingFree.current = false; setMessage('Não foi possível abrir o cronômetro. Tente novamente.'); }
+      }} />
     </> : <>
       <Text accessibilityRole="header" style={styles.heading}>{phase}</Text>
       <Text accessibilityLabel={`Tempo restante: ${Math.floor(seconds / 60)} minutos e ${seconds % 60} segundos`} style={styles.time}>{time}</Text>
