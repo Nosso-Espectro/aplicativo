@@ -265,3 +265,31 @@ Integração de ações deve passar expectedSessionNumber ao timer; este coorden
 ainda não executa essas ações nem assina callbacks onReceived automaticamente.
 Gate nativo continua necessário para SQLite Expo, notificações, permissões,
 relógio/foreground/background/lockscreen/cancelamento/som/vibração e assistivo.
+
+### Identidade integrada às ações do timer
+
+readVersioned/actVersioned retornam sessão e identidade dentro da mesma
+transação; read/act legados continuam disponíveis. TransitionTimerProvider agora
+restaura/retém ambos e usa actVersioned em todas as ações, sem depender do motor
+de notificações para iniciar/pausar/retomar/cancelar. A confirmação de cancelamento
+captura também a identidade; recusa outro timer mesmo com duração/deadline iguais.
+Nenhuma atualização otimista ou permissão/capacidade nativa nova. Fixtures de
+componentes/navegação foram adaptadas explicitamente ao contrato versionado,
+sem fallback silencioso para stores que não o implementam. SQLite real do Node
+verifica reabertura/rollback/identidade nova e metadata inválida; componentes
+verificam que a confirmação antiga não cancela a nova sessão.
+
+progress-visual-crossing.ts calcula somente um cruzamento corrente de marco,
+com identidade/deadline/preferências iguais entre amostras foreground. Não emite
+na primeira amostra, pausa/retomada, background/restauração, mudança de escolhas,
+marco consumido, conclusão ou múltiplos marcos após uma parada longa. Compara
+delta do relógio civil e monotônico: tolerância técnica de1 segundo (cadência do
+timer), não promessa de precisão nativa; saltos divergentes não geram aviso.
+O modelo ainda não está conectado ao provider de avisos nem publica mensagens.
+Persistir decisão antes de apresentar, consumir vencidos sem replay e nunca
+escrever por tick permanecem responsabilidades da próxima integração.
+
+13 testes novos; suíte481/67,56tooling,lint/tipos sem warnings,Doctor21/21 e
+validador verdes. Provider próprio de avisos/callbacks/AppState/retry, apresentação
+visual e UI de preferências/consentimento ainda faltam. Todas tasksUS018 pendentes,
+sem PR/merge/Issue fechada/build/aparelho/notificação real por este avanço.

@@ -2,6 +2,7 @@ import { advanceAlertVersion, openTimerConnection, readAlertVersion, readTimerSe
 import { normalizedTimerSession, pauseTimer, resumeTimer, startTimer, timerAt, type TimerSession } from './visual-timer';
 
 export type TimerAction = { type: 'start'; durationMs: number } | { type: 'pause' | 'resume' | 'cancel' };
+export type VersionedTimerSession = { session: TimerSession | null; sessionNumber: number | null };
 function sameSession(left: TimerSession | null, right: TimerSession | null) {
   return left === null || right === null ? left === right : left.phase === right.phase && left.durationMs === right.durationMs
     && left.remainingMs === right.remainingMs && left.deadlineMs === right.deadlineMs;
@@ -12,10 +13,9 @@ export async function openTimerDatabase() {
   function enqueue<T>(operation: () => Promise<T>): Promise<T> {
     const next = pending.then(operation); pending = next.catch(() => undefined); return next;
   }
-  return {
-    read: () => enqueue(() => readSession(db)),
-    act: (action: TimerAction, nowMs: number, expected: TimerSession | null, expectedSessionNumber?: number | null): Promise<TimerSession | null> => enqueue(async () => {
-      let saved: TimerSession | null = null;
+  function act(action: TimerAction, nowMs: number, expected: TimerSession | null, expectedSessionNumber?: number | null) {
+    return enqueue(async () => {
+      let saved: VersionedTimerSession = { session: null, sessionNumber: null };
       await db.withExclusiveTransactionAsync(async (tx) => {
         const current = await readSession(tx);
         if (!sameSession(current, normalizedTimerSession(expected))) throw new Error('Timer session changed.');
@@ -40,9 +40,27 @@ export async function openTimerDatabase() {
         await advanceAlertVersion(tx, action.type === 'start');
         if (action.type === 'start' || action.type === 'cancel') await tx.runAsync('DELETE FROM timer_delivered_marks');
         // Keep owned notification IDs until the native cancellation is confirmed.
-        saved = await readSession(tx);
+        const session = await readSession(tx);
+        saved = { session, sessionNumber: session ? (await readAlertVersion(tx)).session_counter : null };
+        if (saved.sessionNumber === 0) throw new Error('Invalid timer identity.');
+      });
+      return saved;
+    });
+  }
+  return {
+    read: () => enqueue(() => readSession(db)),
+    readVersioned: () => enqueue(async () => {
+      let saved!: VersionedTimerSession;
+      await db.withExclusiveTransactionAsync(async tx => {
+        const session = await readSession(tx);
+        saved = { session, sessionNumber: session ? (await readAlertVersion(tx)).session_counter : null };
+        if (saved.sessionNumber === 0) throw new Error('Invalid timer identity.');
       });
       return saved;
     }),
+    act: (action: TimerAction, nowMs: number, expected: TimerSession | null, expectedSessionNumber?: number | null) =>
+      act(action, nowMs, expected, expectedSessionNumber).then(saved => saved.session),
+    actVersioned: (action: TimerAction, nowMs: number, expected: VersionedTimerSession) =>
+      act(action, nowMs, expected.session, expected.sessionNumber),
   };
 }
