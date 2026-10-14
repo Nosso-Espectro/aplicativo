@@ -1,5 +1,15 @@
 # Plano de implementação — Foco / Pomodoro Flexível
 
+## Plano vigente US082
+
+Ready sob delegação funcional, Issue82/refino6176236501, base main20a6efe. Expo57/RN0.86/React19/Router/Node24.21.0/npm11.19.0 reais, sem nova dependência. Preservar #25/#26 e Timer/CAA. Estender modelo Pomodoro com escolha custom validada1-180min inteiros e cópia dos dois tempos no estado da sessão; presets e exports existentes preservados. Todas as fases usam tempos capturados, não draft mutável. Start inválido recusa sem sessão; clock inválido mantém recuperação existente. Provider mantém owner/revisão/AppState, nenhum armazenamento.
+
+UI de escolha em Pomodoro existente: radio Personalizado e edição explícita de dois campos numéricos rotulados/aplicar/cancelar, draft25/5. Validar ambos, erro preserva preenchimento e escolha anterior. Edição incompleta impede iniciar; cancelar retorna escolha anterior. Sessão running/paused/waiting não exibe edição e callback antigo deve conferir inatividade/revisão antes mudar escolha/iniciar. Escolha/draft desaparecem em blur/unmount/saída, reentrada25/5; encerrar na mesma abertura mantém escolha aplicada. Sem som/vibração/TTS/notificação/DB/preferência/rede/permissão nova. Textos18/escaláveis/alvos48dp/mode9/retornos previsíveis, sem anúncio por segundo ou indicação clínica.
+
+Testes modelo limites/NaN/decimal/overflow/cópias/presetregressão/clock/stale/next; Router/provider draft/error/apply/cancel/activeguards/saídas/reentrada/cronômetro/AppState/mode9/CAA/Timer. Related/fullserial/lint/tipos/Doctor56toolingvalidador/diff/review/CI últimohead antes integrar; tasks só comportamento. T018 nativo posterior verifica leitores/teclado/reflow/foco/insets/clockbg/offline no SHA integrado, não aprovado por mocks. Sem host/jobs/buildlocal/phone/preview8093 nesta história.
+
+Seções anteriores abaixo são histórico #25/#26; declarações antigas de ausência de código ou #82 não Ready não substituem este plano.
+
 Spec: [spec.md](spec.md). Milestone #18; Issues #25, #26. US025 entregue pelo PR83; US026 refinada e Ready em 2026-10-14.
 
 ## Plano vigente US026
