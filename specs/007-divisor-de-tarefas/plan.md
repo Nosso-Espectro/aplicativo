@@ -1,5 +1,25 @@
 # Plano de implementação — Divisor de Tarefas
 
+## Plano vigente US076
+
+Base maina615742, #19/#20 reais integradas. Stack Expo57/RN0.86/React19/Router/SQLite schema2/Node24.21.0/npm11.19.0 existentes, sem nova dependência. Refino sob delegação [6176720977](https://github.com/Nosso-Espectro/aplicativo/issues/76#issuecomment-6176720977), critérios da Issue alinhados à spec antes código. Catálogo de três itens editoriais originais locais, versão2026-10-14/read-only/snapshots independentes congelados; validar completude/títulos/etapas/IDs conhecidos, recurso ausente/corrompido indisponível com retorno, sem falso loader/retry/rede.
+
+### Texto editorial original aprovado sob delegação
+
+- Organizar uma mesa: Escolher uma pequena área da mesa; Separar objetos que quero guardar; Colocar esses objetos nos lugares escolhidos; Decidir se quero continuar ou terminar.
+- Preparar uma mochila: Listar o que quero levar; Separar os itens da lista; Colocar os itens na mochila; Conferir se quero acrescentar ou retirar algo.
+- Organizar uma pequena área do quarto: Escolher uma área do quarto; Separar objetos que quero guardar; Guardar o que escolhi; Decidir se quero continuar ou terminar.
+
+Redação nova original TEAr, sem texto/imagens/fontes externas copiadas, sob Apache2.0 existente no LICENSE do projeto. O conteúdo é opcional e genérico, não indicação clínica/benefício/diagnóstico/prescrição/IA. Registrar proveniência local sem atribuir licença de terceiros. Não atualizar cópias existentes por versão do catálogo, não semear templates pessoais.
+
+### Integração e validação US076
+
+Entrada em Modelos de tarefas, catálogo `/tasks/catalog` disponível independentemente de sucesso na abertura do banco. Usar item abre `/tasks/catalog/new/[id]` com apenas ID público de catálogo na rota e cópia via helper de template real, IDs novos/statusfalse. Editor existente recebe initialDraft separado de savedTask/template e mantém operações/validação/ordem/remoção/save/cancel; rota focada monta/desmonta draft por foco, callbacks antigos recusados no save antes efeito. Retornos e hardwareback focados/fallback previsíveis, modo9/TaskUI48dp/escalável/teclado/SafeArea existentes. Sem novo provider/DAO/schema/banco/histórico/deps/perms/rede/mídia/estímulos.
+
+Save humano usa TaskProvider.save/DAO existente, commit/readback antes confirmação/lista, error/retry/draft/duplicatas/owner preservados. Leitura não depende do banco, criação salva fica indisponível com erro de banco/retry; nenhum fallback falsa escrita web/SQLite. Testes modelo completude/IDs/textos/cópias/factory/frozen, UI/Router/provider/SQLiteNode real: leitura errodb/primeiraabertura/cópia-edit-save-cancel-reopen/pending/rollback/retry/dups/blur/unmount/mode9/isolamento19-20/CAA/Timer. Related/fullserial/linttipos/Doctor56toolingvalidadordiffreview/CI últimohead antes merge. T020 nativo posterior verifica SQLiteExpo/offline/readers/teclado/reflow/foco/insets/back, não aprovado por mocks. Todas tasks76 ainda pendentes; Ready não é entrega.
+
+O restante do plano é histórico #19/#20, não substitui este estado nem autoriza outras histórias.
+
 Spec: [spec.md](spec.md). Milestone #15; Issues #19, #20. US-019 integrada/PR75; US-020 Ready após aprovação explícita. Registros de progresso abaixo são históricos, não anulam este estado.
 
 ## Stack

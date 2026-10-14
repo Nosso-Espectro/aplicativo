@@ -3,7 +3,7 @@ milestone: 15
 priority: P1
 tag: m007-divisor-de-tarefas
 status: draft
-ready_stories: ["US-019", "US-020"]
+ready_stories: ["US-019", "US-020", "US-076"]
 source_checked: 2026-10-14
 ---
 
@@ -11,7 +11,7 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P1 — Divisor de Tarefas](https://github.com/Nosso-Espectro/aplicativo/milestone/15) (número 15).
 
-US-019 integrada pelo PR75/mainfff768f e Issue fechada. US-020 Ready após aprovação explícita de modelos pessoais; catálogo pronto separado na #76. Gates nativos permanecem abertos, sem aprovação de milestone/release.
+US-019 integrada pelo PR75 e US-020 pelo PR77. US-076 Ready após refino conservador sob delegação funcional, ainda sem implementação; catálogo separado dos modelos pessoais. Gates nativos permanecem abertos, sem aprovação de milestone/release.
 
 ## Contexto
 
@@ -56,6 +56,21 @@ Como usuário, quero transformar uma sequência de etapas em modelo, para reutil
 - [ ] O usuário deve poder criar nova tarefa a partir do modelo.
 - [ ] Editar uma cópia criada do modelo não deve alterar o modelo original.
 
+### US-076 — Consultar modelos comuns de tarefas
+
+GitHub Issue: [#76](https://github.com/Nosso-Espectro/aplicativo/issues/76)
+
+Como usuário, quero consultar modelos comuns de tarefas e criar uma cópia que posso ajustar, para começar sem cadastrar todas as etapas novamente.
+
+#### Critérios de aceite
+
+- [ ] Os três modelos comuns originais do TEAr devem estar disponíveis localmente desde a primeira abertura: Organizar uma mesa, Preparar uma mochila e Organizar uma pequena área do quarto, conforme conteúdo versionado no refinamento.
+- [ ] O catálogo deve ser somente leitura, separado dos modelos pessoais, sem edição/remoção automática ou escrita no banco ao consultar; novas versões não devem modificar cópias existentes.
+- [ ] Usar um modelo comum deve abrir rascunho de tarefa editável/cancelável com IDs novos e todas as etapas não concluídas; nenhum salvamento ou execução automática.
+- [ ] Salvar explicitamente deve usar o banco privado de tarefas existente e confirmar somente após commit; erro preserva o rascunho, retry humano e duplicatas/ações antigas não criam sucesso falso.
+- [ ] Leitura do catálogo deve continuar disponível se o banco falhar; gravação deve ficar indisponível com erro/retry explícito. Sair/blur descarta rascunho e callbacks antigos não salvam/navegam.
+- [ ] Preservar modelos pessoais/tarefas/progresso e outros módulos, com entrada por Tarefas/Modelos, retornos/fallback, modo9, alvos48dp e texto ampliável. Sem DB/deps/permissões/rede/conta/IA/histórico/estímulos novos ou conteúdo clínico.
+
 ### Definition of Done original (comum às Issues #19, #20)
 
 - [ ] Critérios de aceite atendidos.
@@ -79,6 +94,9 @@ Esta história deve priorizar autonomia, previsibilidade, baixa carga cognitiva 
 - **RF-005** — Uma tarefa existente deve poder ser salva como modelo. (#20, critério 1.)
 - **RF-006** — O usuário deve poder criar nova tarefa a partir do modelo. (#20, critério 2.)
 - **RF-007** — Editar uma cópia criada do modelo não deve alterar o modelo original. (#20, critério 3.)
+- **RF-008** — Catálogo local original/read-only separado dos modelos pessoais. (#76, critérios 1/2.)
+- **RF-009** — Criar rascunho independente editável/cancelável, IDs próprios/statusfalse, sem escrita automática. (#76, critério 3.)
+- **RF-010** — Gravação humana confirmada/retry/guards e isolamento/offline/retornos acessíveis. (#76, critérios 4/5/6.)
 
 Os termos qualitativos do backlog foram preservados; limites ainda não definidos estão em “Questões em aberto”. RFs são locais a esta spec; use o caminho da spec junto ao ID ao referenciá-los.
 
@@ -110,7 +128,7 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 ## Questões em aberto
 
 - Q-TAREFA-01 — Resolvida: #19 não tem estado em execução; #20 permite editar e remover modelos pessoais mediante confirmação, sem modificar tarefas já criadas.
-- Q-TAREFA-02 — Separação aprovada: #20 cobre modelos pessoais; catálogo pronto pertence à [#76](https://github.com/Nosso-Espectro/aplicativo/issues/76), não Ready e com conteúdo a definir. IA pertence à milestone P3.
+- Q-TAREFA-02 — Resolvida na #76 sob delegação funcional: três modelos editoriais originais/read-only/locais, cópia editável antes de save humano, sem modificar modelos pessoais ou instâncias. Refinamento [6176720977](https://github.com/Nosso-Espectro/aplicativo/issues/76#issuecomment-6176720977); texto final/proveniência no plano. Ready não comprova implementação/gate. IA pertence à milestone P3.
 
 ## Refinamento aprovado US-020
 
@@ -156,6 +174,9 @@ não aprovar esses critérios nem a milestone por esta entrega. Tasks ainda pend
 | RF-005 | [#20](https://github.com/Nosso-Espectro/aplicativo/issues/20) | US-020 | T007 |
 | RF-006 | [#20](https://github.com/Nosso-Espectro/aplicativo/issues/20) | US-020 | T008 |
 | RF-007 | [#20](https://github.com/Nosso-Espectro/aplicativo/issues/20) | US-020 | T009 |
+| RF-008 | [#76](https://github.com/Nosso-Espectro/aplicativo/issues/76) | US-076 | T015 |
+| RF-009 | [#76](https://github.com/Nosso-Espectro/aplicativo/issues/76) | US-076 | T016 |
+| RF-010 | [#76](https://github.com/Nosso-Espectro/aplicativo/issues/76) | US-076 | T017 |
 | RNF-001 | #19, #20 | Todas acima | Revisão por história em tasks.md |
 | RNF-002 | #19, #20 | Todas acima | Revisão por história em tasks.md |
 | RNF-003 | #19, #20 | Todas acima | Revisão por história em tasks.md |
