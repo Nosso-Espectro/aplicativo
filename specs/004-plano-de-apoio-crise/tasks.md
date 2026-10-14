@@ -1,6 +1,6 @@
 # Tasks — Plano de Apoio / Crise
 
-Milestone #12: [spec.md](spec.md) e [plan.md](plan.md). Progresso US-011/US-013 marcado após verificações; revisões nativas/assistivas pendentes no gate. #12 ainda não implementada.
+Milestone #12: [spec.md](spec.md) e [plan.md](plan.md). Progresso US-011/US-012/US-013 marcado após verificações; revisões nativas/assistivas pendentes no gate.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -24,11 +24,29 @@ comprovam essas verificações em aparelho.
 
 ## US-012 — Issue #12
 
-- [ ] T007 [US-012] Em `src/features/support-plan/support-card`, atender RF-005 (critério 1 de #12): Deve existir uma visualização em tela cheia. Verificar com o cenário correspondente no PR.
-- [ ] T008 [US-012] Em `src/features/support-plan/support-card`, atender RF-006 (critério 2 de #12): A visualização deve priorizar texto grande e alto contraste. Verificar com o cenário correspondente no PR.
-- [ ] T009 [US-012] Em `src/features/support-plan/support-card`, atender RF-007 (critério 3 de #12): Deve haver acesso direto a partir do painel de regulação. Verificar com o cenário correspondente no PR.
-- [ ] T010 [US-012] Adicionar testes de comportamento de RF-005, RF-006, RF-007 em `tests/features/support-plan/support-card`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
+Ready em 2026-10-14 após painel #10/PR72 e refinamento na Issue12. Modelo/read-only,
+leitura atual, Modal/tela/rota/entrada real, recuperação/retorno verificados;
+T011 permanece gate nativo/assistivo.
+
+- [x] T007 [US-012] Em `src/features/support-plan/support-card`, atender RF-005 (critério 1 de #12): Deve existir uma visualização em tela cheia. Verificar com o cenário correspondente no PR.
+- [x] T008 [US-012] Em `src/features/support-plan/support-card`, atender RF-006 (critério 2 de #12): A visualização deve priorizar texto grande e alto contraste. Verificar com o cenário correspondente no PR.
+- [x] T009 [US-012] Em `src/features/support-plan/support-card`, atender RF-007 (critério 3 de #12): Deve haver acesso direto a partir do painel de regulação. Verificar com o cenário correspondente no PR.
+- [x] T010 [US-012] Adicionar testes de comportamento de RF-005, RF-006, RF-007 em `tests/features/support-plan/support-card`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
 - [ ] T011 [US-012] Revisar RNF-001 a RNF-004 na interface/dados de #12, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+
+US-012: 14 testes em três suítes de modelo/componentes/rotas,29 com regressões do
+painel;402 Jest/61 suítes,56 tooling,lint/tipos,Doctor21/21,validador/diffcheck
+aprovados em 2026-10-14. Modal fullScreen/none com SafeArea/ScrollView/fechar e
+onRequestClose; fontes24/34 e títulos26,202124 em branco, quebra/flexShrink e
+alvos64dp. Orientações confirmadas/sugestões escolhidas e referências atuais
+somente aos IDs do plano; vazio/falha/retry separado/StrictMode/leitura obsoleta
+e atualização após remoção/retomada testados. Painel→cartão→painel real verificado,
+inclusive fallback sem histórico e erro. Somente leitura, nenhum save/handoff,
+contato/draft/envio/dependência/permissão/banco novo. Revisão do diff sem achado
+bloqueante; compartilhamentoQAPOIO02 segue fora de escopo. T011 mantém revisão
+nativa de foco/leitor de tela/ampliação/insets/alvos/Modal e SQLite Expo offline/
+backups; mocks não comprovam esses fluxos. Sem screenshot nativo, aparelho,
+build local ou release. CI/integração e build remoto rastreados no PR/GitHub.
 
 ## US-013 — Issue #13
 

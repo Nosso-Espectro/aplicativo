@@ -1,10 +1,11 @@
 import { isPanelOrigin, panelDestination, panelDestinations, type PanelDestinationId } from '../../../src/features/regulation/quick-panel';
-it('maps exactly the four required shortcuts to real integrated local routes', () => {
+it('maps the original shortcuts and support card to real integrated local routes', () => {
   expect(panelDestinations).toEqual([
     { id: 'communication', label: 'Comunicação', path: '/' },
     { id: 'sounds', label: 'Sons', path: '/regulation-sounds' },
     { id: 'timer', label: 'Timer de transição', path: '/transition-timer' },
     { id: 'contact', label: 'Contato de confiança', path: '/trusted-contact' },
+    { id: 'support-card', label: 'Cartão de apoio', path: '/support-card' },
   ]);
 });
 it('returns a fresh destination without exposing mutable shared data', () => {

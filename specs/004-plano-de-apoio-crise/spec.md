@@ -3,15 +3,15 @@ milestone: 12
 priority: P0
 tag: m004-plano-de-apoio-crise
 status: draft
-ready_stories: ["US-011", "US-013"]
-source_checked: 2026-10-13
+ready_stories: ["US-011", "US-012", "US-013"]
+source_checked: 2026-10-14
 ---
 
 # Plano de Apoio / Crise
 
 Milestone GitHub: [P0 — Plano de Apoio / Crise](https://github.com/Nosso-Espectro/aplicativo/milestone/12) (número 12).
 
-Milestone aberta. US-011 integrada pelo PR #67; US-013 implementada e testada com abertura voluntária. #12 depende do painel #10 ainda não implementado, sem simular/fechar esse critério. Builds e validações nativas/assistivas permanecem no gate; milestone não concluída.
+Milestone aberta. US-011 integrada pelo PR #67 e US-013 pelo PR #68. Painel #10 integrado pelo PR #72; US-012 implementada/testada na branch da Issue, aguardando CI/integração. Builds e validações nativas/assistivas permanecem no gate; milestone não concluída.
 
 ## Contexto
 
@@ -52,9 +52,9 @@ Como usuário em dificuldade de comunicação, quero mostrar meu plano de apoio 
 
 #### Critérios de aceite
 
-- [ ] Deve existir uma visualização em tela cheia.
-- [ ] A visualização deve priorizar texto grande e alto contraste.
-- [ ] Deve haver acesso direto a partir do painel de regulação.
+- [x] Deve existir uma visualização em tela cheia.
+- [x] A visualização deve priorizar texto grande e alto contraste.
+- [x] Deve haver acesso direto a partir do painel de regulação.
 
 ### US-013 — Acionar contato de confiança pelo WhatsApp
 
@@ -128,7 +128,7 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 - Q-APOIO-01 — Resolvida nas #15/#11: referências aos sete IDs estáveis de sensibilidades/estratégias explicitamente escolhidos no editor, seleção inicial vazia; ler valores atuais ao reabrir, sem cópia antiga, alteração do perfil, envio ou dependência circular. Campo removido/vazio é omitido.
 - Q-APOIO-02 — A milestone menciona compartilhar o plano, mas #12 cobre exibição e #13 mensagem ao contato. Falta definir formato/destino do compartilhamento e sua Issue.
 - Q-APOIO-03 — Resolvida na #13: contato local com nome opcional, telefone internacional explícito e mensagem livre obrigatórios para configuração válida; numeração validada por biblioteca de domínio, sem inferir país/conta existente. Link oficial preenchido/handoff ao WhatsApp somente após revisão de destino/mensagem e comando explícito; envio final no app externo. Indisponibilidade/falha informada, sem fallback ou envio automático, leitura de agenda ou permissão de contatos. Salvar/cancelar/editar e remover confirmado apenas este módulo, falha conserva draft/confirmado com retry.
-- Q-APOIO-04 — #12 depende do painel #10 para acesso direto; #10 depende do plano/contato. Implementar editores antes e validar os atalhos em conjunto, sem fundir branches.
+- Q-APOIO-04 — Painel #10 integrado pelo PR72; #12 acrescenta cartão/acesso direto real em branch própria. Dependência resolvida, critério continua pendente até testar painel→cartão, sem substituir pelo editor ou fundir branches.
 
 US-011 refinada na [Issue #11](https://github.com/Nosso-Espectro/aplicativo/issues/11#issuecomment-6153657288)
 sob delegação do usuário: um plano pessoal local, inicialmente vazio, orientações
@@ -147,6 +147,23 @@ alterar P0 ou declarar milestone concluída. Refinamento da [US-013](https://git
 sob delegação humana define retenção até edição/remoção voluntária, revisão antes
 de sair do TEAr e indisponibilidade sem perda de configuração. Q-APOIO-02/04
 continuam abertas nos fluxos restantes.
+
+US-012 refinada na [origem](https://github.com/Nosso-Espectro/aplicativo/issues/12#issuecomment-6158099511):
+comando Cartão de apoio no painel real abre somente leitura local em Modal de
+tela cheia, animação none, SafeArea/ScrollView/fechar e onRequestClose sempre
+disponíveis, sem controles globais sobrepostos. Texto24/lineHeight34, títulos26,
+202124 em branco, escalável/quebra/scroll e comandos64dp. Ordem: orientações livres
+salvas, sugestões originais escolhidas e referências escolhidas ao perfil atual.
+Sem drafts, campos não escolhidos, dados de contato ou resumoUS016. Vazio válido.
+Ler plano confirmado e readSupportForPlan somente com IDs escolhidos; reler ao
+abrir/retomar apresentação, omitir campos atuais vazios/removidos, sem snapshot ou
+banco novo. Falha do plano limpa conteúdo anterior e permite retry/fechar; falha
+do perfil mantém orientações próprias, limpa referências antigas e oferece retry
+separado. Descartar requisições obsoletas. Fechar retorna ao painel real, fallback
+ao painel sem histórico; nenhuma gravação/remoção/envio/exportação/autoplay ou
+mudança automática do modo9, dependência/permissão nova ou parâmetros pessoais.
+Q-APOIO-02 permanece aberto para formato/destino/Issue própria de compartilhar.
+Ready não implica conclusão; validações nativas/assistivas permanecem no gate.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 

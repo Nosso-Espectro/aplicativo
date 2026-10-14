@@ -33,6 +33,21 @@ Módulo proposto: `src/features/support-plan/`.
 
 ## Modelo de dados
 
+US-012 Ready após painel PR72/refinamento na Issue12: representação somente de
+leitura derivada do plano confirmado da US011. Compor orientações livres/sugestões
+escolhidas e referências atuais escolhidas via contrato readSupportForPlan; IDs
+estáveis/ordem previsível, omitir valores vazios, sem contato/draft/exportação.
+Rota support-card com Modal fullScreen sem animação/controles globais sobrepostos,
+SafeArea/ScrollView e fechamento independente dos dados. Acrescentar destino
+Cartão de apoio real ao painel da US010, sem alterar os quatro atalhos existentes.
+Reabrir/retomar relê plano e perfil; geração/cleanup evita conteúdo obsoleto.
+Falha de plano oculta conteúdo anterior/retry/fechar; falha de referências mantém
+orientações próprias/oculta antigas/retry separado. Sem banco/dependência/permissão
+novos, sem alterar plano/perfil ou modo9. Texto24/34/títulos26/alvos64dp,
+contraste202124 em branco. Testar conteúdo atual/vazio/remoção/erro/retry/retorno/
+isolamento com dados sintéticos e rotas reais; nativo/assistivo/offline/backups
+pendentes do gate. CompartilhamentoQAPOIO02 fora desta história.
+
 US-011: um plano pessoal com `instructions` livre opcional, IDs das quatro sugestões
 predefinidas e IDs dos campos de suporte escolhidos voluntariamente. Seleções
 inicialmente vazias, validadas, deduplicadas e em ordem previsível; texto com trim
@@ -165,10 +180,11 @@ framework ou integração externa. Segurança do host de build continua pendente
 
 Plano vazio, contato inválido e WhatsApp ausente; #13 exige informar indisponibilidade sem falhar. Tratamento de validação detalhado em Q-APOIO-03.
 
-US-011 entregue pelo PR67, US-013 Ready após refinamento no GitHub e confirmação
-da stack. US-012 aguarda painel #10 para cumprir acesso direto, não simulá-lo nem
-fechar a Issue. Q-APOIO-02/04 continuam nas histórias dependentes; não aprovar
-milestone/release por implementar somente editores. Ver [auditoria](../../docs/backlog-audit.md).
+US-011 entregue pelo PR67, US-013 pelo PR68, painel #10 pelo PR72. US-012
+implementada/testada em SupportCardScreen/support-card e rota support-card com
+acesso real do painel; CI/integração ainda aguardados. Q-APOIO-04 cumprida no fluxo
+testado, não por stub; compartilhamentoQ-APOIO-02 e gates nativos continuam
+pendentes. Não aprovar milestone/release somente pelos checks leves. Ver [auditoria](../../docs/backlog-audit.md).
 
 ## Decisões arquiteturais
 
