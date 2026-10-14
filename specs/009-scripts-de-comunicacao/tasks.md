@@ -1,6 +1,6 @@
 # Tasks — Scripts de Comunicação
 
-Milestone #17: [spec.md](spec.md) e [plan.md](plan.md). Todas pendentes; não executadas nesta preparação.
+Milestone #17: [spec.md](spec.md) e [plan.md](plan.md). US023 verificada em2026-10-14; US024 e gate nativo pendentes.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -10,11 +10,11 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 
 Ready após recomendação funcional documentada sob delegação humana. Cinco textos/categorias definidos emspec; confirmar API/version/licença SDK57 e runtime real antescódigo. Clipboard somente por toque explícito; sem read/clear/autocopy/voz/envio/histórico. Sem implementar24 nesta branch.
 
-- [ ] T001 [US-023] Em `src/features/communication-scripts/script-catalog`, atender RF-001 (critério 1 de #23): Devem existir scripts iniciais para pedir ajuda, pedir mais tempo, pedir esclarecimento, encerrar conversa e informar sobrecarga. Verificar com o cenário correspondente no PR.
-- [ ] T002 [US-023] Em `src/features/communication-scripts/script-catalog`, atender RF-002 (critério 2 de #23): Os scripts devem ser organizados por categoria. Verificar com o cenário correspondente no PR.
-- [ ] T003 [US-023] Em `src/features/communication-scripts/script-catalog`, atender RF-003 (critério 3 de #23): O usuário deve conseguir copiar um script com um toque. Verificar com o cenário correspondente no PR.
-- [ ] T004 [US-023] Adicionar testes de comportamento de RF-001, RF-002, RF-003 em `tests/features/communication-scripts/script-catalog`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
-- [ ] T005 [US-023] Revisar RNF-001 a RNF-004 na interface/dados de #23, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+- [x] T001 [US-023] RF-001: `script-catalog.ts` empacota os cinco textos originais/categorias dos critérios, com IDs estáveis/únicos, sem diagnóstico ou inferência.
+- [x] T002 [US-023] RF-002: `ScriptCatalogScreen.tsx` mostra categoria de cada item e filtros explícitos/Todos; ordenação/conteúdo preservados, vazio neutro, rota/quadro reais.
+- [x] T003 [US-023] RF-003: um toque copia texto literal viaSDK57/plainText, sucesso só após APItrue, false/rejeição/SDK indisponível sem sucesso prematuro. FIFO entre telas/refbusydup/ownerfocus/dispose/retorno livre/retry humano. TEAr não lê/apaga/observa clipboard anterior; limites nativos do SDK documentados no plano.
+- [x] T004 [US-023] Testes de RF-001 a RF-003: catálogo/filtro/vazio/sem mutação; adaptador literal/false/rejeição/retry/FIFO/não leitura/eventos; ExpoRouter real/quadro/categorias/cópia única/pending/dup/errors/stale/unmount/back/reentrada/modo9/params ignorados/offline. NoticeMIT exato distribuído testado.13testesnovos,17relacionados/4.
+- [x] T005 [US-023] RNF001-004 revisadas: SafeArea/ScrollView/escalável/48dp/headers/selected/feedbackpolite/contraste/sem estímulosautomáticos; nenhumbanco/rede/clipboardreadclear ou voz/envio/permissão solicitada. expo-clipboard57.0.2fixoMIT/notices; manifestprovider nãoexportado/observador de tipos nativo documentados, não atestar ausência/integridade por mocks.585Jest/78suítes,lint/tipossemwarnings/Doctor21/21/56tooling/validador/diffcheck verdes; sem regressão impeditiva conhecida. T011nativo/assistivo pendente.
 
 ## US-024 — Issue #24
 
