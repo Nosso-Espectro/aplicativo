@@ -19,7 +19,7 @@ Cada milestone tem spec.md (o quê/por quê), plan.md (proposta técnica) e task
 | 011 | P1 | [#19 — P1 — Sons para Regulação](https://github.com/Nosso-Espectro/aplicativo/milestone/19) | [011-sons-para-regulacao](011-sons-para-regulacao/spec.md) | [#27](https://github.com/Nosso-Espectro/aplicativo/issues/27), [#28](https://github.com/Nosso-Espectro/aplicativo/issues/28) | `m011-sons-para-regulacao` |
 | 012 | P2 | [#20 — P2 — Lembrete de Água](https://github.com/Nosso-Espectro/aplicativo/milestone/20) | [012-lembrete-de-agua](012-lembrete-de-agua/spec.md) | [#29](https://github.com/Nosso-Espectro/aplicativo/issues/29), [#30](https://github.com/Nosso-Espectro/aplicativo/issues/30) | `m012-lembrete-de-agua` |
 | 013 | P2 | [#21 — P2 — Meditação e Zazen](https://github.com/Nosso-Espectro/aplicativo/milestone/21) | [013-meditacao-e-zazen](013-meditacao-e-zazen/spec.md) | [#31](https://github.com/Nosso-Espectro/aplicativo/issues/31), [#32](https://github.com/Nosso-Espectro/aplicativo/issues/32) | `m013-meditacao-e-zazen` |
-| 014 | P2 | [#22 — P2 — Microconteúdos / Podcasts](https://github.com/Nosso-Espectro/aplicativo/milestone/22) | [014-microconteudos-podcasts](014-microconteudos-podcasts/spec.md) | [#33](https://github.com/Nosso-Espectro/aplicativo/issues/33), [#34](https://github.com/Nosso-Espectro/aplicativo/issues/34) | `m014-microconteudos-podcasts` |
+| 014 | P2 | [#22 — P2 — Microconteúdos / Podcasts](https://github.com/Nosso-Espectro/aplicativo/milestone/22) (retirada) | [014-microconteudos-podcasts](014-microconteudos-podcasts/spec.md) (arquivo histórico) | [#33](https://github.com/Nosso-Espectro/aplicativo/issues/33), [#34](https://github.com/Nosso-Espectro/aplicativo/issues/34) — `not_planned` | `m014-microconteudos-podcasts` (não criada) |
 | 015 | P3 | [#23 — P3 — Assistente de IA](https://github.com/Nosso-Espectro/aplicativo/milestone/23) | [015-assistente-de-ia](015-assistente-de-ia/spec.md) | [#35](https://github.com/Nosso-Espectro/aplicativo/issues/35), [#36](https://github.com/Nosso-Espectro/aplicativo/issues/36), [#37](https://github.com/Nosso-Espectro/aplicativo/issues/37) | `m015-assistente-de-ia` |
 | 016 | P3 | [#24 — P3 — Histórico e Autoconhecimento](https://github.com/Nosso-Espectro/aplicativo/milestone/24) | [016-historico-e-autoconhecimento](016-historico-e-autoconhecimento/spec.md) | [#38](https://github.com/Nosso-Espectro/aplicativo/issues/38), [#39](https://github.com/Nosso-Espectro/aplicativo/issues/39), [#40](https://github.com/Nosso-Espectro/aplicativo/issues/40) | `m016-historico-e-autoconhecimento` |
 
@@ -31,7 +31,7 @@ A conclusão de P0 está bloqueada pela definição de atalhos de sons e timer P
 
 ## Pós-MVP
 
-P1: timer, divisor de tarefas, check-in, scripts, foco e sons. P2: água, meditação e podcasts. P3: IA e histórico. “Água” no check-in (#22) pode apontar a P0 ou P2; o destino está pendente. IA começa pela história de limites #37 antes dos fluxos #35/#36. A prioridade original foi preservada.
+P1: timer, divisor de tarefas, check-in, scripts, foco e sons. P2: água e meditação. P3: IA e histórico. Microconteúdos/podcasts foram retirados por solicitação humana em 2026-10-14; #33/#34 e milestone #22 estão arquivadas, sem entrega. A spec014 permanece somente como histórico, fora da lista ativa. “Água” no check-in (#22) pode apontar a P0 ou P2; o destino está pendente. IA começa pela história de limites #37 antes dos fluxos #35/#36. As demais prioridades foram preservadas.
 
 ## Releases
 
@@ -42,6 +42,8 @@ Se SemVer for adotado, acrescentar aqui a tabela milestone ↔ tag ↔ versão �
 ## Branches previstas
 
 Uma Issue = uma branch curta. Nomes abaixo calculados das histórias atuais; nenhuma branch foi criada. O script usa o título vivo da Issue, portanto renomeações futuras precisam ser reconciliadas antes de iniciar trabalho. `fix/` e `chore/` substituem `feat/` para Issues com rótulo de correção/tarefa técnica.
+
+Os mapeamentos US-033/US-034 abaixo são históricos e não autorizam novas branches ou desenvolvimento: funcionalidades retiradas do planejamento em 2026-10-14.
 
 | Issue | História | Branch prevista |
 | --- | --- | --- |

@@ -1,5 +1,9 @@
 # Plano de implementação — Microconteúdos / Podcasts
 
+## Arquivo Histórico
+
+Escopo retirado do planejamento em 2026-10-14 por solicitação explícita do usuário. Issues #33/#34 fechadas como `not_planned`; milestone #22 arquivada sem entrega. Este plano não deve ser executado: preservar somente rastreabilidade, sem criar lista/player, dependências de áudio, rede/cache ou conteúdo. Ver [decisão](spec.md#escopo-retirado). Nenhuma implementação ou release foi concluída.
+
 Spec: [spec.md](spec.md). Milestone #22; Issues #33, #34. Plano proposto, sujeito às questões em aberto.
 
 ## Stack

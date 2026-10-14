@@ -1,5 +1,7 @@
 # Auditoria do backlog e decisões pendentes
 
+Atualização 2026-10-14: micropodcast retirado da lista ativa por solicitação explícita do usuário. Issues #33/#34 encerradas como `not_planned` e milestone #22 arquivada sem implementação/entrega. A spec014 preserva somente histórico; não executar suas tasks. O inventário de 2026-09-23 abaixo não representa o backlog ativo atual.
+
 Consulta via gh em 2026-09-23. Repositório `Nosso-Espectro/aplicativo`, trunk `main`, squash permitido. Estado inicial local: somente README e LICENSE; README já modificado na tarefa anterior e preservado. Sem app, manifestos de dependências, CI, testes de produto ou Spec Kit instalado.
 
 ## Inventário
@@ -23,7 +25,7 @@ Consulta via gh em 2026-09-23. Repositório `Nosso-Espectro/aplicativo`, trunk `
 | Água no check-in | #22 versus CAA #1 / hidratação #29 P2 | Definir destino; não antecipar P2 por inferência. |
 | Intervalos de foco personalizados | Milestone #18; #25 exige presets | Falta critério/Issue para personalização. |
 | Sons em segundo plano | Milestone #19; #27/#28 sem critérios específicos | Definir plataformas, interrupções e cobertura por história. |
-| Podcasts | #33/#34 | Fonte, licenças, atualização, rede/cache e retenção indefinidos. |
+| Podcasts (retirados) | #33/#34 `not_planned` | Escopo arquivado em 2026-10-14 por solicitação humana; não desenvolver nem tratar como entrega. |
 | IA futura | #35–#37 P3 | Processamento, provedor, credenciais, consentimento e destino de salvamento indefinidos; fora do MVP. |
 | Histórico | #38–#40 | Não há contrato de coleta/retenção dos módulos anteriores; não iniciar telemetria silenciosa. |
 | Critérios qualitativos | “poucos toques”, “amplos”, “rapidamente”, “discreto” | Refinar limites/cenários observáveis com produto antes de declarar aceite. |
@@ -35,7 +37,7 @@ Detalhes e perguntas por história estão em “Questões em aberto” de cada s
 
 ## Ordem recomendada
 
-P0: CAA → rotina → perfil → plano de apoio → regulação. P1: timer → divisor → check-in → scripts → foco → sons. P2: água → meditação → podcasts. P3: IA → histórico. Em IA, implementar limites #37 antes dos fluxos #35/#36.
+P0: CAA → rotina → perfil → plano de apoio → regulação. P1: timer → divisor → check-in → scripts → foco → sons. P2: água → meditação. P3: IA → histórico. Podcasts removidos da ordem ativa em 2026-10-14. Em IA, implementar limites #37 antes dos fluxos #35/#36.
 
 A ordem é de implementação sugerida; integrações cíclicas e dependências P0/P1 impedem prometer conclusão sequencial de milestones sem refinamento. Prioridades e números GitHub permanecem intactos. Consulte [índice e branches previstas](../specs/README.md).
 

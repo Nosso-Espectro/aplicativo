@@ -4,14 +4,18 @@ priority: P2
 tag: m014-microconteudos-podcasts
 status: draft
 ready_stories: []
-source_checked: 2026-09-23
+source_checked: 2026-10-14
 ---
 
 # Microconteúdos / Podcasts
 
 Milestone GitHub: [P2 — Microconteúdos / Podcasts](https://github.com/Nosso-Espectro/aplicativo/milestone/22) (número 22).
 
-Estado consultado: aberta; todas as histórias abaixo estão abertas. Especificação em revisão, não implementação concluída.
+## Escopo Retirado
+
+Em 2026-10-14, o usuário solicitou: "remova a feature do micropodcast da lista". A área de microconteúdos/podcasts foi retirada do planejamento ativo: Issues [#33](https://github.com/Nosso-Espectro/aplicativo/issues/33) e [#34](https://github.com/Nosso-Espectro/aplicativo/issues/34) fechadas como `not_planned`; milestone #22 fechada para arquivar o escopo, não por entrega.
+
+Não houve implementação, critérios atendidos, quality gate, tag ou release. `status: draft` e Ready vazio são preservados para não simular conclusão. As histórias, critérios e requisitos abaixo são arquivo histórico, não trabalho a executar. Não reabrir ou implementar sem novo pedido humano.
 
 ## Contexto
 
