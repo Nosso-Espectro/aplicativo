@@ -16,7 +16,7 @@ jest.mock('../../../src/features/regulation/display-preferences-database', () =>
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
 jest.mock('@react-native-community/slider', () => 'Slider');
 const mockPush = jest.fn(); const mockBack = jest.fn(); const mockReplace = jest.fn(); let mockHistory = true;
-jest.mock('expo-router', () => ({ useLocalSearchParams: () => ({}), useRouter: () => ({ push: mockPush, back: mockBack, replace: mockReplace, canGoBack: () => mockHistory }), Stack: (props: { screenOptions: { animation: string } }) => <MockStack {...props} /> }));
+jest.mock('expo-router', () => ({ useFocusEffect: (effect: () => void) => jest.requireActual('react').useEffect(effect, [effect]), useLocalSearchParams: () => ({}), useRouter: () => ({ push: mockPush, back: mockBack, replace: mockReplace, canGoBack: () => mockHistory }), Stack: (props: { screenOptions: { animation: string } }) => <MockStack {...props} /> }));
 function MockStack({ screenOptions }: { screenOptions: { animation: string } }) {
   const [route, setRoute] = useState('/');
   useEffect(() => { mockPush.mockImplementation(setRoute); mockBack.mockImplementation(() => setRoute('/')); mockReplace.mockImplementation(setRoute); }, []);
@@ -35,13 +35,18 @@ beforeEach(() => {
   jest.spyOn(AppState, 'addEventListener').mockImplementation((_name, listener) => { appEvent = listener; return { remove: jest.fn() }; });
 });
 afterEach(() => { jest.restoreAllMocks(); });
-async function press(label: string) { await act(async () => { fireEvent.press(screen.getByRole('button', { name: label })); }); }
+async function press(label: string) {
+  if (!screen.queryByRole('button', { name: label }) && screen.queryByRole('button', { name: 'Abrir ferramentas' })) {
+    await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir ferramentas' })));
+  }
+  await act(async () => { fireEvent.press(screen.getByRole('button', { name: label })); });
+}
 async function open() { render(<RootLayout />); await act(async () => { appEvent('active'); }); await press('Abrir sons'); }
 it('reaches the actual route and preserves playback/choice/gain across board navigation without another play', async () => {
   await open(); expect(screen.getByRole('header', { name: 'Sons' })).toBeOnTheScreen();
   fireEvent.press(screen.getByRole('radio', { name: 'Ruído marrom' })); await press('Reproduzir som');
   fireEvent(screen.getByLabelText('Volume do som'), 'valueChange', 0); await press('Voltar ao quadro');
-  expect(screen.getByRole('header', { name: 'Comunicação' })).toBeOnTheScreen(); await press('Abrir sons');
+  expect(screen.getByRole('header', { name: 'Frase' })).toBeOnTheScreen(); await press('Abrir sons');
   expect(screen.getByRole('radio', { name: 'Ruído marrom' })).toBeChecked(); expect(screen.getByText('Volume: 0%')).toBeOnTheScreen();
   expect(screen.getByText('Reproduzindo')).toBeOnTheScreen(); expect(engine.play).toHaveBeenCalledTimes(1); expect(engine.dispose).not.toHaveBeenCalled();
 });
@@ -52,5 +57,5 @@ it('preserves global low-stimulation mode and the no-animation Stack on the soun
 });
 it('returns to communication safely without navigation history', async () => {
   await open(); mockHistory = false; await press('Voltar ao quadro'); expect(mockReplace).toHaveBeenCalledWith('/');
-  expect(screen.getByRole('header', { name: 'Comunicação' })).toBeOnTheScreen();
+  expect(screen.getByRole('header', { name: 'Frase' })).toBeOnTheScreen();
 });

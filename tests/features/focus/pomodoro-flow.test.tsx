@@ -39,7 +39,12 @@ beforeEach(() => {
 });
 afterEach(() => { AppState.currentState = initialAppState; jest.restoreAllMocks(); jest.useRealTimers(); });
 async function mount(url = '/focus') { const view = renderRouter(routes, { initialUrl: url }); await act(async () => {}); return view; }
-async function press(name: string) { await act(async () => fireEvent.press(screen.getByRole('button', { name }))); }
+async function press(name: string) {
+  if (!screen.queryByRole('button', { name }) && screen.queryByRole('button', { name: 'Abrir ferramentas' })) {
+    await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir ferramentas' })));
+  }
+  await act(async () => fireEvent.press(screen.getByRole('button', { name })));
+}
 function background(state: AppStateStatus) { act(() => { for (const callback of appChanges) callback(state); }); }
 it('opens from the board, selects a preset and pauses/resumes/ends without retaining a session on reentry', async () => {
   await mount('/'); await press('Abrir Pomodoro');
@@ -68,7 +73,7 @@ it('confirms hardware back and provides a direct-link fallback with low-stimulat
   await mount(); await act(async () => fireEvent(screen.getByRole('switch', { name: 'Modo de baixa estimulação' }), 'valueChange', true));
   await press('Iniciar foco'); act(() => { expect(back?.({ type: 'hardwareBackPress', timeStamp: Date.now() })).toBe(true); });
   expect(screen.getByText('Encerrar a sessão e voltar ao quadro?')).toBeOnTheScreen();
-  await press('Confirmar saída e encerrar'); expect(screen.getByRole('header', { name: 'Comunicação' })).toBeOnTheScreen();
+  await press('Confirmar saída e encerrar'); expect(screen.getByRole('header', { name: 'Frase' })).toBeOnTheScreen();
   expect(screen.getByRole('switch', { name: 'Modo de baixa estimulação' })).toBeChecked();
 });
 it('discards on an external route removal and does not restore session or responses through navigation', async () => {

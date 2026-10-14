@@ -36,7 +36,12 @@ beforeEach(() => {
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
 });
 afterEach(() => jest.restoreAllMocks());
-async function press(name: string) { await act(async () => fireEvent.press(screen.getByRole('button', { name }))); }
+async function press(name: string) {
+  if (!screen.queryByRole('button', { name }) && screen.queryByRole('button', { name: 'Abrir ferramentas' })) {
+    await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir ferramentas' })));
+  }
+  await act(async () => fireEvent.press(screen.getByRole('button', { name })));
+}
 async function openPanel() {
   const result = renderRouter(routes, { initialUrl: '/' });
   await screen.findByRole('header', { name: 'TEAr' }); await press('Abrir painel de regulação'); return result;
@@ -53,7 +58,7 @@ it.each([
 });
 it('opens actual communication and permits returning from a directly opened panel', async () => {
   const { getPathname } = await openPanel(); await press('Comunicação'); expect(getPathname()).toBe('/');
-  expect(screen.getByRole('header', { name: 'Comunicação' })).toBeOnTheScreen();
+  expect(screen.getByRole('header', { name: 'Frase' })).toBeOnTheScreen();
 });
 it('uses the board fallback when panel has no history', async () => {
   const { getPathname } = renderRouter(routes, { initialUrl: '/regulation' }); await press('Voltar ao quadro');

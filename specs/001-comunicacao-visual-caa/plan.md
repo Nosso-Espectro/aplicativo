@@ -1,5 +1,17 @@
 # Implementation Plan: P0 — Comunicação Visual / CAA
 
+## Organização vigente US088
+
+Pedido humano por imagens substitui a posição escolhida em US085: CommunicationBoard na home abaixo de SentenceComposer/header; drawer contém apenas os atalhos existentes. Estado de abertura pertence à rota home para fechar antes de router.push; Home mantém lifecycle/foco/back/backdrop e não altera contratos de dados. Quadro embutido evita SafeArea duplicada. Testes passam a abrir menu para ferramentas e compor diretamente na principal. Prévia web via US087, desktop/mobile, sem instalar celular; T053 nativo pendente. Seções US085 abaixo são histórico da organização anterior.
+
+## Prévia web US087
+
+Reconciliar exports `createLocalImageStorage`/`isLocalImage` no arquivo `.web` que impede importar rotinas. Não importar filesystem nativo no navegador; cópia indisponível deve rejeitar como antes, sem fingir arquivo salvo. Manter contratos Android/iOS intactos, sem dependências. Foco web usa a ref DOM/Pressable por `focus()`, evitando `findNodeHandle` indisponível nesta plataforma; foco nativo continua via AccessibilityInfo. Testar exports e abrir a home real via Expo web, drawer/frase/atalhos e viewport desktop/mobile. Capacidades indisponíveis mantêm erros existentes; prévia não comprova gate nativo nem autoriza instalação. Organização visual das imagens corrigida separadamente pela Issue88.
+
+## Home US085 vigente
+
+Issue85 Ready em 2026-10-14 por pedido humano: quadro existente no drawer lateral esquerdo, frase no header e atalhos na home. Modal nativo sem animação/dependência nova, largura limitada ao viewport, SafeArea, fundo oculto aos leitores e foco de abertura/retorno; fechar antes de navegar ao editor. Reutilizar CommunicationBoard e SentenceComposer sem alterar bancos, snapshots, ordem, favoritos ou TTS. Testar abertura/fechamento/back/categorias/composição/atalhos/modo9/erros e regressões. Drawer não dispara fala. Gates reais de leitores/foco/insets/offline permanecem pendentes; nenhuma instalação autorizada por esta mudança.
+
 **Branch**: uma branch curta por Issue (`feat/us-xxx-slug`, `fix/...` ou `chore/...`); não há branch de milestone. **Date**: 2026-09-23. **Spec**: [spec.md](spec.md)
 
 **Input**: Milestone #9, Issues funcionais #1–#5 e história técnica US-041/#41. US-041 integrada pelo PR #42; implementação atual restrita à US-001/#1, Ready conforme backlog consultado em 2026-10-13.

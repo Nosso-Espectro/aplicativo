@@ -3,6 +3,7 @@ import { SpeechControls } from '../../../../src/features/communication/speech/Sp
 import { localSpeech } from '../../../../src/features/communication/speech/local-speech';
 import StartupScreen from '../../../../src/app';
 import { SentenceProvider } from '../../../../src/features/communication/sentence/SentenceProvider';
+jest.mock('expo-router', () => ({ ...jest.requireActual('expo-router'), useFocusEffect: (effect: () => void) => jest.requireActual('react').useEffect(effect, [effect]) }));
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
 jest.mock('../../../../src/features/communication/custom-cards/CustomCardsProvider', () => ({
   useCustomCards: () => ({ cards: [], loading: false, error: null }),
@@ -108,7 +109,9 @@ describe('US-003 explicit speech controls (RF-009/RF-011)', () => {
   it('keeps the selected sentence visible when local voice is unavailable', async () => {
     speech.isAvailable.mockResolvedValue(false);
     render(<SentenceProvider><StartupScreen /></SentenceProvider>);
+
     fireEvent.press(screen.getByRole('button', { name: 'Ajuda' }));
+
     expect(speech.isAvailable).not.toHaveBeenCalled();
     fireEvent.press(screen.getByRole('button', { name: 'Ler frase' }));
     await screen.findByRole('alert');

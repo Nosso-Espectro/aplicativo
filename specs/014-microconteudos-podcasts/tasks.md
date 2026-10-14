@@ -1,6 +1,6 @@
 # Tasks — Microconteúdos / Podcasts
 
-Milestone #22: [spec.md](spec.md) e [plan.md](plan.md). Todas pendentes; não executadas nesta preparação.
+Milestone #22: [spec.md](spec.md) e [plan.md](plan.md). Escopo retirado em 2026-10-14 por solicitação humana; Issues #33/#34 fechadas como `not_planned`. Tasks abaixo arquivadas, não executáveis e não concluídas. Checkboxes preservados sem marcar aceitação fictícia; não iniciar desenvolvimento a partir deste arquivo.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 

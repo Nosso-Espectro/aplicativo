@@ -158,6 +158,32 @@ aprovados antes de incorporar US-052, lint/typecheck e Expo Doctor 21/21.
 T036 permanece pendente de binário offline, TalkBack/VoiceOver e foco em aparelho.
 Os testes SQLite do host e fronteiras Expo simuladas não substituem essa evidência.
 
+## Organização por imagens — US-088 / Issue #88
+
+- [x] T050 [US-088] Implementar RF-023: quadro na principal, frase no header e 12 ferramentas no drawer; fechar antes de navegar, preservar dados e contratos.
+- [x] T051 [US-088] Testar router/composição/menu/retornos/back/erro/favoritos/edição/mode9 e conferir prévia web desktop/mobile.
+- [x] T052 [US-088] Revisar UI/acessibilidade/privacidade/diff e executar checks leves/CI antes integração.
+- [ ] T053 [US-088] Gate nativo posterior: leitores/foco/ampliação/insets/alvos/offline Android/iOS; prévia web/build não comprovam.
+
+Evidência US088: 635 Jest/85 suítes completos,16 relacionados/4; lint/tipos sem warnings, Doctor21/21,56tooling,validador/diffcheck verdes. Testes da home atualizados para cartões diretos e menu exclusivo de ferramentas; regressões de rotas executam o passo real de abrir menu, sem substituir APIs ou enfraquecer contratos. Prévia real localhost:8093 mostra as duas áreas conforme imagens, compõe Sim, abre Pomodoro pelo menu e retorna preservando frase. Drawer fecha antes de navegar; fundo da home usa aria-hidden na web e propriedades nativas de acessibilidade. Desktop1280x900: documentWidth1280, cartões Sim/Não na mesma linha sem overflow; mobile390x844 e painel estreito exibem controles escaláveis/scroll sem perder funções. T053 e gates anteriores pendentes. Imagens anexadas não viraram assets; nenhum aparelho/host operado, dependência/permissão/banco nova ou áudio automático. Persistência nativa indisponível na prévia continua informada; não declarar paridade funcional web/nativa integral.
+
+## Prévia web — US-087 / Issue #87
+
+- [x] T047 [US-087] Reconciliar contrato web de imagens para RF-022 sem filesystem nativo ou sucesso falso.
+- [x] T048 [US-087] Testar exports/indisponibilidade e abrir home real no navegador, drawer/frase/atalhos e viewport mobile/desktop; registrar limites.
+- [x] T049 [US-087] Revisar diff/privacidade e executar checks leves/CI antes integração, sem build nativo/instalação.
+
+Evidência US087: dois testes novos de contrato web, 635 Jest/85 suítes completos, lint/tipos sem warnings, Doctor21/21,56tooling,validador/diffcheck. Prévia real em localhost:8093 abriu home, drawer e compôs Sim sem acionar leitura; fechamento preservou frase e retornou foco ao menu. Viewport390x844: documentWidth390 e controles dentro dos limites. Foco web usa ref.focus(), não findNodeHandle nativo; Android/iOS mantêm implementação anterior. Cartões/favoritos salvos permanecem explicitamente indisponíveis na prévia; estados SQLite de outros módulos não equivalem a persistência web validada. Nenhum gate nativo aprovado por esta prévia. Reorganização visual posterior das imagens é Issue88, não parte desta correção.
+
+## Home — US-085 / Issue #85
+
+- [x] T043 [US-085] Implementar RF-021: frase no header, ações na home e Comunicação no drawer esquerdo, reutilizando contratos atuais.
+- [x] T044 [US-085] Testar drawer/back/fechar/categorias/composição/retornos/editores/erro/mode9 e regressões CAA/voz/atalhos.
+- [x] T045 [US-085] Revisar acessibilidade/privacidade/offline/diff e executar checks leves antes da entrega.
+- [ ] T046 [US-085] Gate nativo posterior: leitores/foco real/ampliação/insets/alvos/offline em Android/iOS; mocks/build não comprovam.
+
+Evidência US085: quatro testes novos de Expo Router/providers reais, 633 Jest/84 suítes completos, 33 relacionados/5 suítes após ajustes finais de toolbar/foco e estilos; lint/tipos sem warnings, Doctor21/21,56tooling,validador/diffcheck aprovados. Drawer sem animação, fechar fixo no topo, backdrop/back, conteúdo de fundo oculto aos leitores e tentativa de foco de abertura/retorno; contratos de composição/favoritos/edição/voz e todos os atalhos preservados. Nenhuma dependência/permissão/banco/rede nova. Prévia web não validada: erro preexistente em `local-image-storage.web.ts` sem export `createLocalImageStorage`, usado por rotinas; não alterado nesta Issue. Revisão de código sem regressão impeditiva conhecida nos testes, mas T046 e gates nativos anteriores permanecem pendentes. Nenhum celular operado.
+
 ## Identidade visual solicitada — US-052 / Issue #52
 
 - [x] T040 [US-052] Gerar e salvar o ícone raster aprovado em `assets/branding/tear-icon.png`, registrar referência/prompt e preservar exatamente a imagem aprovada. Evidência: PNG RGB 1254x1254 copiado sem edição, aprovado expressamente pelo usuário e documentado em README.
