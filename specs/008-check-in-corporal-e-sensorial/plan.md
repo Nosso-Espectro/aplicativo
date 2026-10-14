@@ -27,21 +27,21 @@ Módulo de #21: `src/features/sensory-check-in/`.
 
 Respostas opcionais por item do check-in; resumo derivado apenas das respostas presentes. Histórico persistente não é pressuposto desta milestone.
 
-US021: `CheckInState` com índice, respostas opcionais por ID tipado e indicador de encerramento. Reducer valida escala por item, rejeita eventos de pergunta anterior/duplicados, mantém revisão em memória e limpa respostas ao finalizar/reset. Sem migração/banco.
+`CheckInState` com índice, respostas opcionais por ID tipado e indicador de encerramento. Reducer valida escala por item, rejeita eventos de pergunta anterior/duplicados. US022 estende finalização: conserva respostas para resumo literal derivado na mesma tela, somente até reset/saída/blur/unmount. Sem migração/banco/provider global. `check-in-summary.ts` deriva linhas somente de respostas válidas, preservando ordem e sem inferência.
 
 ## Persistência
 
-US021 aprovada: estado local de componente/reducer, respostas tipadas opcionais por pergunta; nenhuma resposta padrão. Não persistir nem transmitir. Sair/finalizar/desmontar descarta a sessão, nova entrada vazia. Voltar revisa resposta; pular apaga a resposta do item. Resumo/transferência para #22 ainda pendentes, não antecipar Histórico P3.
+Estado local de componente/reducer; nenhuma resposta padrão. Não persistir/transmitir. Finalizar mostra resumo (extensão US022); sair/abrir ferramenta/back/blur/unmount descarta, nova entrada vazia. Voltar nas perguntas revisa; pular apaga resposta do item. Sem Histórico P3.
 
 ## Fluxos principais
 
-US021: quadro → check-in → selecionar e continuar ou pular → revisar com pergunta anterior → encerrar sem resultado clínico → quadro. Sair antes do fim também descarta. Scroll volta ao topo sem animação ao mudar pergunta. Resumo de #22 não implementado nesta etapa.
+Quadro → check-in → selecionar/continuar ou pular/revisar → resumo literal e possibilidades neutras → quadro ou ferramenta escolhida. Sair antes do fim também descarta. Scroll volta ao topo sem animação ao mudar pergunta/resumo. US022 rota Água `/check-in/water` reutiliza CommunicationBoard com somente cartão local Água, sem compositor/onSelectCard; faltando cartão mostra estado vazio/retorno. Regulação e contato usam rotas próprias já entregues. Nenhuma resposta em params.
 
 Validar cada critério no seu fluxo e as integrações indicadas em spec.md; a sequência não impõe um único percurso de interface.
 
 ## Offline
 
-US021 opera sem rede e sem armazenamento; respostas somente em memória da sessão. Reentrada inicia sem respostas. #22 requer refinamento próprio.
+Check-in/resumo/Água operam sem rede e armazenamento de respostas; reentrada vazia. Abrir contato apenas revisa configuração local; envio externo continua ação humana separada no módulo existente.
 
 Recursos locais não devem depender de autenticação ou API. Capacidades externas explicitamente solicitadas devem informar indisponibilidade sem impedir os recursos locais; não confundir falta de backend próprio com ausência de qualquer serviço externo futuro.
 
@@ -72,7 +72,7 @@ Base implementada, sem bibliotecas novas ou uso de temporizador/áudio. #21 não
 
 Perguntas puladas e resumo sem respostas (#21/#22); não preencher respostas por inferência.
 
-US021 Ready após aprovação explícita. Sugestões/atalhos/retenção de #22 ainda pendentes. Leitor de tela/foco, texto ampliado/insets/alvos e abertura offline reais permanecem gate nativo T012; testes RNTL não comprovam conformidade total ou release. Ver [auditoria](../../docs/backlog-audit.md).
+US021 entregue e US022 Ready após aprovação explícita. Leitor de tela/foco, texto ampliado/insets/alvos e abertura offline reais permanecem gates nativos T012/T013; testes RNTL não comprovam conformidade total ou release. Ver [auditoria](../../docs/backlog-audit.md).
 
 ## Decisões arquiteturais
 

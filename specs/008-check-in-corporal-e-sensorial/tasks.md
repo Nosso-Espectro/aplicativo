@@ -19,6 +19,8 @@ Refinamento aprovado em 2026-10-14: sete itens Sim/Não/Não sei, temperatura Fr
 
 ## US-022 — Issue #22
 
+Refinamento aprovado em2026-10-14: resumo literal só respostas válidas, sem inferência de puladas; estado vazio neutro. Memória até sair/abrir ferramenta/back/blur/unmount; sem histórico. Possibilidades neutras opcionais e rotas reais regulação/contato/Água CAA local para exibição, sem ações automáticas. Modelo em `check-in-summary.ts`, UI no fluxo existente `CheckInForm.tsx`, rota `src/app/check-in/water.tsx`; sem deps/DB/rede/respostas em params.
+
 - [ ] T007 [US-022] Em `src/features/sensory-check-in/check-in-summary`, atender RF-005 (critério 1 de #22): O resumo deve mostrar apenas as respostas fornecidas. Verificar com o cenário correspondente no PR.
 - [ ] T008 [US-022] Em `src/features/sensory-check-in/check-in-summary`, atender RF-006 (critério 2 de #22): Sugestões devem ser apresentadas como possibilidades, não como prescrição clínica. Verificar com o cenário correspondente no PR.
 - [ ] T009 [US-022] Em `src/features/sensory-check-in/check-in-summary`, atender RF-007 (critério 3 de #22): O usuário deve poder acessar diretamente ferramentas relacionadas, como água, regulação ou contato de apoio. Verificar com o cenário correspondente no PR.
@@ -28,3 +30,4 @@ Refinamento aprovado em 2026-10-14: sete itens Sim/Não/Não sei, temperatura Fr
 ## Gate nativo separado
 
 - [ ] T012 [US-021] No SHA integrado, verificar abertura/reentrada offline sem retenção, TalkBack/VoiceOver/foco ao trocar pergunta, texto ampliado/insets/scroll/alvos de toque e modo9 em aparelho/simulador. Build/mocks não comprovam essas verificações; nenhuma instalação autorizada por aprovação funcional.
+- [ ] T013 [US-022] No SHA integrado, verificar resumo/saída/reentrada offline e sem retenção, leitores/foco/ampliação/insets/scroll/alvos/modo9/Modal do cartão Água em aparelho/simulador; abertura dos atalhos sem voz/envio/estímulos automáticos. Mocks/build não comprovam; instalação requer autorização específica.
