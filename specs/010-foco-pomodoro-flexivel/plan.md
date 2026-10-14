@@ -10,6 +10,10 @@ Modelo puro com estado inicial/running/paused/finished, decorrido confirmado, re
 
 Testes de zero/elapsed/acumulado/pausa/retomada/finalizar/novo, interrupções curtas sem penalização, atraso/background, clock regressivo/falha/inteiros safe, stale/duplicatas/desmontagem, Expo Router/retornos/mode9 e regressões Pomodoro/timer. Mesmos checks leves e skills; gate T012 nativeassistivo/offline/background/clock separado. Nenhum DB/rede/dep/permissão/áudio/notificação nova. #82 continua fora.
 
+### Modelo US026 preparado em 2026-10-14
+
+`stopwatch-model.ts` implementa sessão própria running/paused/finished, revisão capturada, acumulado confirmado, baseline de retomada, amostra de relógio e decorrido. Tick calcula `accumulatedMs + nowMs - startedAtMs`, sem contagem de ticks; pausa congela e retomada não zera. Finalização preserva somente esta sessão, sem histórico; nova sessão explícita zera. Clock inválido/regressivo/overflow pausa no último decorrido confirmado. Se finalizar durante clock falho, primeiro preserva/pausa para nova decisão humana; finalizar já pausado é válido mesmo sem relógio. Falha ao iniciar nova sessão não apaga um resultado finalizado anterior. Discard remove sessão e revisões recusam callbacks antigos. Doze testes unitários e regressões Pomodoro passaram. Provider/AppState/UI/rotas cronômetro ainda não implementados; modelo isolado não comprova critérios ou gate nativo, tasks seguem pendentes.
+
 ## Plano vigente US025
 
 Stack confirmada: Expo SDK57, React Native0.86.3, React19.2.3, TypeScript strict, Expo Router e Jest. O temporizador US017 e avisos US018 já existem; ler seus modelos, relógio/AppState, layouts e testes antes de implementar, sem alterar seus bancos, sessão ou consentimentos. Caminho da ferramenta: `src/features/focus/` e rotas próprias sob `src/app/focus/`, acesso pelo quadro e retorno com fallback.
