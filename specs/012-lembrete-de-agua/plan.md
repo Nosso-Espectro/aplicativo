@@ -2,6 +2,22 @@
 
 Spec: [spec.md](spec.md). Milestone #20; Issues #29, #30. Plano proposto, sujeito às questões em aberto.
 
+## Plano vigente US030
+
+US029 integrada PR93/mainb6dfd5f em2026-10-14:751Jest94/57novos/PRCI38581557667SUCCESS1m32s/mainCI38581938203SUCCESS1m36s, nativos SKIPPED. Seções US029 abaixo preservam evidências pré-integração, não instruem reimplementação. US030 Ready pelo refinamento registrado no GitHub/spec; nenhum código30/tasks verificadas ainda.
+
+Stack/dependências sem alteração. API/source57.0.22 revisados: parseDailyTrigger aceita DAILY/hour/minute/channelId, Android DailyTrigger usa Calendar local/nextday/segundoszero e iOS DailyTriggerRecord cria UNCalendarNotificationTrigger repeats true. Retorno de inspeção difere Android daily/hour/minute e iOS calendar/dateComponents/repeats; normalizar somente após guardas reais. getNextTriggerDateAsync retorna Unixms nas duas plataformas (iOS multiplica epochseconds por1000), diferente do evento recebido iOS já tratado29. Não usar CALENDAR genérico como suposto suporte Android, nem inventar trigger/listener/quota.
+
+Implementar modelo quiet-hours: nullable default, validação HH:MM/minuto0-1439/distintos, predicate início inclusivo/fim exclusivo/modular-meia-noite, fase de minutos diários ancorada no primeiro intervalo de ativação/retomada, até48 slots e gaps civis nunca menores que intervalo antes do filtro. Relógio/overflow inválidos recusados; plano nativo omite próximas ocorrências antes de now+intervalo completo, dentro do silêncio ou não confirmadas. Sem slots, capacidade ou confirmação = erro/inativo. Sem janela usar contrato29 intacto.
+
+Estender persistência privada para configuração de janela/plano/recibos de lote com migração schema1 preservando valores/status/IDs/journal legado, sem resets nem tocar outros DBs. Revisão CAS/FIFO/TX/readback/rollback/future-schema; DTOs validados e cópias independentes. Todas etapas da operação nativa gravadas antes de efeito; nenhum falso commit distribuído. Preservar cancelamento legado29 e compensação restrita à operação, detectar geração nova antes de cancelar; owner/stale/busy/dup/dispose e erro de cancelamento pendente mantidos.
+
+Adapter/coordenador verificam contagem+IDs pendentes totais com limite conservador48 do produto, não limite declarado do OS; não ler/logar conteúdo alheio. Confirmar cada schedule e TODO lote, preservar avisosTimer/terceiros, compensar apenas próprios após falha parcial/commit/lateeffects. Reabertura valida plano/próximas ocorrências/clock/fuso/permissão sem agendar/request automático; divergência pausa recuperável após cancel próprio, Retomar humano. Faixa foreground recusa relógio inválido/silêncio/ID não atual/replay. Sem polling para promessa background e sem handler global/novas deps/permissões/exact/push/conta/rede.
+
+UI existente hidratação: draft enable/start/end/savecancel separado/revisão capturada; edição apenas pausada/desativada/semjournal, início=fim inválido. Confirmar mudança para horários diários e limites OS antes Ativar/Retomar; sem horário imposto/recomendação clínica. Rótulos/erroretry/backfallback/mode9/48dp/escalável e controles familiares, nunca mudar quiet ou intervalo silenciosamente para obter capacidade. Manter Timer/CAA/som e prévia8093.
+
+Tests quiet/property-boundaries/slots/circular-gaps/clockerror; SQLiteNode real migração v1/rollback/future-schema/receipts/batchtakeover; SDKfake fiel dailyAndroid/calendarIOS/nextms/capacidade/falha parcial/cancel/late; controller/provider/Router/reabertura/fuso/draft/permission/foreg/meia-noite/mode9/regressões29/Timer/CAA. Jest serial/runtime24.21.0/linttipos/Doctor56toolingvalidadordiffreviewCI antesDoD, tasks só comportamento. Gate T013 real: emissão/delivery no silêncio/meia-noite/DST/timezone/clock/Doze/reboot/capacidade/cancelamento/leitores/SQLiteExpo/offline/backups, sem aprovação por mocks/assinatura/build. Nenhuma operação aparelho/host/jobs/build local autorizada neste desenvolvimento.
+
 ## Plano vigente US029
 
 ### Fundação em desenvolvimento

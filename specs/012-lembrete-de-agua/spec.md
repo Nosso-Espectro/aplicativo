@@ -3,7 +3,7 @@ milestone: 20
 priority: P2
 tag: m012-lembrete-de-agua
 status: draft
-ready_stories: ["US-029"]
+ready_stories: ["US-029", "US-030"]
 source_checked: 2026-10-14
 ---
 
@@ -11,7 +11,18 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P2 — Lembrete de Água](https://github.com/Nosso-Espectro/aplicativo/milestone/20) (número 20).
 
-Milestone aberta; US029 Ready após refinamento sob delegação funcional, implementação em validação na branch própria. US030 conserva questões próprias, não Ready. Nenhum gate nativo/release concluído.
+Milestone aberta; US029 integrada pelo PR93, US030 Ready após refinamento sob delegação funcional, ainda sem código. Gates nativos e release não concluídos.
+
+## Refinamento US030
+
+Recomendação conservadora registrada na [Issue30](https://github.com/Nosso-Espectro/aplicativo/issues/30#issuecomment-6171072593) sob delegação funcional; critérios originais abaixo preservados.
+
+- Janela diária civil local HH:MM, início inclusivo/fim exclusivo, inclusive cruzando meia-noite. Início igual ao fim é inválido, não significa24h; Pausar/Desativar continuam para suspender tudo. Default sem janela, draft sem horários inferidos, salvar/cancelar separados.
+- Editar intervalo/janela somente paused/disabled e sem journal; salvar não agenda, ativar/retomar exige confirmação humana e permissão. Persistir configuração privada com migração v1 que conserva US029, recibos/journal/revisões, recusa corrupção/schema futuro/overflow e publicação apenas após commit/readback.
+- Sem janela preservar TIME_INTERVAL29. Com janela: plano nativo DAILY finito de minutos civis, fase ancorada no primeiro intervalo da retomada, espaçamento civil pelo intervalo escolhido30-720/ciclo diário sem encurtar último-primeiro e zero slots dentro do silêncio. Horários diários podem ampliar os espaços entre avisos; comunicar esta mudança antes de ativar. Cada próxima ocorrência via getNextTriggerDateAsync precisa ser confirmada em ms e não anterior ao intervalo completo; omitir/recusar ocorrência nula/inválida/dentro do silêncio. Sem horários elegíveis = não ativar/erro recuperável, jamais aviso imediato.
+- Limite conservador do produto48 solicitações pendentes totais observadas para iniciar lote, não quota do OS. Inspecionar contagem/IDs sem conteúdo de outras ferramentas; falta de espaço recusa antes de efeitos. Plano e todos IDs/geração registrados antes de efeitos; confirmar TODO lote e DB antes de active. FIFO/TX/readback/journal/rollback/latecompensação somente da operação, não cancelar geração mais nova/avisosTimer/cancelAll; preservar IDs legados29. Cancelamento não confirmado informa risco, não sucesso.
+- Reabertura/foreground verificam configuração/plano/IDs/permissão/fuso/próximas ocorrências sem request ou agenda automática. Divergência/fuso alterado/clock inválido/missing/extra/ambíguo exige pausa recuperável e cancelamento próprio confirmado/Retomar humano, sem catch-up. DAILY usa calendário nativo, não polling JS suspenso; DST/clock/fuso/entrega atrasada/Doze/reboot/force-stop ficam no gate. Não prometer controle sobre apresentação/atraso do OS.
+- Faixa foreground somente evento atual próprio e fora da janela no relógio atual, sem replay/voz/som/vibração/histórico. UI na hidratação existente, início/fim/ativar janela/draftsavecancel/erros/48dp/escalável/mode9. Sem dependência/permissão/exact/handler global/push/backend/conta novos. Zero emissão PLANEJADA é verificável no modelo/adapter; critério original de não emissão e transições reais não é aprovado por mocks, T013 nativo pendente.
 
 ## Refinamento US029
 
@@ -121,7 +132,7 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-AGUA-01 — Resolvida para29 pelo refinamento: intervalo relativo, configuração/recibos locais e reabertura sem reagendamento automático/catch-up. Horários/silêncio/fuso/meia-noite de30 requerem refino próprio, não Ready.
+- Q-AGUA-01 — Resolvida para29 pelo refinamento: intervalo relativo, configuração/recibos locais e reabertura sem reagendamento automático/catch-up. Para30, refinamento acima define janela civil diária/meia-noite/plano DAILY e recuperação de divergência/fuso sem auto-agenda; comportamento nativo em transições permanece gate T013.
 - Q-AGUA-02 — Resolvida para29: confirmação/permissão sob comando, negação preserva configuração/inativo/retry humano; notificações locais e limites do OS explícitos, sem garantia exata.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
