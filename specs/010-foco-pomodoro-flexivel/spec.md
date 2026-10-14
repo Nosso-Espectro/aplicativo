@@ -3,15 +3,27 @@ milestone: 18
 priority: P1
 tag: m010-foco-pomodoro-flexivel
 status: draft
-ready_stories: []
-source_checked: 2026-09-23
+ready_stories: ["US-025"]
+source_checked: 2026-10-14
 ---
 
 # Foco / Pomodoro Flexível
 
 Milestone GitHub: [P1 — Foco / Pomodoro Flexível](https://github.com/Nosso-Espectro/aplicativo/milestone/18) (número 18).
 
-Estado consultado: aberta; todas as histórias abaixo estão abertas. Especificação em revisão, não implementação concluída.
+Estado consultado: aberta; #25 Ready após refinamento sob delegação funcional, #26 permanece em revisão. Nenhuma implementação desta milestone concluída.
+
+## Refinamento US-025
+
+Decisão registrada em [#25](https://github.com/Nosso-Espectro/aplicativo/issues/25#issuecomment-6165449744) sob a delegação humana para seguir recomendações conservadoras sem aguardar nova aprovação funcional.
+
+- Presets fixos 25 minutos de foco / 5 de pausa e 50 / 10. Seleção antes de iniciar; não trocar preset durante uma sessão ativa.
+- Iniciar, pausar, retomar e encerrar sem penalização. Pausa congela o restante; retomada usa esse restante.
+- Ao esgotar uma fase, indicar visualmente a próxima e anunciar de forma polite. Aguardar comando explícito Iniciar pausa ou Iniciar foco; não executar outra fase automaticamente. Sem som, vibração ou notificações de sistema.
+- Estado local somente em memória, sem histórico, DB, rede, logs de sessão ou novas permissões. Em segundo plano, comparar o prazo ao retornar, sem replay ou avanço por múltiplas fases. Reinício do app começa vazio.
+- A sessão pertence ao layout da ferramenta. Sair encerra e descarta; fluxo explícito de saída de sessão ativa confirma antes de abandonar. Saída externa/desmontagem descarta sem executar ações tardias. Nenhuma promessa de execução em processo morto.
+- Relógio inválido/regressivo pausa com erro genérico e recuperação humana, sem tempo negativo ou transição inferida. Rótulos, estado, comandos e modo de baixa estimulação permanecem acessíveis; alvos mínimos 48dp e texto escalável.
+- Personalização de intervalos está registrada separadamente na [#82](https://github.com/Nosso-Espectro/aplicativo/issues/82), não Ready, e não pertence à branch #25. Cronômetro livre #26 também não pertence a esta entrega.
 
 ## Contexto
 
@@ -91,7 +103,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Implementações de outras milestones, requisitos não rastreados e decisões funcionais listadas como pendentes. Nesta execução apenas documentação e ferramentas de engenharia; nenhuma funcionalidade é implementada.
+Implementações de outras milestones, personalização #82, cronômetro #26 nesta branch, histórico, notificações/som/vibração automáticos, backend, IA, sincronização e diagnóstico. O refinamento torna apenas #25 Ready; não comprova implementação.
 
 ## Dependências funcionais
 
@@ -105,8 +117,8 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-FOCO-01 — A milestone menciona personalização de intervalos, mas #25 só exige presets. Falta atribuir critérios dessa personalização.
-- Q-FOCO-02 — Transição foco/pausa é automática ou depende de confirmação? Como avisar sem estímulo inesperado e como tratar segundo plano (#25/#26)?
+- Q-FOCO-01 — Escopo separado na #82, não Ready; limites, edição e retenção de preferências devem ter critérios antes de implementar personalização. Não bloqueia os presets de #25.
+- Q-FOCO-02 — Resolvida para #25 conforme refinamento: próximo período iniciado explicitamente, aviso visual/polite, prazo comparado ao retornar, memória efêmera e sem estímulos automáticos. #26 ainda requer refinamento próprio.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 
