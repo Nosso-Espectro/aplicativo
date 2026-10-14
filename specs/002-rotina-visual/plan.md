@@ -84,6 +84,30 @@ Base integrada da US-041 e fronteiras locais de imagem da US-004 reutilizadas. S
 
 ## Riscos
 
+### Correção US-008: player e consentimento de reinício
+
+Reproduzir callback de progresso após unmount e confirmação capturada antes de
+Manter rotina concluída. Usar foco real do Router e owner por ativação/ID de
+rotina. Intenção de reinício possui token próprio, validado antes de confirmar
+ou repetir; cancelar/sair/outra intenção invalida o token. Continuações antigas
+não publicam feedback nem liberam busy atual. Commit previamente autorizado
+pode concluir, sem promessa de cancelamento da transação. Preservar DAO,
+expectedId, schema/permissões/dependências e feedback da ativação atual.
+Testes componentes/StrictMode e Router/provider/SQLiteNode real devem cobrir
+callbacks/blur/retorno/commit/falha tardios, cancelamento de reinício e retry.
+T017 nativa permanece pendente; correção não fecha #8.
+
+Evidência local 2026-10-14: dois achados reproduzidos em teste antes do fix;
+12 regressões novas (9 componentes e 3 Router/provider/SQLiteNode real), 58
+relacionados/7 suítes e 946 Jest/104 suítes completos PASS serial. Suíte final
+após ajuste de dependências do React Compiler: 140,082s, sem supressão de regras.
+Lint/tipos sem warnings, Doctor21/21, 56 tooling, validador/diff/review PASS.
+Mesmos controles/layout/alvos48dp e zero estímulos; provider/DAO/schema/IDs/status
+preservados. Testes reais do host não comprovam SQLiteExpo/leitores/offline em
+aparelho. PR104 anexado, CI38644757648 SUCCESS2min1s no head6700ecb;
+reconferir CI do último commit documental antes squash. Android/iOS SKIPPED
+não são builds; #8 e T017 continuam abertas/pendentes.
+
 ### Correção US-006: continuações do editor
 
 Reprodução inicial: manter save pendente, desmontar o editor e resolver o commit;
