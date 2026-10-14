@@ -97,6 +97,15 @@ Testes componentes/StrictMode e Router/provider/SQLiteNode real devem cobrir
 callbacks/blur/retorno/commit/falha tardios, cancelamento de reinício e retry.
 T017 nativa permanece pendente; correção não fecha #8.
 
+Evidência local 2026-10-14: dois achados reproduzidos em teste antes do fix;
+12 regressões novas (9 componentes e 3 Router/provider/SQLiteNode real), 58
+relacionados/7 suítes e 946 Jest/104 suítes completos PASS serial. Suíte final
+após ajuste de dependências do React Compiler: 140,082s, sem supressão de regras.
+Lint/tipos sem warnings, Doctor21/21, 56 tooling, validador/diff/review PASS.
+Mesmos controles/layout/alvos48dp e zero estímulos; provider/DAO/schema/IDs/status
+preservados. Testes reais do host não comprovam SQLiteExpo/leitores/offline em
+aparelho. CI do último head ainda necessária antes integração.
+
 ### Correção US-006: continuações do editor
 
 Reprodução inicial: manter save pendente, desmontar o editor e resolver o commit;

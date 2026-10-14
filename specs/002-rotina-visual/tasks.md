@@ -54,5 +54,5 @@ offline e interrupção/reabertura do binário permanecem pendentes. Nenhum buil
 
 ## Correção do player — US-008 / Issue #8
 
-- [ ] T020 [US-008] Reproduzir ações após descarte e confirmação revogada; proteger owner de foco/montagem/rotina e intenção de reinício/cancelamento/retry, preservando commits autorizados e guardas transacionais existentes.
+- [x] T020 [US-008] Reproduzir ações após descarte e confirmação revogada; proteger owner de foco/montagem/rotina e intenção de reinício/cancelamento/retry, preservando commits autorizados e guardas transacionais existentes. Evidência: dois testes RED antes do fix; 12 novos PASS (9 componentes/3 Router-provider-SQLiteNode real), callbacks descartados sem escrita/reinício revogado, commit autorizado preservado.
 - [ ] T021 [US-008] Testar componentes/Router/provider/SQLiteNode real/StrictMode, blur/retorno/ações antigas/falhas/commit/rollback e regressões #6/#7/CAA/timers; revisar UI/privacidade/diff e checks leves/CI último head antes merge. Não fechar #8 ou aprovar T017 nativa.
