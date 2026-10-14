@@ -7,8 +7,8 @@ import { act, render, waitFor } from '@testing-library/react-native';
 import { useEffect } from 'react';
 import { fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
-import { Slot } from 'expo-router';
-import { AccessibilityInfo, Text } from 'react-native';
+import { Slot, router } from 'expo-router';
+import { AccessibilityInfo, BackHandler, Text } from 'react-native';
 import { TaskProvider, useTasks } from '../../../src/features/task-breakdown/TaskProvider';
 import { openTaskWorkspaceDatabase } from '../../../src/features/task-breakdown/task-database';
 import TasksLayout from '../../../src/app/tasks/_layout';
@@ -19,6 +19,11 @@ import Edit from '../../../src/app/tasks/edit/[id]';
 import Templates from '../../../src/app/tasks/templates';
 import Template from '../../../src/app/tasks/templates/[id]';
 import EditTemplate from '../../../src/app/tasks/templates/edit/[id]';
+import Catalog from '../../../src/app/tasks/catalog';
+import CatalogEditor from '../../../src/app/tasks/catalog/new/[id]';
+import { CommonTaskCatalogScreen } from '../../../src/features/task-breakdown/CommonTaskCatalogScreen';
+import { commonTaskDraft } from '../../../src/features/task-breakdown/common-task-catalog';
+import { TaskEditor } from '../../../src/features/task-breakdown/TaskEditor';
 import StartupScreen from '../../../src/app';
 import { SentenceProvider } from '../../../src/features/communication/sentence/SentenceProvider';
 import { CustomCardsProvider } from '../../../src/features/communication/custom-cards/CustomCardsProvider';
@@ -40,7 +45,8 @@ function GlobalLayout() {
 }
 const routes = { _layout: GlobalLayout, index: StartupScreen, 'tasks/_layout': TasksLayout, 'tasks/index': List,
   'tasks/new': New, 'tasks/[id]': Detail, 'tasks/edit/[id]': Edit,
-  'tasks/templates/index': Templates, 'tasks/templates/[id]': Template, 'tasks/templates/edit/[id]': EditTemplate };
+  'tasks/templates/index': Templates, 'tasks/templates/[id]': Template, 'tasks/templates/edit/[id]': EditTemplate,
+  'tasks/catalog/index': Catalog, 'tasks/catalog/new/[id]': CatalogEditor };
 beforeEach(() => {
   jest.clearAllMocks(); directory = mkdtempSync(join(tmpdir(), 'tear-task-flow-')); connections = [];
   failCommit = false; holdCommit = null;
@@ -304,4 +310,128 @@ it('keeps stale editor drafts and refuses outdated removal confirmations when an
   latest = (await external.readWorkspace()).templates[0]; await external.saveTemplate({ ...latest, title: 'Versão mais nova' }, latest);
   await press('Confirmar remoção do modelo'); await screen.findByText(/Os dados salvos foram mantidos/);
   expect((await external.readWorkspace()).templates[0].title).toBe('Versão mais nova');
+});
+async function useCommon(title = 'Organizar uma mesa') {
+  await press('Usar modelo comum: ' + title); await screen.findByLabelText('Título da tarefa');
+}
+function oldPress(name: string) {
+  let node = screen.getByRole('button', { name });
+  while (node.parent && typeof node.props.onPress !== 'function') node = node.parent;
+  expect(typeof node.props.onPress).toBe('function'); return node.props.onPress as () => void;
+}
+it('reads original common models through the real menu without seeding tasks or personal models', async () => {
+  const fetch = jest.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('offline'));
+  renderRouter(routes, { initialUrl: '/' }); await press('Abrir tarefas'); await screen.findByText('Ainda não há tarefas salvas.');
+  await press('Modelos de tarefas'); await press('Modelos comuns');
+  expect(screen.getByRole('header', { name: 'Preparar uma mochila' })).toBeOnTheScreen();
+  expect(screen.getByRole('header', { name: 'Organizar uma pequena área do quarto' })).toBeOnTheScreen();
+  expect(screen.queryByRole('button', { name: 'Editar modelo' })).toBeNull();
+  expect(connections[0].prepare('SELECT count(*) AS total FROM tasks').get()).toMatchObject({ total: 0 });
+  expect(connections[0].prepare('SELECT count(*) AS total FROM task_templates').get()).toMatchObject({ total: 0 });
+  expect(fetch).not.toHaveBeenCalled(); expect(localSpeech.speak).not.toHaveBeenCalled();
+});
+it('edits and saves a common copy with false progress and independent IDs, preserving catalog and personal models on reentry', async () => {
+  const view = renderRouter(routes, { initialUrl: '/tasks/catalog' }); await act(async () => {}); await useCommon();
+  expect(screen.getByLabelText('Título da etapa 1')).toHaveProp('value', 'Escolher uma pequena área da mesa');
+  fireEvent.changeText(screen.getByLabelText('Título da tarefa'), 'Cópia sintética'); await press('Descer etapa 1');
+  await press('Salvar tarefa'); await screen.findByRole('button', { name: 'Abrir tarefa: Cópia sintética' });
+  const workspace = await (await openTaskWorkspaceDatabase()).readWorkspace();
+  expect(workspace.templates).toEqual([]); expect(workspace.tasks).toHaveLength(1);
+  expect(workspace.tasks[0].steps.every(step => !step.completed && !step.id.startsWith('common-'))).toBe(true);
+  expect(workspace.tasks[0].steps[1].title).toBe('Escolher uma pequena área da mesa');
+  await press('Modelos de tarefas'); await press('Modelos comuns'); expect(screen.getByText('1. Escolher uma pequena área da mesa')).toBeOnTheScreen();
+  await useCommon(); await press('Salvar tarefa'); await screen.findByRole('button', { name: 'Abrir tarefa: Organizar uma mesa' });
+  const saved = await (await openTaskWorkspaceDatabase()).readWorkspace();
+  expect(saved.tasks[0].steps.some(step => saved.tasks[1].steps.some(other => step.id === other.id))).toBe(false);
+  view.unmount(); for (const db of connections) db.close(); connections = [];
+  renderRouter(routes, { initialUrl: '/tasks' }); await screen.findByRole('button', { name: 'Abrir tarefa: Cópia sintética' });
+  expect((await (await openTaskWorkspaceDatabase()).readWorkspace()).tasks).toHaveLength(2);
+});
+it('cancels a common draft and refuses a captured save callback after leaving without writing', async () => {
+  renderRouter(routes, { initialUrl: '/tasks/catalog' }); await act(async () => {}); await useCommon();
+  fireEvent.changeText(screen.getByLabelText('Título da tarefa'), 'Discarded'); const save = oldPress('Salvar tarefa');
+  await press('Cancelar'); act(() => save()); await act(async () => {});
+  expect((await (await openTaskWorkspaceDatabase()).readWorkspace()).tasks).toEqual([]);
+  await useCommon(); expect(screen.getByLabelText('Título da tarefa')).toHaveProp('value', 'Organizar uma mesa');
+});
+it('refuses a save callback captured before a newer draft edit, then saves only the current choice', async () => {
+  renderRouter(routes, { initialUrl: '/tasks/catalog' }); await act(async () => {}); await useCommon();
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Salvar tarefa' })).toBeEnabled());
+  const save = oldPress('Salvar tarefa'); fireEvent.changeText(screen.getByLabelText('Título da tarefa'), 'Current synthetic draft');
+  await act(async () => save());
+  expect((await (await openTaskWorkspaceDatabase()).readWorkspace()).tasks).toEqual([]);
+  expect(screen.getByLabelText('Título da tarefa')).toHaveProp('value', 'Current synthetic draft');
+  await press('Salvar tarefa'); await screen.findByRole('button', { name: 'Abrir tarefa: Current synthetic draft' });
+});
+it('keeps pending copy unconfirmed, rejects duplicates and preserves draft through rollback then human retry', async () => {
+  let back: Parameters<typeof BackHandler.addEventListener>[1] | undefined;
+  jest.spyOn(BackHandler, 'addEventListener').mockImplementation((_event, callback) => { back = callback; return { remove: jest.fn() }; });
+  const view = renderRouter(routes, { initialUrl: '/tasks/catalog' }); await act(async () => {}); await useCommon('Preparar uma mochila');
+  fireEvent.changeText(screen.getByLabelText('Título da tarefa'), 'Mochila sintética'); const save = oldPress('Salvar tarefa');
+  holdCommit = new Promise(resolve => { releaseCommit = resolve; });
+  await act(async () => { save(); save(); }); expect(view.getPathname()).toBe('/tasks/catalog/new/backpack');
+  expect(screen.getByRole('button', { name: 'Salvar tarefa' })).toBeDisabled(); expect(screen.getByRole('button', { name: 'Cancelar' })).toBeDisabled();
+  act(() => { expect(back?.({ type: 'hardwareBackPress', timeStamp: Date.now() })).toBe(true); });
+  expect(view.getPathname()).toBe('/tasks/catalog/new/backpack');
+  failCommit = true; await act(async () => { holdCommit = null; releaseCommit(); });
+  await screen.findByText(/Seu preenchimento foi mantido/); expect(screen.getByLabelText('Título da tarefa')).toHaveProp('value', 'Mochila sintética');
+  expect(connections[0].prepare('SELECT count(*) AS total FROM tasks').get()).toMatchObject({ total: 0 });
+  expect(screen.queryByText('synthetic private failure')).toBeNull(); failCommit = false;
+  await press('Salvar tarefa'); await screen.findByRole('button', { name: 'Abrir tarefa: Mochila sintética' });
+  expect(connections[0].prepare('SELECT count(*) AS total FROM tasks').get()).toMatchObject({ total: 1 });
+});
+it('reads catalog with database failure while the draft shows recoverable unavailable storage', async () => {
+  jest.mocked(openDatabaseAsync).mockRejectedValueOnce(new Error('private synthetic failure'));
+  renderRouter(routes, { initialUrl: '/tasks/catalog' }); await act(async () => {});
+  expect(screen.getByRole('header', { name: 'Organizar uma mesa' })).toBeOnTheScreen(); await useCommon();
+  await screen.findByRole('button', { name: 'Tentar abrir tarefas novamente' });
+  expect(screen.getByRole('button', { name: 'Salvar tarefa' })).toBeDisabled();
+  expect(screen.queryByText('private synthetic failure')).toBeNull();
+  await press('Tentar abrir tarefas novamente'); await waitFor(() => expect(screen.getByRole('button', { name: 'Salvar tarefa' })).toBeEnabled());
+  await press('Salvar tarefa'); await screen.findByRole('button', { name: 'Abrir tarefa: Organizar uma mesa' });
+});
+it('discards retained draft on blur, guards old save and preserves mode9 on fresh focus', async () => {
+  renderRouter({ ...routes, 'tasks/other': () => <Text>Synthetic other screen</Text> }, { initialUrl: '/tasks/catalog/new/room' });
+  await screen.findByLabelText('Título da tarefa'); await waitFor(() => expect(screen.getByRole('button', { name: 'Salvar tarefa' })).toBeEnabled());
+  await act(async () => fireEvent(screen.getByRole('switch', { name: 'Modo de baixa estimulação' }), 'valueChange', true));
+  fireEvent.changeText(screen.getByLabelText('Título da tarefa'), 'Discarded'); const save = oldPress('Salvar tarefa');
+  await act(async () => router.push('/tasks/other')); act(() => save()); await act(async () => router.back());
+  await screen.findByLabelText('Título da tarefa'); expect(screen.getByLabelText('Título da tarefa')).toHaveProp('value', 'Organizar uma pequena área do quarto');
+  expect(screen.getByRole('switch', { name: 'Modo de baixa estimulação' })).toBeChecked();
+  expect((await (await openTaskWorkspaceDatabase()).readWorkspace()).tasks).toEqual([]);
+});
+it('has focused hardware fallback for missing catalog IDs and rejects the old back callback after leaving', async () => {
+  let back: Parameters<typeof BackHandler.addEventListener>[1] | undefined;
+  jest.spyOn(BackHandler, 'addEventListener').mockImplementation((_event, callback) => { back = callback; return { remove: jest.fn() }; });
+  const view = renderRouter(routes, { initialUrl: '/tasks/catalog/new/missing' }); await screen.findByText('Este modelo comum não está disponível.');
+  const old = back; act(() => { expect(back?.({ type: 'hardwareBackPress', timeStamp: Date.now() })).toBe(true); });
+  await screen.findByRole('header', { name: 'Modelos comuns' }); expect(view.getPathname()).toBe('/tasks/catalog');
+  act(() => { expect(old?.({ type: 'hardwareBackPress', timeStamp: Date.now() })).toBe(false); });
+  await press('Voltar aos modelos'); expect(view.getPathname()).toBe('/tasks/templates');
+});
+it('keeps a navigation failure recoverable and refuses duplicate use before navigation finishes', async () => {
+  const use = jest.fn().mockImplementationOnce(() => { throw new Error('private synthetic navigation'); });
+  renderRouter({ ...routes, 'tasks/catalog/index': () => <CommonTaskCatalogScreen onClose={jest.fn()} onUse={use} /> }, { initialUrl: '/tasks/catalog' });
+  await press('Usar modelo comum: Organizar uma mesa'); await screen.findByText('Não foi possível abrir a cópia. Tente novamente.');
+  const command = oldPress('Usar modelo comum: Organizar uma mesa'); act(() => { command(); command(); });
+  expect(use).toHaveBeenCalledTimes(2); expect(use).toHaveBeenLastCalledWith('desk');
+  expect(screen.queryByText('private synthetic navigation')).toBeNull();
+});
+it('does not navigate after unmount while an already authorized save commits, nor write from an old callback', async () => {
+  const saved = jest.fn(); const view = render(<TaskProvider><TaskEditor initialDraft={commonTaskDraft('desk')} onClose={jest.fn()} onSaved={saved} /></TaskProvider>);
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Salvar tarefa' })).toBeEnabled());
+  const command = oldPress('Salvar tarefa'); holdCommit = new Promise(resolve => { releaseCommit = resolve; });
+  await act(async () => command()); view.unmount();
+  await act(async () => { holdCommit = null; releaseCommit(); }); act(() => command()); await act(async () => {});
+  expect((await (await openTaskWorkspaceDatabase()).readWorkspace()).tasks).toHaveLength(1); expect(saved).not.toHaveBeenCalled();
+});
+it.each([
+  { name: 'missing', content: () => null }, { name: 'incomplete', content: () => ({ revision: 'x', items: [] }) },
+  { name: 'throwing', content: () => ({ get revision(): never { throw new Error('private synthetic'); } }) },
+])('shows neutral unavailable $name catalog without fake retry or copy actions', async ({ content }) => {
+  const close = jest.fn(); const use = jest.fn(); const value = content();
+  renderRouter({ ...routes, 'tasks/catalog/index': () => <CommonTaskCatalogScreen content={value} onClose={close} onUse={use} /> }, { initialUrl: '/tasks/catalog' });
+  await screen.findByText('Os modelos comuns não estão disponíveis nesta versão.');
+  expect(screen.queryByRole('button', { name: /Usar modelo comum/ })).toBeNull();
+  await press('Voltar aos modelos'); expect(close).toHaveBeenCalledTimes(1); expect(use).not.toHaveBeenCalled();
 });

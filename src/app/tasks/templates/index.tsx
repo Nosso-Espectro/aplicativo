@@ -7,6 +7,8 @@ export default function TemplatesScreen() {
   return <TaskPage>
     <TaskCommand icon="arrow-back" label="Voltar às tarefas" onPress={() => router.replace('/tasks')} />
     <Text accessibilityRole="header" style={styles.heading}>Modelos de tarefas</Text>
+    <TaskCommand icon="library-books" label="Modelos comuns" onPress={() => router.push('/tasks/catalog')} />
+    <Text accessibilityRole="header" style={styles.label}>Modelos pessoais</Text>
     {context.loading && <Text accessibilityLiveRegion="polite" style={styles.text}>Abrindo modelos...</Text>}
     {context.error && <Text accessibilityRole="alert" style={styles.error}>{context.error}</Text>}
     {context.error && <TaskCommand icon="refresh" label="Tentar abrir modelos novamente" onPress={context.retry} />}

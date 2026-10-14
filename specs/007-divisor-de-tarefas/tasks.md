@@ -1,5 +1,18 @@
 # Tasks — Divisor de Tarefas
 
+## US-076 — Issue #76
+
+Ready após refino sob delegação e spec/plan alinhados, implementação76 validada localmente; PR/CI/merge pendentes. #19/#20 integradas; T012/T014/T020 nativos preservados.
+
+- [x] T015 [US-076] RF-008: catálogo editorial original local validado/completo/read-only/snapshots congelados/proveniência e isolamento de templates pessoais.
+- [x] T016 [US-076] RF-009: cópia para draft do editor existente/IDsnovos/statusfalse/apenasaçãohumana/editarcancelar sem escrita automática, foco/blur/unmount/oldcallbacks.
+- [x] T017 [US-076] RF-010: entrada Modelos/rotas/fallback/back/mode9/escalável/48dp, saveDAOreal/commit/pending/erroretry/semfalsosucesso/indisponívelcorrupto-banco.
+- [x] T018 [US-076] Testes modelo/Router/provider/SQLiteNode de conteúdo/completude/cópias/primeiraabertura/offline/savecancel/pendingdups/rollbackretry/blurunmount/stale/isolamento19-20/regressõesCAA/Timer.
+- [x] T019 [US-076] Review RF/RNF/UIprivacyofflineclean, related/fullserial/linttiposDoctor56toolingvalidadordiffreview/CI últimohead antesintegração; tasks sócomportamento comprovado. PR102 anexado; CI38630024488 SUCCESS1min44s no head8710d28225c9c16d5a6ab71e8d9eaedf9df0d332. 25novos/280rel21/926Jest103/tiposlintsemwarnings/Doctor21/21/56tooling/validadordiffreview PASS. Conferir novo head documental verde antes squash; nativos SKIPPED não são builds, T020 permanece pendente.
+- [ ] T020 [US-076] Gate real SHA integrado SQLiteExpo/offline/backups/readers/teclado/foco/ampliação/insets/alvos/backgestos; mocks/SQLiteNode/CIleve não aprovam nativo ou autorizam aparelho/buildlocal.
+
+Evidência local76:25novos12modelo13fluxo/280relacionados21/926Jest103 completos PASS (versão corrigida). Regressão comprovou oldSave gravando draft anterior e foi corrigida com currentDraft/ref+guard antes efeito; todos testes de editor/modelos pessoais preservados. Ref busy passou a layout effect, sem suprimir lint; back durante commit pendente verificado. Save já autorizado pode concluir no DB após unmount, mas não navega nem aceita nova escrita de callback antigo. Leitura não cria/altera tarefas/modelos, mas layout existente abre workspace/pode inicializar schema. Checks finais/CI em plan.md/T019; T020 não comprovado por Node/mocks.
+
 Milestone #15: [spec.md](spec.md) e [plan.md](plan.md). US-019 integrada/PR75, Issue fechada. US-020 Ready após aprovação humana; tasks ainda pendentes. Catálogo pronto na #76 fora desta branch. Gates nativos não são substituídos pelos testes locais.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
