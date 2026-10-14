@@ -1,6 +1,6 @@
 # Tasks — Foco / Pomodoro Flexível
 
-Milestone #18: [spec.md](spec.md) e [plan.md](plan.md). Todas pendentes; não executadas nesta preparação.
+Milestone #18: [spec.md](spec.md) e [plan.md](plan.md). Todas pendentes. US025 Ready após refinamento de 2026-10-14; preparação não equivale a implementação.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -8,11 +8,13 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 
 ## US-025 — Issue #25
 
-- [ ] T001 [US-025] Em `src/features/focus/pomodoro`, atender RF-001 (critério 1 de #25): Devem existir presets iniciais como 25/5 e 50/10. Verificar com o cenário correspondente no PR.
-- [ ] T002 [US-025] Em `src/features/focus/pomodoro`, atender RF-002 (critério 2 de #25): O usuário deve poder iniciar, pausar, retomar e encerrar a sessão. Verificar com o cenário correspondente no PR.
-- [ ] T003 [US-025] Em `src/features/focus/pomodoro`, atender RF-003 (critério 3 de #25): Ao terminar um período, o aplicativo deve informar a mudança para foco ou pausa. Verificar com o cenário correspondente no PR.
-- [ ] T004 [US-025] Adicionar testes de comportamento de RF-001, RF-002, RF-003 em `tests/features/focus/pomodoro`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
-- [ ] T005 [US-025] Revisar RNF-001 a RNF-004 na interface/dados de #25, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+- [ ] T001 [US-025] Modelo puro em `src/features/focus/`: presets 25/5 e 50/10 (RF-001), estado/fase/restante/prazo, seleção antes da sessão e comandos com identidade capturada.
+- [ ] T002 [US-025] Provider local somente memória e iniciar/pausar/retomar/encerrar (RF-002); prazo/relógio injetável, AppState/reconciliação sem catch-up, recusa de eventos antigos/duplicados, relógio inválido/regressivo com recuperação humana e cleanup.
+- [ ] T003 [US-025] UI e rotas próprias/quadro/fallback: aviso visual/polite e próxima fase somente por comando humano (RF-003), confirmação de saída ativa, reentrada vazia, modo9/48dp/escalável, sem som/vibração/notificação ou alterar timer existente.
+- [ ] T004 [US-025] Testes modelo/provider/Expo Router: presets, pausa/retomada, fim foco/pausa, próxima fase manual, background/atraso/relógio regressivo, comandos antigos/duplicados, confirmar/manter saída, desmontagem/reentrada e modo9; regressões timer/avisos existentes.
+- [ ] T005 [US-025] Revisar RNF-001 a RNF-004, privacidade/offline/clean-code e diff; Jest serial/lint/tipos/Doctor/tooling/validador/CI leve antes PR. Atualizar tasks somente após comportamento verificado, sem alegar gate nativo por mocks.
+
+- [ ] T011 [US-025] Gate nativo posterior no SHA integrado: relógio/background/processo morto/offline, TalkBack/VoiceOver/foco/ampliação/insets/alvos/contraste e saída real. Build remoto não substitui estes testes; nenhuma instalação autorizada por refinamento.
 
 ## US-026 — Issue #26
 

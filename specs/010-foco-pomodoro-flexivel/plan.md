@@ -1,6 +1,18 @@
 # Plano de implementação — Foco / Pomodoro Flexível
 
-Spec: [spec.md](spec.md). Milestone #18; Issues #25, #26. Plano proposto, sujeito às questões em aberto.
+Spec: [spec.md](spec.md). Milestone #18; Issues #25, #26. US025 refinada em 2026-10-14; US026 permanece sujeita às questões próprias.
+
+## Plano vigente US025
+
+Stack confirmada: Expo SDK57, React Native0.86.3, React19.2.3, TypeScript strict, Expo Router e Jest. O temporizador US017 e avisos US018 já existem; ler seus modelos, relógio/AppState, layouts e testes antes de implementar, sem alterar seus bancos, sessão ou consentimentos. Caminho da ferramenta: `src/features/focus/` e rotas próprias sob `src/app/focus/`, acesso pelo quadro e retorno com fallback.
+
+Reducer/modelo puro com preset, fase foco/pausa, estado inicial/em curso/pausado/aguardando próxima fase, restante e prazo. Relógio injetável nos testes; capturar comandos/identidade da sessão para rejeitar eventos antigos e duplicatas. Não somar ticks como fonte da verdade. Ao retornar de background, calcular apenas o período atual, limitar restante a zero e aguardar ação humana para a próxima fase. Tratar relógio inválido ou regressivo sem avançar fase.
+
+Provider pertencente ao layout da ferramenta, somente memória. Dispose e saída descartam callbacks e sessão; saída explícita ativa pede confirmação. Preset não muda no meio da sessão. UI reutiliza padrões de SafeArea, Scroll, modo9, alvos48dp, texto escalável e anúncios polite sem som/movimento inesperado. Não criar banco/dependência/permissão/rede ou notificação por conveniência.
+
+Testes: presets e relógio controlado, pausa/retomada, fim de ambas fases, confirmação da próxima, atraso/background sem catch-up, relógio regressivo, comando antigo/duplicado, saída/cancelamento/desmontagem/reentrada vazia, router/fallback/modo9 e regressões timer/avisos existentes. Checks leves serializados; acessibilidade e background real dependem do gate nativo, não de mocks. #82 personalização e #26 cronômetro fora da branch.
+
+As seções abaixo são contexto da preparação original; afirmações de ausência de código/stack em 2026-09-23 não descrevem o estado atual. Este plano vigente prevalece para #25.
 
 ## Stack
 
