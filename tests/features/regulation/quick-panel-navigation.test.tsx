@@ -36,7 +36,12 @@ beforeEach(() => {
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
 });
 afterEach(() => jest.restoreAllMocks());
-async function press(name: string) { await act(async () => fireEvent.press(screen.getByRole('button', { name }))); }
+async function press(name: string) {
+  if (!screen.queryByRole('button', { name }) && screen.queryByRole('button', { name: 'Abrir ferramentas' })) {
+    await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir ferramentas' })));
+  }
+  await act(async () => fireEvent.press(screen.getByRole('button', { name })));
+}
 async function openPanel() {
   const result = renderRouter(routes, { initialUrl: '/' });
   await screen.findByRole('header', { name: 'TEAr' }); await press('Abrir painel de regulação'); return result;

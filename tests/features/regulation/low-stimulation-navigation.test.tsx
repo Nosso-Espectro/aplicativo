@@ -67,12 +67,13 @@ it('also disables the nested routines Stack; system motion is not mistaken for a
   expect(screen.getByText('Stack:none')).toBeOnTheScreen();
 });
 it('retains sentences, saved favorites and navigation across a global mode change — spec005/RF-003', async () => {
-  render(<Screens />); fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
+  render(<Screens />);
   await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Favorito: Sim' })).toBeEnabled());
   fireEvent.press(screen.getByRole('button', { name: 'Sim' }));
-  fireEvent.press(screen.getByRole('button', { name: 'Fechar Comunicação' })); expect(screen.getByLabelText('1. Sim')).toBeOnTheScreen();
+   expect(screen.getByLabelText('1. Sim')).toBeOnTheScreen();
   fireEvent(toggle(), 'valueChange', true); await waitFor(() => expect(toggle()).toBeChecked());
   expect(screen.getByLabelText('1. Sim')).toBeOnTheScreen(); expect(localSpeech.speak).not.toHaveBeenCalled();
+  fireEvent.press(screen.getByRole('button', { name: 'Abrir ferramentas' }));
   fireEvent.press(screen.getByRole('button', { name: 'Abrir favoritos' }));
   expect(toggle()).toBeChecked(); expect(screen.getByRole('header', { name: 'Favoritos' })).toBeOnTheScreen();
   expect(screen.getByRole('checkbox', { name: 'Favorito: Sim' })).toBeChecked();
@@ -87,7 +88,7 @@ it('retains sentences, saved favorites and navigation across a global mode chang
 it('keeps card preview, its essential image and return usable in low stimulation', async () => {
   render(<Screens />); await waitFor(() => expect(toggle()).toBeEnabled());
   fireEvent(toggle(), 'valueChange', true); await waitFor(() => expect(toggle()).toBeChecked());
-  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
+
   fireEvent.press(screen.getByRole('button', { name: 'Mostrar cartão: Sim' }));
   expect(screen.getByRole('header', { name: 'Sim' })).toBeOnTheScreen();
   const modal = screen.UNSAFE_getAllByType(SafeAreaView).find((view) => view.props.accessibilityViewIsModal);
@@ -97,5 +98,5 @@ it('keeps card preview, its essential image and return usable in low stimulation
   expect(images[0].props.source).toEqual(initialCards.find((card) => card.id === 'yes')?.pictogram);
   fireEvent.press(screen.getByRole('button', { name: 'Voltar ao quadro' }));
   expect(screen.getByRole('button', { name: 'Sim' })).toBeOnTheScreen();
-  fireEvent.press(screen.getByRole('button', { name: 'Fechar Comunicação' })); expect(toggle()).toBeChecked();
+   expect(toggle()).toBeChecked();
 });

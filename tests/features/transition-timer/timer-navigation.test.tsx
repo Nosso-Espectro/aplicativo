@@ -39,7 +39,12 @@ beforeEach(() => {
   jest.spyOn(AppState, 'addEventListener').mockReturnValue({ remove: jest.fn() });
 });
 afterEach(() => { jest.restoreAllMocks(); jest.useRealTimers(); });
-async function press(name: string) { await act(async () => { fireEvent.press(screen.getByRole('button', { name })); }); }
+async function press(name: string) {
+  if (!screen.queryByRole('button', { name }) && screen.queryByRole('button', { name: 'Abrir ferramentas' })) {
+    await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir ferramentas' })));
+  }
+  await act(async () => { fireEvent.press(screen.getByRole('button', { name })); });
+}
 it('reaches the real route from the board and retains countdown while navigating back and returning', async () => {
   render(<RootLayout />); await act(async () => {});
   await press('Abrir timer de transição'); expect(screen.getByRole('header', { name: 'Timer de transição' })).toBeOnTheScreen();

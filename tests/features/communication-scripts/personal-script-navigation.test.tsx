@@ -81,7 +81,12 @@ beforeEach(() => {
 });
 afterEach(() => { for (const db of connections) { try { db.close(); } catch {} } rmSync(directory, { recursive: true, force: true }); jest.restoreAllMocks(); });
 async function mount(url = '/scripts') { const view = renderRouter(routes, { initialUrl: url }); await act(async () => {}); return view; }
-async function press(name: string) { await act(async () => fireEvent.press(screen.getByRole('button', { name }))); }
+async function press(name: string) {
+  if (!screen.queryByRole('button', { name }) && screen.queryByRole('button', { name: 'Abrir ferramentas' })) {
+    await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir ferramentas' })));
+  }
+  await act(async () => fireEvent.press(screen.getByRole('button', { name })));
+}
 async function check(name: string) { await act(async () => fireEvent.press(screen.getByRole('checkbox', { name }))); }
 async function create(text: string) {
   await press('Novo script'); fireEvent.changeText(screen.getByLabelText('Texto do script'), text); await press('Salvar script');

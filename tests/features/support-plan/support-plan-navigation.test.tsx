@@ -15,6 +15,7 @@ beforeEach(() => {
 });
 it('opens the real editor from the board and cancels back without implicitly saving', async () => {
   const { getPathname } = renderRouter(routes, { initialUrl: '/' }); await screen.findByRole('header', { name: 'TEAr' });
+  await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir ferramentas' })));
   await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir plano de apoio' })));
   await waitFor(() => expect(screen.getByRole('button', { name: 'Salvar plano' })).toBeEnabled()); expect(getPathname()).toBe('/support-plan');
   fireEvent.changeText(screen.getByLabelText('Minhas orientações'), 'Rascunho sintético');

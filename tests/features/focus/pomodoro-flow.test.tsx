@@ -36,7 +36,12 @@ beforeEach(() => {
 });
 afterEach(() => { AppState.currentState = initialAppState; jest.restoreAllMocks(); jest.useRealTimers(); });
 async function mount(url = '/focus') { const view = renderRouter(routes, { initialUrl: url }); await act(async () => {}); return view; }
-async function press(name: string) { await act(async () => fireEvent.press(screen.getByRole('button', { name }))); }
+async function press(name: string) {
+  if (!screen.queryByRole('button', { name }) && screen.queryByRole('button', { name: 'Abrir ferramentas' })) {
+    await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir ferramentas' })));
+  }
+  await act(async () => fireEvent.press(screen.getByRole('button', { name })));
+}
 function background(state: AppStateStatus) { act(() => { for (const callback of appChanges) callback(state); }); }
 it('opens from the board, selects a preset and pauses/resumes/ends without retaining a session on reentry', async () => {
   await mount('/'); await press('Abrir Pomodoro');

@@ -15,13 +15,13 @@ function App() {
 describe('US-002 composition workflow', () => {
   it('composes in order across categories, removes one occurrence and clears', () => {
     render(<App />);
-    fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
+
     fireEvent.press(screen.getByRole('button', { name: 'Necessidades' }));
     fireEvent.press(screen.getByRole('button', { name: 'Água' }));
     fireEvent.press(screen.getByRole('button', { name: 'Solicitações' }));
     fireEvent.press(screen.getByRole('button', { name: 'Ajuda' }));
     fireEvent.press(screen.getByRole('button', { name: 'Sim' }));
-    fireEvent.press(screen.getByRole('button', { name: 'Fechar Comunicação' }));
+
     expect(screen.getByLabelText('1. Água')).toBeOnTheScreen();
     expect(screen.getByLabelText('2. Ajuda')).toBeOnTheScreen();
     expect(screen.getByLabelText('3. Sim')).toBeOnTheScreen();
@@ -37,11 +37,11 @@ describe('US-002 composition workflow', () => {
     const openUrl = jest.spyOn(Linking, 'openURL');
     try {
       render(<App />);
-      fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
+
       fireEvent.press(screen.getByRole('button', { name: 'Água' }));
       fireEvent.press(screen.getByRole('button', { name: 'Mostrar cartão: Água' }));
       fireEvent.press(screen.getByRole('button', { name: 'Voltar ao quadro' }));
-      fireEvent.press(screen.getByRole('button', { name: 'Fechar Comunicação' }));
+
       expect(screen.getByLabelText('1. Água')).toBeOnTheScreen();
       expect(openUrl).not.toHaveBeenCalled();
     } finally {
@@ -54,7 +54,7 @@ describe('US-002 composition workflow', () => {
       return <SentenceProvider>{visible ? <StartupScreen /> : null}</SentenceProvider>;
     }
     const view = render(<Session visible />);
-    fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
+
     fireEvent.press(screen.getByRole('button', { name: 'Sim' }));
     view.rerender(<Session visible={false} />);
     view.rerender(<Session visible />);

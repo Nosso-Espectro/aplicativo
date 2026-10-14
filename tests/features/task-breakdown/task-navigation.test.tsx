@@ -69,7 +69,12 @@ afterEach(() => {
   for (const db of connections) { try { db.close(); } catch {} }
   rmSync(directory, { recursive: true, force: true }); jest.restoreAllMocks();
 });
-async function press(name: string) { await act(async () => fireEvent.press(screen.getByRole('button', { name }))); }
+async function press(name: string) {
+  if (!screen.queryByRole('button', { name }) && screen.queryByRole('button', { name: 'Abrir ferramentas' })) {
+    await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir ferramentas' })));
+  }
+  await act(async () => fireEvent.press(screen.getByRole('button', { name })));
+}
 async function newTask(title: string, steps: string[] = []) {
   await screen.findByText('Tarefas'); await press('Nova tarefa');
   fireEvent.changeText(screen.getByLabelText('Título da tarefa'), title);
@@ -88,7 +93,7 @@ it('opens from the real board, creates, edits, orders and restores manual progre
   expect(screen.getByRole('checkbox', { name: 'Etapa 2: Uma' })).toBeChecked();
   expect(screen.getByText('1 de 2 etapas concluídas (50%).')).toBeOnTheScreen();
   await press('Voltar às tarefas'); await press('Voltar ao quadro');
-  expect(screen.getByRole('button', { name: 'Abrir rotinas' })).toBeOnTheScreen();
+  expect(screen.getByRole('button', { name: 'Abrir ferramentas' })).toBeOnTheScreen();
   view.unmount(); for (const db of connections) db.close(); connections = [];
   renderRouter(routes, { initialUrl: '/tasks' });
   await screen.findByRole('button', { name: 'Abrir tarefa: Tarefa sintética' }); await press('Abrir tarefa: Tarefa sintética');

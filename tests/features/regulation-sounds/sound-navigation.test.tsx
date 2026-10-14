@@ -35,7 +35,12 @@ beforeEach(() => {
   jest.spyOn(AppState, 'addEventListener').mockImplementation((_name, listener) => { appEvent = listener; return { remove: jest.fn() }; });
 });
 afterEach(() => { jest.restoreAllMocks(); });
-async function press(label: string) { await act(async () => { fireEvent.press(screen.getByRole('button', { name: label })); }); }
+async function press(label: string) {
+  if (!screen.queryByRole('button', { name: label }) && screen.queryByRole('button', { name: 'Abrir ferramentas' })) {
+    await act(async () => fireEvent.press(screen.getByRole('button', { name: 'Abrir ferramentas' })));
+  }
+  await act(async () => { fireEvent.press(screen.getByRole('button', { name: label })); });
+}
 async function open() { render(<RootLayout />); await act(async () => { appEvent('active'); }); await press('Abrir sons'); }
 it('reaches the actual route and preserves playback/choice/gain across board navigation without another play', async () => {
   await open(); expect(screen.getByRole('header', { name: 'Sons' })).toBeOnTheScreen();

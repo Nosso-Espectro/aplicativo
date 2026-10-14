@@ -31,7 +31,7 @@ beforeEach(() => {
 });
 it('updates the board after edit without rewriting selected snapshots; delete removes only matching occurrences', async () => {
   render(<Session />);
-  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
+
   await screen.findByRole('button', { name: 'Primeiro título' });
   fireEvent.press(screen.getByRole('button', { name: 'Primeiro título' }));
   fireEvent.press(screen.getByRole('button', { name: 'Sim' }));
@@ -39,10 +39,10 @@ it('updates the board after edit without rewriting selected snapshots; delete re
   fireEvent.press(screen.getByRole('button', { name: 'Editar cartão: Primeiro título' }));
   fireEvent.changeText(screen.getByLabelText('Título do cartão'), 'Título atualizado');
   fireEvent.press(screen.getByRole('button', { name: 'Salvar cartão' }));
-  await screen.findByRole('button', { name: 'Abrir Comunicação' });
+  await screen.findByRole('button', { name: 'Título atualizado' });
   expect(screen.getByLabelText('1. Primeiro título')).toBeOnTheScreen();
   expect(screen.getByLabelText('3. Primeiro título')).toBeOnTheScreen();
-  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
+
   await screen.findByRole('button', { name: 'Título atualizado' });
   fireEvent.press(screen.getByRole('button', { name: 'Editar cartão: Título atualizado' }));
   fireEvent.press(screen.getByRole('button', { name: 'Excluir cartão' }));
@@ -54,14 +54,14 @@ it('updates the board after edit without rewriting selected snapshots; delete re
 it('keeps initial cards usable after storage failure and recovers on retry', async () => {
   jest.mocked(openCardDatabase).mockRejectedValueOnce(new Error('private path'));
   render(<Session />);
-  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
+
   await screen.findByText(/Não foi possível abrir os cartões e favoritos salvos/);
   fireEvent.press(screen.getByRole('button', { name: 'Sim' }));
-  fireEvent.press(screen.getByRole('button', { name: 'Fechar Comunicação' }));
+
   expect(screen.getByLabelText('1. Sim')).toBeOnTheScreen();
-  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
+
   fireEvent.press(screen.getByRole('button', { name: 'Tentar abrir cartões novamente' }));
   expect(await screen.findByRole('button', { name: 'Primeiro título' })).toBeOnTheScreen();
-  fireEvent.press(screen.getByRole('button', { name: 'Fechar Comunicação' }));
+
   expect(screen.getByLabelText('1. Sim')).toBeOnTheScreen();
 });

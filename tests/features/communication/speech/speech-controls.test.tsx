@@ -109,9 +109,9 @@ describe('US-003 explicit speech controls (RF-009/RF-011)', () => {
   it('keeps the selected sentence visible when local voice is unavailable', async () => {
     speech.isAvailable.mockResolvedValue(false);
     render(<SentenceProvider><StartupScreen /></SentenceProvider>);
-    fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
+
     fireEvent.press(screen.getByRole('button', { name: 'Ajuda' }));
-    fireEvent.press(screen.getByRole('button', { name: 'Fechar Comunicação' }));
+
     expect(speech.isAvailable).not.toHaveBeenCalled();
     fireEvent.press(screen.getByRole('button', { name: 'Ler frase' }));
     await screen.findByRole('alert');
