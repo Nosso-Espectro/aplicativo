@@ -3,11 +3,14 @@ import { DatabaseSync } from 'node:sqlite';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { act, waitFor } from '@testing-library/react-native';
+import { act, render, waitFor } from '@testing-library/react-native';
+import { useEffect } from 'react';
 import { fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
 import { Slot } from 'expo-router';
-import { AccessibilityInfo } from 'react-native';
+import { AccessibilityInfo, Text } from 'react-native';
+import { TaskProvider, useTasks } from '../../../src/features/task-breakdown/TaskProvider';
+import { openTaskWorkspaceDatabase } from '../../../src/features/task-breakdown/task-database';
 import TasksLayout from '../../../src/app/tasks/_layout';
 import List from '../../../src/app/tasks';
 import New from '../../../src/app/tasks/new';
@@ -137,4 +140,73 @@ it('offers real fallback routes for an absent task and keeps global low stimulat
   expect(screen.getByRole('switch', { name: 'Modo de baixa estimulação' })).toBeChecked();
   await press('Voltar às tarefas'); await press('Voltar ao quadro'); expect(view.getPathname()).toBe('/');
   expect(screen.getByRole('switch', { name: 'Modo de baixa estimulação' })).toBeChecked();
+});
+let workspaceContext: ReturnType<typeof useTasks>;
+function WorkspaceProbe() {
+  const context = useTasks(); useEffect(() => { workspaceContext = context; }, [context]);
+  return <Text>{context.loading ? 'Abrindo workspace' : `Estado:${context.tasks.length}/${context.templates.length}`}</Text>;
+}
+async function openWorkspaceProbe() {
+  const db = await openTaskWorkspaceDatabase();
+  await db.save({ title: 'Sintética', steps: [{ id: 'source', title: 'Etapa', completed: true }] });
+  const view = render(<TaskProvider><WorkspaceProbe /></TaskProvider>); await screen.findByText('Estado:1/0'); return view;
+}
+it('coordinates actual SQLite template creation, copying, editing and deletion without changing existing instances', async () => {
+  await openWorkspaceProbe(); const source = workspaceContext.tasks[0];
+  await act(async () => { expect(await workspaceContext.createTemplate(source)).toBe(true); });
+  const original = workspaceContext.templates[0];
+  let copiedId: string | undefined;
+  await act(async () => { copiedId = (await workspaceContext.createTaskFromTemplate(original))?.id; });
+  expect(copiedId).toBeDefined(); expect(workspaceContext.tasks[1].steps[0].completed).toBe(false);
+  expect(workspaceContext.tasks[0]).toEqual(source);
+  const copy = workspaceContext.tasks[1];
+  await act(async () => { expect(await workspaceContext.saveTemplate({ ...original, title: 'Modelo editado', steps: [] }, original)).toBe(true); });
+  expect(workspaceContext.tasks[1]).toEqual(copy);
+  await act(async () => { expect(await workspaceContext.removeTemplate(workspaceContext.templates[0])).toBe(true); });
+  expect(workspaceContext.templates).toEqual([]); expect(workspaceContext.tasks).toEqual([source, copy]);
+});
+it('preserves confirmed workspace on rollback and blocks duplicate model operations until commit', async () => {
+  await openWorkspaceProbe(); const source = workspaceContext.tasks[0];
+  holdCommit = new Promise(resolve => { releaseCommit = resolve; });
+  let saving!: Promise<boolean>;
+  await act(async () => { saving = workspaceContext.createTemplate(source); });
+  expect(workspaceContext.templates).toEqual([]); expect(workspaceContext.busy).toBe(true);
+  await act(async () => { expect(await workspaceContext.createTemplate(source)).toBe(false); });
+  failCommit = true;
+  await act(async () => { holdCommit = null; releaseCommit(); await expect(saving).rejects.toThrow('Task change unavailable.'); });
+  expect(workspaceContext.templates).toEqual([]); expect(workspaceContext.tasks).toEqual([source]);
+  failCommit = false; await act(async () => { expect(await workspaceContext.createTemplate(source)).toBe(true); });
+  expect(workspaceContext.templates).toHaveLength(1);
+});
+it('does not publish a copied task or return navigation data after provider unmount while commit is pending', async () => {
+  const view = await openWorkspaceProbe();
+  await act(async () => { await workspaceContext.createTemplate(workspaceContext.tasks[0]); });
+  holdCommit = new Promise(resolve => { releaseCommit = resolve; });
+  let copying!: ReturnType<typeof workspaceContext.createTaskFromTemplate>;
+  await act(async () => { copying = workspaceContext.createTaskFromTemplate(workspaceContext.templates[0]); });
+  expect(workspaceContext.tasks).toHaveLength(1); view.unmount();
+  await act(async () => { holdCommit = null; releaseCommit(); expect(await copying).toBeNull(); });
+  expect((await (await openTaskWorkspaceDatabase()).readWorkspace()).tasks).toHaveLength(2);
+});
+it('refuses copies and edits from deleted model snapshots without resurrecting them', async () => {
+  await openWorkspaceProbe();
+  await act(async () => { await workspaceContext.createTemplate(workspaceContext.tasks[0]); });
+  const removed = workspaceContext.templates[0];
+  await act(async () => { await workspaceContext.removeTemplate(removed); });
+  await act(async () => {
+    await expect(workspaceContext.createTaskFromTemplate(removed)).rejects.toThrow('Task change unavailable.');
+    await expect(workspaceContext.saveTemplate(removed, removed)).rejects.toThrow('Task change unavailable.');
+  });
+  expect(workspaceContext.tasks).toHaveLength(1); expect(workspaceContext.templates).toEqual([]);
+});
+it('returns the exact committed copy rather than another task added through a different connection', async () => {
+  await openWorkspaceProbe();
+  await act(async () => { await workspaceContext.createTemplate(workspaceContext.tasks[0]); });
+  const external = await openTaskWorkspaceDatabase(); await external.save({ title: 'Outra conexão', steps: [] });
+  expect(workspaceContext.tasks).toHaveLength(1);
+  await act(async () => {
+    const copied = await workspaceContext.createTaskFromTemplate(workspaceContext.templates[0]);
+    expect(copied?.title).toBe('Sintética'); expect(copied?.steps).toHaveLength(1);
+  });
+  expect(workspaceContext.tasks).toHaveLength(3);
 });

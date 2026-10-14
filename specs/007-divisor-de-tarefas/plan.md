@@ -212,3 +212,16 @@ offline e independência, vazio, origem/modelo stale/removido, fila, rollback de
 create/edit/delete/copy por commit/readback, corrupção/overflow/tabela ausente.
 Total17testes banco; provider/UI/rotas de modelos ainda faltam, todas tasks20
 pendentes. Nenhum SQLite Expo/build/aparelho/host ou gate nativo alegado.
+
+TaskProvider agora integrado ao workspace: restaura tasks/templates conjuntamente,
+mantém loading/busy/error/retry/owner/StrictMode e métodos legados com boolean.
+Mutações de modelos publicam workspace confirmado; criação de cópia retorna
+SavedTask somente depois do commit e ainda montado. Banco devolve createdTaskId
+exato em resultado de cópia (não persistido): comparar listas seria ambíguo se
+outra conexão tivesse criado tarefa antes da cópia. Cinco testes novos com
+provider real/SQLite Node: criação/edição/cópia/exclusão isoladas, pending/duplicata/
+rollback-retry, desmontagem antes commit sem retorno de navegação, modelo removido
+e tarefa de outra conexão sem selecionar destino errado. Fixtures do editor19
+explicitam contrato workspace; métodos de modelo não usados nesses testes
+recusam execução, sem fallback de capacidade ausente. UI/model list/editor/
+rotas/comando Salvar como modelo AINDA FALTAM; nenhuma task20 concluída.

@@ -4,7 +4,7 @@ import { normalizedTemplateDraft, taskFromTemplate, templateFromTask, type Templ
 
 export type SavedTask = TaskDraft & { id: string; revision: number };
 export type SavedTemplate = TemplateDraft & { id: string; revision: number };
-export type TaskWorkspace = { tasks: SavedTask[]; templates: SavedTemplate[] };
+export type TaskWorkspace = { tasks: SavedTask[]; templates: SavedTemplate[]; createdTaskId?: string };
 function identity(id: string) {
   if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(id)) throw new Error('Invalid task identity.');
   return id;
@@ -84,10 +84,13 @@ export async function openTaskWorkspaceDatabase() {
   async function workspace(tx: SQLiteDatabase): Promise<TaskWorkspace> {
     return { tasks: await readTasks(tx), templates: await readTemplates(tx) };
   }
-  function changeWorkspace(operation: (tx: SQLiteDatabase, current: TaskWorkspace) => Promise<void>) {
+  function changeWorkspace(operation: (tx: SQLiteDatabase, current: TaskWorkspace) => Promise<string | void>) {
     return enqueue(async () => {
       let saved!: TaskWorkspace;
-      await db.withExclusiveTransactionAsync(async tx => { await operation(tx, await workspace(tx)); saved = await workspace(tx); });
+      await db.withExclusiveTransactionAsync(async tx => {
+        const createdTaskId = await operation(tx, await workspace(tx));
+        saved = { ...await workspace(tx), ...(createdTaskId ? { createdTaskId } : {}) };
+      });
       return saved;
     });
   }
@@ -129,6 +132,7 @@ export async function openTaskWorkspaceDatabase() {
       const id = identity(`task-${Date.now()}-${Math.random().toString(36).slice(2)}`);
       await tx.runAsync('INSERT INTO tasks (id,title,revision) VALUES (?,?,1)', id, draft.title);
       await write(tx, draft, id, 1);
+      return id;
     }),
     list: () => enqueue(async () => {
       let saved!: SavedTask[];
