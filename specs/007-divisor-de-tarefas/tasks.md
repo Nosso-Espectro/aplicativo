@@ -1,6 +1,6 @@
 # Tasks — Divisor de Tarefas
 
-Milestone #15: [spec.md](spec.md) e [plan.md](plan.md). US-019 implementada e verificada localmente em2026-10-14; integração por PR ainda pendente. US-020 permanece fora desta entrega. Gates nativos não são substituídos pelos testes locais.
+Milestone #15: [spec.md](spec.md) e [plan.md](plan.md). US-019 integrada/PR75, Issue fechada. US-020 Ready após aprovação humana; tasks ainda pendentes. Catálogo pronto na #76 fora desta branch. Gates nativos não são substituídos pelos testes locais.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -23,3 +23,5 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 - [ ] T009 [US-020] Em `src/features/task-breakdown/task-templates`, atender RF-007 (critério 3 de #20): Editar uma cópia criada do modelo não deve alterar o modelo original. Verificar com o cenário correspondente no PR.
 - [ ] T010 [US-020] Adicionar testes de comportamento de RF-005, RF-006, RF-007 em `tests/features/task-breakdown/task-templates`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
 - [ ] T011 [US-020] Revisar RNF-001 a RNF-004 na interface/dados de #20, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+- [ ] T013 [US-020] Implementar modelos pessoais editáveis/removíveis com confirmação, drafts/save/cancel e revisões; cópias independentes com todas etapas não concluídas, preservando tarefas/modelos já existentes. Verificar migração schema1→2/rollback/offline/reabertura/isolamento/erro/retry/duplicatas e navegação real.
+- [ ] T014 [US-020] Gate nativo/assistivo: SQLite Expo/migração/offline/backups/TalkBack/VoiceOver/foco/ampliação/teclado/insets/alvos48dp e retorno. Mocks/SQLite Node não comprovam esses resultados; builds somente remotos quando host/lock conferidos.

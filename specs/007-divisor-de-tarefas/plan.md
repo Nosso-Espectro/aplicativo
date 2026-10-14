@@ -1,6 +1,6 @@
 # Plano de implementação — Divisor de Tarefas
 
-Spec: [spec.md](spec.md). Milestone #15; Issues #19, #20. Plano proposto, sujeito às questões em aberto.
+Spec: [spec.md](spec.md). Milestone #15; Issues #19, #20. US-019 integrada/PR75; US-020 Ready após aprovação explícita. Registros de progresso abaixo são históricos, não anulam este estado.
 
 ## Stack
 
@@ -103,7 +103,7 @@ celular, dados pessoais ou scripts autônomos não revisados para validar19.
 
 - Diretriz confirmada: React Native; MVP sem backend.
 - US-019: TypeScript em src/features/task-breakdown, modelo/SQLite/editor/lista/rota pequenos, alinhados às convenções atuais.
-- Pendente para20: edição/exclusão de modelos e catálogo comum, sem redefinir seus critérios na19.
+- US-020 aprovada: modelos pessoais editáveis/removíveis com confirmação; catálogo comum separado na #76, não Ready.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.
 
 ## Progresso inicial US-019
@@ -168,3 +168,24 @@ Verificação de entrega local: 527 testes Jest/71 suítes completos, 30 relacio
 4 suítes, lint/typecheck sem warnings, Doctor21/21, 56 testes Python de tooling,
 validador e diff-check aprovados. Origin/main confirmado2379922 antes do PR;
 nenhuma dependência/nativo/build/host/aparelho operados nesta entrega.
+
+## Plano aprovado US-020
+
+Base mainfff768f/PR75/Issue19 fechada, tarefa real e banco/provider/editor/rotas
+disponíveis. Aprovação humana registrada na Issue20, catálogo pronto na #76.
+Modelo puro título/etapas ordenadas sem conclusão; cópia gera identidades próprias
+e boolfalse, preservando modelo/origem. Modelos pessoais persistidos no mesmo
+tear-task-breakdown.db por migração schema1→2 transacional, preservando tarefas/
+progresso/revisões. Uma fila/conexão lógica para validar origem e criar cópia na
+mesma transação; evitar half-copy, edição obsoleta ou modelo removido ressuscitado.
+API de tarefas existente preservada; novos métodos de modelos com readback/commit/
+rollback/revisão segura/future-schema, sem histórico/snapshot de progresso.
+Salvar como modelo no detalhe real da tarefa confirmada, lista/editor de modelos
+e criar tarefa com cópia explícita; editar/remover com confirmação sem afetar
+instâncias, cancelar draft sem escrever. Provider/rotas existentes adaptados sem
+novo framework/dependência/permissão/rede. IDs em rotas sem dados pessoais.
+Testes modelo/SQLite Node/migração/offline/isolamento/revisões/rollback e UI/rotas
+reais, duplicatas/loading/error/retry/commit antes sucesso/draft/lowmode. Checks
+completos/review/CI leve antes PR; gate nativo/assistivo/SQLiteExpo/offline/backups
+aberto. Builds somente remotos, dispatch adiado pelo host/lock ainda desconhecidos.
+Nenhuma task de US-020 concluída por este refinamento.
