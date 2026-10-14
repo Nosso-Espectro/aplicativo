@@ -5,7 +5,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { durationFromInput, type TimerSession } from './visual-timer';
 import { useTransitionTimer } from './TransitionTimerProvider';
 
-export function TransitionTimerScreen({ onClose }: { onClose(): void }) {
+export function TransitionTimerScreen({ onClose, backLabel = 'Voltar ao quadro' }: { onClose(): void; backLabel?: string }) {
   const timer = useTransitionTimer();
   const [minutes, setMinutes] = useState(''); const [seconds, setSeconds] = useState('0');
   const [invalidDuration, setInvalidDuration] = useState(false);
@@ -23,7 +23,7 @@ export function TransitionTimerScreen({ onClose }: { onClose(): void }) {
   return <SafeAreaView style={styles.screen}>
     <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
-        <Command icon="arrow-back" label="Voltar ao quadro" onPress={onClose} />
+        <Command icon="arrow-back" label={backLabel} onPress={onClose} />
         <Text accessibilityRole="header" style={styles.heading}>Timer de transição</Text>
         {timer.loading && <Text accessibilityLiveRegion="polite" style={styles.text}>Abrindo timer…</Text>}
         {timer.error && <>

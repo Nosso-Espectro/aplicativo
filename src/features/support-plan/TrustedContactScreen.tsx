@@ -6,7 +6,7 @@ import { emptyTrustedContact, normalizedTrustedContact, type TrustedContact } fr
 import { openTrustedContactDatabase } from './trusted-contact-database';
 import { openWhatsAppDraft } from './whatsapp-handoff';
 
-export function TrustedContactScreen({ onClose }: { onClose(): void }) {
+export function TrustedContactScreen({ onClose, backLabel = 'Cancelar e voltar' }: { onClose(): void; backLabel?: string }) {
   const [draft, setDraft] = useState({ ...emptyTrustedContact });
   const [saved, setSaved] = useState({ ...emptyTrustedContact });
   const [loading, setLoading] = useState(true);
@@ -65,7 +65,7 @@ export function TrustedContactScreen({ onClose }: { onClose(): void }) {
   return <SafeAreaView style={styles.screen}>
     <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
-        <Command icon="arrow-back" label="Cancelar e voltar" disabled={operation !== null} onPress={onClose} />
+        <Command icon="arrow-back" label={backLabel} disabled={operation !== null} onPress={onClose} />
         <Text accessibilityRole="header" style={styles.heading}>Contato de confiança</Text>
         {loading && <Text accessibilityLiveRegion="polite" style={styles.text}>Abrindo contato…</Text>}
         {loadError && <>

@@ -18,7 +18,12 @@ export default function StartupScreen() {
       favoriteDisabled={custom.loading || Boolean(custom.error) || custom.favoriteBusy}
       onFavorite={(id, selected) => void custom.setFavorite(id, selected)}
       feedback={<FavoriteFeedback />}
-      navigation={<View><Pressable accessibilityRole="button" accessibilityLabel="Abrir favoritos"
+      navigation={<View><Pressable accessibilityRole="button" accessibilityLabel="Abrir painel de regulação"
+        onPress={() => router.push('/regulation')}
+        style={{ minHeight: 64, flexDirection: 'row', gap: 8, alignItems: 'center', padding: 16 }}>
+        <MaterialIcons name="dashboard" size={24} color="#16634D" accessible={false} />
+        <Text style={{ color: '#16634D', fontSize: 18, flexShrink: 1 }}>Painel de regulação</Text>
+      </Pressable><Pressable accessibilityRole="button" accessibilityLabel="Abrir favoritos"
         onPress={() => router.push('/favorites')}
         style={{ minHeight: 48, flexDirection: 'row', gap: 8, alignItems: 'center', padding: 12 }}>
         <MaterialIcons name="star-border" size={24} color="#16634D" accessible={false} />

@@ -1,6 +1,5 @@
-import { useRouter } from 'expo-router';
+import { usePanelReturn } from '../features/regulation/usePanelReturn';
 import { RegulationSoundsScreen } from '../features/regulation-sounds/RegulationSoundsScreen';
 export default function RegulationSoundsRoute() {
-  const router = useRouter();
-  return <RegulationSoundsScreen onClose={() => router.canGoBack() ? router.back() : router.replace('/')} />;
+  return <RegulationSoundsScreen {...usePanelReturn('Voltar ao quadro')} />;
 }

@@ -1,6 +1,5 @@
-import { useRouter } from 'expo-router';
+import { usePanelReturn } from '../features/regulation/usePanelReturn';
 import { TransitionTimerScreen } from '../features/transition-timer/TransitionTimerScreen';
 export default function TransitionTimerRoute() {
-  const router = useRouter();
-  return <TransitionTimerScreen onClose={() => router.canGoBack() ? router.back() : router.replace('/')} />;
+  return <TransitionTimerScreen {...usePanelReturn('Voltar ao quadro')} />;
 }
