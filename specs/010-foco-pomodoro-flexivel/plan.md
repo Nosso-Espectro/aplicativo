@@ -14,6 +14,10 @@ Testes: presets e relógio controlado, pausa/retomada, fim de ambas fases, confi
 
 As seções abaixo são contexto da preparação original; afirmações de ausência de código/stack em 2026-09-23 não descrevem o estado atual. Este plano vigente prevalece para #25.
 
+### Modelo preparado em 2026-10-14
+
+`pomodoro-model.ts` implementa os dois presets e um reducer puro com revisão capturada em cada comando. Ticks atualizam prazo/restante sem invalidar comandos humanos da mesma fase; pausa, retomada, término, erro de relógio e passagem à próxima fase avançam a revisão para recusar eventos antigos. Expiração mantém a fase concluída em `waiting`, sem executar a próxima. Relógio inválido/regressivo preserva o último restante confirmado e exige retomada humana; falha de relógio ao iniciar a próxima fase mantém `waiting` para retry explícito. Fim descarta a sessão; não há histórico ou persistência. Testes unitários incluem fronteiras exatas, background longo sem catch-up, duplicatas/stale e erro/retry. Provider/AppState/UI/rotas ainda não implementados; modelo isolado não satisfaz aceitação ou gate nativo. Tasks permanecem pendentes até seus fluxos serem verificados.
+
 ## Stack
 
 Inspeção em 2026-09-23: repositório sem código de aplicação, package.json, dependências ou ferramentas de build/teste. React Native e primeira versão sem backend são diretrizes explícitas do projeto, ainda não implementadas. Expo, linguagem, navegação e biblioteca de persistência não foram escolhidos. Não assumir stack web, banco ou servidor.
