@@ -1,19 +1,39 @@
 import type { ProgressAlertEngine } from './expo-progress-alert-engine';
 import type { openProgressAlertDatabase, ProgressAlertSnapshot } from './progress-alert-database';
-import { normalizedProgressAlerts, type ProgressAlertPreferences } from './progress-alerts';
+import { normalizedProgressAlerts, type ProgressAlertPreferences, type ProgressMark } from './progress-alerts';
 import { progressAlertReconciliation } from './progress-alert-reconciliation';
+import { crossedVisualProgressMark, type ProgressVisualSample } from './progress-visual-crossing';
 
 type Store = Awaited<ReturnType<typeof openProgressAlertDatabase>>;
 const unavailable = () => new Error('Timer alerts unavailable.');
 
 export function createProgressAlertCoordinator(store: Store, createEngine: () => ProgressAlertEngine,
-  clock: () => number = Date.now) {
+  clock: () => number = Date.now, observer?: { changed(snapshot: ProgressAlertSnapshot): void; failed(): void;
+    consumed?(snapshot: ProgressAlertSnapshot, minutes: ProgressMark, receivedAtMs: number): void }) {
   let disposed = false;
   let engine: ProgressAlertEngine | null = null;
   let snapshot: ProgressAlertSnapshot | null = null;
   let queue: Promise<unknown> = Promise.resolve();
+  let unsubscribe: (() => void) | null = null;
+  const receivedPending = new Set<string>();
   function alive() { if (disposed) throw unavailable(); }
-  function capability() { alive(); return engine ??= createEngine(); }
+  function capability(): ProgressAlertEngine {
+    alive();
+    if (!engine) {
+      const created = createEngine();
+      try {
+        unsubscribe = created.onReceived(() => snapshot?.pending ?? [], identifier => {
+          if (disposed || receivedPending.has(identifier)) return;
+          receivedPending.add(identifier);
+          void api.received(identifier).then(saved => {
+            if (!disposed) { try { observer?.changed(saved); } catch {} }
+          }, () => { if (!disposed) { try { observer?.failed(); } catch {} } }).finally(() => receivedPending.delete(identifier));
+        });
+        engine = created;
+      } catch { created.dispose(); throw unavailable(); }
+    }
+    return engine;
+  }
   function enqueue<T>(operation: () => Promise<T>) {
     const next = queue.then(async () => { alive(); return operation(); }).catch(() => { throw unavailable(); });
     queue = next.catch(() => undefined); return next;
@@ -75,7 +95,7 @@ export function createProgressAlertCoordinator(store: Store, createEngine: () =>
     }
     return current;
   }
-  return {
+  const api = {
     read: () => enqueue(read),
     reconcile: () => enqueue(reconcile),
     requestSystemPermission: () => enqueue(() => capability().requestPermission()),
@@ -94,14 +114,31 @@ export function createProgressAlertCoordinator(store: Store, createEngine: () =>
         return reconcile();
       });
     },
-    received: (identifier: string) => enqueue(async () => {
+    received: (identifier: string, receivedAtMs = clock()) => enqueue(async () => {
       const current = await read();
       const entry = current.pending.find(item => item.identifier === identifier);
       if (!entry || entry.sessionNumber !== current.sessionNumber) return current;
       snapshot = await store.consumeOwned(identifier, current.revision); alive();
+      if (!current.delivered.includes(entry.minutes)) {
+        try { observer?.consumed?.(snapshot, entry.minutes, receivedAtMs); } catch {}
+      }
       return reconcile();
     }),
+    sampleVisual: (previous: ProgressVisualSample | null, next: ProgressVisualSample, stillForeground: () => boolean) => enqueue(async () => {
+      const minutes = crossedVisualProgressMark(previous, next);
+      let current = await read();
+      if (minutes === null || !stillForeground() || clock() - next.nowMs > 1000 || clock() < next.nowMs
+        || current.revision !== next.snapshot.revision) return { snapshot: current, minutes: null };
+      current = await store.markDelivered(minutes, next.snapshot.sessionNumber!, clock(), current.revision); alive(); snapshot = current;
+      // A background transition or a slow commit must not publish an old foreground notice.
+      return { snapshot: current, minutes: stillForeground() && clock() - next.nowMs <= 1000 && clock() >= next.nowMs ? minutes : null };
+    }),
     getSnapshot: () => snapshot,
-    dispose: () => { if (disposed) return; disposed = true; engine?.dispose(); },
+    dispose: () => {
+      if (disposed) return;
+      disposed = true; receivedPending.clear();
+      try { unsubscribe?.(); } finally { engine?.dispose(); }
+    },
   };
+  return api;
 }

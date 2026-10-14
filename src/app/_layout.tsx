@@ -6,6 +6,7 @@ import { LowStimulationProvider, useLowStimulationPresentation } from '../featur
 import { LowStimulationControl } from '../features/regulation/LowStimulationControl';
 import { TransitionTimerProvider } from '../features/transition-timer/TransitionTimerProvider';
 import { RegulationSoundsProvider } from '../features/regulation-sounds/RegulationSoundsProvider';
+import { ProgressAlertsProvider } from '../features/transition-timer/ProgressAlertsProvider';
 
 function ApplicationStack() {
   const { navigationAnimation } = useLowStimulationPresentation();
@@ -19,7 +20,7 @@ export default function RootLayout() {
   return (
     <LowStimulationProvider><SentenceProvider>
       <CustomCardsProvider>
-        <RegulationSoundsProvider><TransitionTimerProvider><ApplicationStack /></TransitionTimerProvider></RegulationSoundsProvider>
+        <RegulationSoundsProvider><TransitionTimerProvider><ProgressAlertsProvider><ApplicationStack /></ProgressAlertsProvider></TransitionTimerProvider></RegulationSoundsProvider>
       </CustomCardsProvider>
     </SentenceProvider></LowStimulationProvider>
   );

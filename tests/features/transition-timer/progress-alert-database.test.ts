@@ -9,6 +9,12 @@ import { openProgressAlertDatabase } from '../../../src/features/transition-time
 import { emptyProgressAlerts, type ProgressAlertPreferences } from '../../../src/features/transition-timer/progress-alerts';
 import { createProgressAlertCoordinator } from '../../../src/features/transition-timer/progress-alert-coordinator';
 import type { ProgressAlertEngine } from '../../../src/features/transition-timer/expo-progress-alert-engine';
+import * as engineModule from '../../../src/features/transition-timer/expo-progress-alert-engine';
+import { createElement, StrictMode, useEffect } from 'react';
+import { AppState, Text, type AppStateStatus } from 'react-native';
+import { act, render, waitFor } from '@testing-library/react-native';
+import { TransitionTimerProvider, useTransitionTimer } from '../../../src/features/transition-timer/TransitionTimerProvider';
+import { ProgressAlertsProvider, useProgressAlerts } from '../../../src/features/transition-timer/ProgressAlertsProvider';
 jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn() }));
 let directory: string; let connections: DatabaseSync[]; let failReadback: boolean; let failCommit: boolean;
 const enabled: ProgressAlertPreferences = { enabled: true, marks: [10, 5, 2], systemNotifications: true };
@@ -295,4 +301,127 @@ it('ignores foreign or old-session received IDs and consumes current owned callb
   expect(consumed.pending.map(entry => entry.minutes)).toEqual([2, 5]);
   expect(await coordinator.received(id)).toEqual(consumed);
   expect(native.engine.schedule).toHaveBeenCalledTimes(3); coordinator.dispose();
+});
+
+let alertsContext: ReturnType<typeof useProgressAlerts>;
+let timerContext: ReturnType<typeof useTransitionTimer>;
+function ProviderProbe() {
+  const alerts = useProgressAlerts(); const timer = useTransitionTimer();
+  useEffect(() => { alertsContext = alerts; timerContext = timer; }, [alerts, timer]);
+  return createElement(Text, null, alerts?.loading ? 'Loading' : 'Ready');
+}
+async function providerFixture(preferences = { ...enabled, systemNotifications: false }, strict = false, nowMs = 1000) {
+  jest.useFakeTimers({ now: 1000 }); alertsContext = null;
+  const timer = await openTimerDatabase(); const alerts = await openProgressAlertDatabase();
+  await timer.actVersioned({ type: 'start', durationMs: 1200000 }, 1000, await timer.readVersioned());
+  await alerts.savePreferences(preferences, (await alerts.read()).revision);
+  jest.setSystemTime(nowMs);
+  const native = fakeEngine(); const factory = jest.spyOn(engineModule, 'createExpoProgressAlertEngine').mockReturnValue(native.engine);
+  const listeners = new Set<(state: AppStateStatus) => void>();
+  jest.spyOn(AppState, 'addEventListener').mockImplementation((_event, callback) => {
+    listeners.add(callback); return { remove: () => { listeners.delete(callback); } };
+  });
+  const tree = createElement(TransitionTimerProvider, null, createElement(ProgressAlertsProvider, null, createElement(ProviderProbe)));
+  const view = render(strict ? createElement(StrictMode, null, tree) : tree);
+  await act(async () => {}); await waitFor(() => expect(alertsContext?.loading).toBe(false));
+  await waitFor(() => expect(alertsContext?.busy).toBe(false));
+  return { ...native, factory, timer, alerts, view, listeners,
+    changeState: async (state: AppStateStatus) => { await act(async () => { for (const callback of listeners) callback(state); }); },
+    cleanup: () => { view.unmount(); jest.restoreAllMocks(); jest.useRealTimers(); },
+  };
+}
+it('mounts a StrictMode visual-only provider without native capability or permission and suppresses clock jumps', async () => {
+  const fixture = await providerFixture(undefined, true);
+  try {
+    expect(fixture.factory).not.toHaveBeenCalled();
+    await act(async () => { jest.advanceTimersByTime(1000); });
+    await act(async () => { jest.setSystemTime(600000); });
+    await act(async () => { jest.advanceTimersByTime(1000); });
+    expect(alertsContext?.visualMark).toBeNull(); // wall-clock jump, not a continuous crossing
+    await act(async () => { jest.setSystemTime(900000); });
+    await act(async () => { jest.advanceTimersByTime(1000); });
+    expect(alertsContext?.visualMark).toBeNull();
+    expect(fixture.factory).not.toHaveBeenCalled();
+  } finally { fixture.cleanup(); }
+});
+it('publishes a current foreground milestone only after persisting the decision and does not write on ordinary ticks', async () => {
+  const fixture = await providerFixture(undefined, true, 599000);
+  try {
+    const initial = await fixture.alerts.read();
+    await act(async () => { jest.advanceTimersByTime(1000); });
+    expect((await fixture.alerts.read()).revision).toBe(initial.revision);
+    await act(async () => { jest.advanceTimersByTime(1000); });
+    await waitFor(() => expect(alertsContext?.busy).toBe(false));
+    expect(alertsContext?.visualMark).toBe(10); expect((await fixture.alerts.read()).delivered).toEqual([10]);
+    const consumed = await fixture.alerts.read();
+    await act(async () => { jest.advanceTimersByTime(1000); });
+    expect((await fixture.alerts.read()).revision).toBe(consumed.revision); expect(fixture.factory).not.toHaveBeenCalled();
+  } finally { fixture.cleanup(); }
+});
+it('consumes background milestones on return without visual replay or native permission', async () => {
+  const fixture = await providerFixture();
+  try {
+    await fixture.changeState('background');
+    await act(async () => { jest.advanceTimersByTime(700000); });
+    await fixture.changeState('active'); await waitFor(() => expect(alertsContext?.busy).toBe(false));
+    expect(alertsContext?.visualMark).toBeNull(); expect((await fixture.alerts.read()).delivered).toEqual([10]);
+    expect(fixture.factory).not.toHaveBeenCalled();
+  } finally { fixture.cleanup(); }
+});
+it('keeps explicit permission separate from visual preferences and clears listeners on unmount', async () => {
+  const fixture = await providerFixture();
+  try {
+    await act(async () => { expect(await alertsContext!.requestSystemPermission()).toBe(true); });
+    expect(fixture.engine.requestPermission).toHaveBeenCalledTimes(1);
+    await act(async () => { expect(await alertsContext!.save(enabled, true)).toBe(true); });
+    expect(fixture.engine.schedule).toHaveBeenCalledTimes(3);
+    expect(fixture.engine.onReceived).toHaveBeenCalledTimes(1);
+    fixture.view.unmount(); expect(fixture.listeners.size).toBe(0); expect(fixture.engine.dispose).toHaveBeenCalledTimes(1);
+  } finally { fixture.cleanup(); }
+});
+it('preserves timer actions while a native notification RPC is pending and cleans up obsolete intents afterwards', async () => {
+  const fixture = await providerFixture();
+  try {
+    let finish!: () => void; let reached!: () => void;
+    const entered = new Promise<void>(resolve => { reached = resolve; });
+    jest.mocked(fixture.engine.schedule).mockImplementationOnce(async entry => {
+      reached(); await new Promise<void>(resolve => { finish = resolve; }); fixture.scheduled.add(entry.identifier);
+    });
+    let saving!: Promise<boolean>;
+    await act(async () => { saving = alertsContext!.save(enabled, true); await entered; });
+    expect(alertsContext?.busy).toBe(true);
+    await act(async () => { await timerContext.act({ type: 'pause' }); });
+    expect(timerContext.session?.phase).toBe('paused'); expect(timerContext.busy).toBe(false);
+    await act(async () => { finish(); await saving; });
+    await waitFor(() => expect(alertsContext?.busy).toBe(false));
+    expect(fixture.scheduled.size).toBe(0); expect((await fixture.alerts.read()).pending).toEqual([]);
+  } finally { fixture.cleanup(); }
+});
+it('does not publish a foreground notice when the local decision fails to commit, and retry consumes it without replay', async () => {
+  const fixture = await providerFixture(undefined, false, 599000);
+  try {
+    await act(async () => { jest.advanceTimersByTime(1000); }); failCommit = true;
+    await act(async () => { jest.advanceTimersByTime(1000); });
+    expect(alertsContext?.error).toBe(true); expect(alertsContext?.visualMark).toBeNull();
+    failCommit = false; expect((await fixture.alerts.read()).delivered).toEqual([]);
+    await act(async () => { alertsContext!.retry(); }); await waitFor(() => expect(alertsContext?.busy).toBe(false));
+    expect((await fixture.alerts.read()).delivered).toEqual([10]); expect(alertsContext?.visualMark).toBeNull();
+  } finally { failCommit = false; fixture.cleanup(); }
+});
+it('shows one current committed native callback crossing and ignores duplicate or detached callbacks', async () => {
+  const fixture = await providerFixture(enabled, false, 599000);
+  try {
+    await act(async () => { jest.advanceTimersByTime(1000); });
+    const id = (await fixture.alerts.read()).pending.find(entry => entry.minutes === 10)!.identifier;
+    const received = jest.mocked(fixture.engine.onReceived).mock.calls[0][1];
+    const ownGetter = jest.mocked(fixture.engine.onReceived).mock.calls[0][0];
+    expect(ownGetter().some(entry => entry.identifier === id)).toBe(true);
+    jest.spyOn(performance, 'now').mockReturnValue(2000); jest.setSystemTime(601000);
+    await act(async () => { received(id); received(id); });
+    await waitFor(() => expect(alertsContext?.snapshot?.pending).toHaveLength(2));
+    expect(alertsContext?.visualMark).toBe(10); expect((await fixture.alerts.read()).delivered).toEqual([10]);
+    expect(ownGetter().some(entry => entry.identifier === id)).toBe(false);
+    const saved = await fixture.alerts.read(); fixture.view.unmount();
+    await act(async () => { received(id); }); expect(await fixture.alerts.read()).toEqual(saved);
+  } finally { fixture.cleanup(); }
 });

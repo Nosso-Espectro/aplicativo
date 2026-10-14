@@ -293,3 +293,40 @@ escrever por tick permanecem responsabilidades da próxima integração.
 validador verdes. Provider próprio de avisos/callbacks/AppState/retry, apresentação
 visual e UI de preferências/consentimento ainda faltam. Todas tasksUS018 pendentes,
 sem PR/merge/Issue fechada/build/aparelho/notificação real por este avanço.
+
+### Provider e callbacks US-018
+
+ProgressAlertsProvider agora envolve o Stack dentro de TransitionTimerProvider.
+Inicializa armazenamento depois da restauração do timer para não disputar a
+migração inicial; promessa compartilhada e owner ativo evitam duplicação no
+replay StrictMode. Cada owner possui coordenador/subscription/intervalo e cleanup,
+sem reiniciar o motor ao simplesmente atualizar a leitura do timer. AppState e
+mudanças confirmadas de sessão/fase acionam reconciliação; pedido pendente não
+bloqueia ações do timer. Preferences/read/snapshot/error/busy/retry/save/pedido
+de permissão são expostos por contexto próprio; SDK permanece lazy, sem prompt
+ao abrir ou restaurar visual-only. Nenhum write em tick comum.
+
+sampleVisual no coordenador confirma revisão e persistência antes de retornar
+um marco para apresentação; saída de foreground, fila/commit lento ou amostra
+obsoleta não publicam evento atrasado. O provider guarda identidade/deadline do
+aviso e não o reutiliza numa sessão nova ou retomada. Ainda não há componente
+para mostrar esse estado ou tela de preferências. Retorno de background consome
+passados sem replay; erro de commit mantém dados e retry não recupera aviso antigo.
+
+O coordenador agora assina onReceived quando a capacidade realmente é criada,
+com getter de ownership atual, coalescência de callbacks pendentes por ID e
+guards de dispose. Callback consumido só pode virar estado visual num cruzamento
+foreground atual, depois de commit e com identidade/deadline corretos; não basta
+observar que o pedido existe. Receipts atrasados/background/duplicados não
+autorizam apresentação. Observadores não propagam exceções para o evento nativo.
+Cleanup remove subscription e invalida callbacks; owned intents ainda seguem
+ledger/cancelamento confirmado. RPC nativo continua serial/sem ultrapassagem,
+não equivale a garantia de pontualidade, entrega ou efeito tardio em aparelho.
+
+Sete testes integrados novos com providers reais/SQLite do Node/motor falso:
+StrictMode, sem SDK no visual-only, commit antes do estado visual, ticks sem
+write, clock jump, background/retorno, consent separado, unsubscribe, timer
+utilizável com schedule pendente/cleanup obsoleto, rollback/retry sem replay e
+callbacks duplicados/desmontados. Bootstrap passou a aguardar efeitos assíncronos
+com act, sem suprimir avisos do React. UI e verificações nativas/assistivas ainda
+pendentes; nenhuma task US-018 concluída por essa integração interna.
