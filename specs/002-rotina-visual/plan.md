@@ -104,7 +104,9 @@ após ajuste de dependências do React Compiler: 140,082s, sem supressão de reg
 Lint/tipos sem warnings, Doctor21/21, 56 tooling, validador/diff/review PASS.
 Mesmos controles/layout/alvos48dp e zero estímulos; provider/DAO/schema/IDs/status
 preservados. Testes reais do host não comprovam SQLiteExpo/leitores/offline em
-aparelho. CI do último head ainda necessária antes integração.
+aparelho. PR104 anexado, CI38644757648 SUCCESS2min1s no head6700ecb;
+reconferir CI do último commit documental antes squash. Android/iOS SKIPPED
+não são builds; #8 e T017 continuam abertas/pendentes.
 
 ### Correção US-006: continuações do editor
 
