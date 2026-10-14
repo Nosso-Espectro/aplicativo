@@ -1,6 +1,24 @@
 # Plano de implementação — Foco / Pomodoro Flexível
 
-Spec: [spec.md](spec.md). Milestone #18; Issues #25, #26. US025 refinada em 2026-10-14; US026 permanece sujeita às questões próprias.
+Spec: [spec.md](spec.md). Milestone #18; Issues #25, #26. US025 entregue pelo PR83; US026 refinada e Ready em 2026-10-14.
+
+## Plano vigente US026
+
+Cronômetro livre em `src/features/focus/`, rota própria `/focus/free` com provider de sessão próprio e memória efêmera. Reusar padrões reais de relógio/AppState/owner/rotas e layout modo9 da US025, sem unir estados independentes ou criar framework genérico por antecipação. Não iniciar cronômetro ao navegar; oferecer acesso quando a sessão Pomodoro não estiver ativa, respeitando encerramento/confirmação existente.
+
+Modelo puro com estado inicial/running/paused/finished, decorrido confirmado, relógio de última retomada/amostra e revisão de comandos. Prazo ausente; ticks apenas reconciliam decorrido. Pausa acumula diferença segura e congela; retomada cria baseline humano; finalizar preserva decorrido da sessão até nova sessão ou saída, sem histórico. Clock inválido/regressivo/overflow pausa no último valor confirmado sem tempo negativo ou meta artificial. Provider limpa intervalos/listeners e recusa callbacks antigos. Saída explícita ativa confirma; blur/unmount/saída externa descarta e reentrada vazia.
+
+Testes de zero/elapsed/acumulado/pausa/retomada/finalizar/novo, interrupções curtas sem penalização, atraso/background, clock regressivo/falha/inteiros safe, stale/duplicatas/desmontagem, Expo Router/retornos/mode9 e regressões Pomodoro/timer. Mesmos checks leves e skills; gate T012 nativeassistivo/offline/background/clock separado. Nenhum DB/rede/dep/permissão/áudio/notificação nova. #82 continua fora.
+
+### Modelo US026 preparado em 2026-10-14
+
+`stopwatch-model.ts` implementa sessão própria running/paused/finished, revisão capturada, acumulado confirmado, baseline de retomada, amostra de relógio e decorrido. Tick calcula `accumulatedMs + nowMs - startedAtMs`, sem contagem de ticks; pausa congela e retomada não zera. Finalização preserva somente esta sessão, sem histórico; nova sessão explícita zera. Clock inválido/regressivo/overflow pausa no último decorrido confirmado. Se finalizar durante clock falho, primeiro preserva/pausa para nova decisão humana; finalizar já pausado é válido mesmo sem relógio. Falha ao iniciar nova sessão não apaga um resultado finalizado anterior. Discard remove sessão e revisões recusam callbacks antigos.
+
+`StopwatchProvider` usa owner de efeito, ref do estado confirmado, relógio injetável e AppState/ticks foreground conforme padrão do Pomodoro, mas estado próprio. Comandos duplicados são recusados antes de render, cleanup descarta listeners/intervalos e callbacks antigos não publicam. A rota `/focus/free` monta provider próprio; acesso no Pomodoro somente sem sessão ativa. Não houve mudança no banco/avisos/timer ou ciclo Pomodoro.
+
+`StopwatchScreen` exibe horas/minutos/segundos em segmentos com wrap e um rótulo acessível completo, sem anunciar cada segundo. Estado polite e comandos humano de iniciar/pausar/retomar/finalizar/nova sessão. Resultado finalizado permanece apenas na tela; saída ativa confirma revisão capturada. Hardware back focado segue o mesmo fluxo, callback tardio retorna sem ação, blur/unmount discarda e foco limpa confirmação/mensagem antigas mesmo em tela retida pelo stack. Retorno sem histórico usa `/focus`. Testes reais Expo Router/provider e clock/AppState sintéticos verificam estados, isolamento, reentrada/fallback/mode9/offline JS, erro/recuperação/StrictMode. Doze testes modelo e onze novos de fluxo/provider; gate T012 nativo permanece pendente.
+
+O acesso ao cronômetro consulta owner/revisão e ausência de sessão confirmados no provider Pomodoro, não apenas o estado de um render antigo. Uma ref impede navegação duplicada antes de trocar de tela, foco libera o próximo comando e falha síncrona de navegação oferece retry humano. Testes capturam o callback real antes de iniciar Pomodoro e verificam sua recusa posterior, além de falha/retry e duplicatas sem criar APIs falsas.
 
 ## Plano vigente US025
 

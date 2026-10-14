@@ -2,11 +2,14 @@ import { StrictMode, useEffect } from 'react';
 import { act, render } from '@testing-library/react-native';
 import { renderRouter, screen, fireEvent } from 'expo-router/testing-library';
 import { Slot, router } from 'expo-router';
-import { AccessibilityInfo, AppState, BackHandler, type AppStateStatus } from 'react-native';
+import { AccessibilityInfo, AppState, BackHandler, Text, type AppStateStatus } from 'react-native';
 import StartupScreen from '../../../src/app';
 import FocusLayout from '../../../src/app/focus/_layout';
 import FocusRoute from '../../../src/app/focus';
+import FreeRoute from '../../../src/app/focus/free';
+import { StopwatchProvider, useStopwatch } from '../../../src/features/focus/StopwatchProvider';
 import { PomodoroProvider, usePomodoro } from '../../../src/features/focus/PomodoroProvider';
+import { PomodoroScreen } from '../../../src/features/focus/PomodoroScreen';
 import { LowStimulationProvider } from '../../../src/features/regulation/LowStimulationProvider';
 import { LowStimulationControl } from '../../../src/features/regulation/LowStimulationControl';
 import { SentenceProvider } from '../../../src/features/communication/sentence/SentenceProvider';
@@ -24,7 +27,7 @@ const initialAppState = AppState.currentState;
 function Layout() {
   return <LowStimulationProvider><LowStimulationControl /><SentenceProvider><CustomCardsProvider><Slot /></CustomCardsProvider></SentenceProvider></LowStimulationProvider>;
 }
-const routes = { _layout: Layout, index: StartupScreen, 'focus/_layout': FocusLayout, 'focus/index': FocusRoute };
+const routes = { _layout: Layout, index: StartupScreen, 'focus/_layout': FocusLayout, 'focus/index': FocusRoute, 'focus/free': FreeRoute };
 beforeEach(() => {
   jest.clearAllMocks(); jest.useFakeTimers({ now: 10000 }); appChanges = []; back = undefined;
   AppState.currentState = 'active';
@@ -110,4 +113,97 @@ it('shows a recoverable clock failure without changing the session when the cloc
   expect(value.error).toBe('clock'); expect(value.session).toBeNull(); failed = false;
   act(() => { value.act({ type: 'start', presetId: '25-5', expectedRevision: value.revision }); });
   expect(value.error).toBeNull(); expect(value.session?.remainingMs).toBe(1500000);
+});
+function elapsed(hours: number, minutes: number, seconds: number) {
+  expect(screen.getByLabelText(`Tempo decorrido: ${hours} horas, ${minutes} minutos e ${seconds} segundos`)).toBeOnTheScreen();
+}
+it('refuses an old open-free callback after a Pomodoro session starts before navigation', async () => {
+  await mount();
+  let button = screen.getByRole('button', { name: 'Abrir cronômetro livre' });
+  while (button.parent && typeof button.props.onPress !== 'function') button = button.parent;
+  const oldOpen = button.props.onPress;
+  expect(typeof oldOpen).toBe('function');
+  await press('Iniciar foco'); act(() => oldOpen());
+  expect(screen.getByRole('button', { name: 'Pausar sessão' })).toBeOnTheScreen();
+  expect(screen.queryByRole('header', { name: 'Cronômetro livre' })).toBeNull();
+});
+it('blocks duplicate free navigation and permits a human retry after a navigation capability fails', async () => {
+  const opened = jest.fn().mockImplementationOnce(() => { throw new Error('synthetic navigation failure'); });
+  renderRouter({ ...routes, 'focus/index': () => <PomodoroScreen onClose={jest.fn()} onFree={opened} /> }, { initialUrl: '/focus' });
+  await act(async () => {}); await press('Abrir cronômetro livre');
+  expect(screen.getByText('Não foi possível abrir o cronômetro. Tente novamente.')).toBeOnTheScreen();
+  await press('Abrir cronômetro livre'); await press('Abrir cronômetro livre'); expect(opened).toHaveBeenCalledTimes(2);
+});
+it('opens the free stopwatch only while Pomodoro is inactive and retains elapsed across pause/resume/finalize/new', async () => {
+  await mount('/'); await press('Abrir Pomodoro'); await press('Iniciar foco');
+  expect(screen.queryByRole('button', { name: 'Abrir cronômetro livre' })).toBeNull();
+  await press('Encerrar sessão'); await press('Confirmar encerramento'); await press('Abrir cronômetro livre'); elapsed(0, 0, 0);
+  await press('Iniciar cronômetro'); act(() => jest.advanceTimersByTime(65000)); elapsed(0, 1, 5);
+  await press('Pausar cronômetro'); act(() => jest.advanceTimersByTime(20000)); elapsed(0, 1, 5);
+  await press('Retomar cronômetro'); act(() => jest.advanceTimersByTime(1000)); elapsed(0, 1, 6);
+  await press('Finalizar cronômetro'); act(() => jest.advanceTimersByTime(60000)); elapsed(0, 1, 6);
+  expect(screen.getByText('Sessão finalizada.')).toBeOnTheScreen(); await press('Nova sessão'); elapsed(0, 0, 0);
+});
+it('allows an immediate free finalization without penalty or a minimum duration', async () => {
+  const fetch = jest.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('offline synthetic'));
+  await mount('/focus/free'); await press('Iniciar cronômetro'); await press('Finalizar cronômetro'); elapsed(0, 0, 0);
+  expect(screen.getByText('Sessão finalizada.')).toBeOnTheScreen(); expect(screen.getByRole('button', { name: 'Nova sessão' })).toBeOnTheScreen();
+  expect(fetch).not.toHaveBeenCalled();
+});
+it('counts free background time, pauses without adding background while paused and keeps modes isolated', async () => {
+  await mount('/focus/free'); await press('Iniciar cronômetro'); background('background');
+  act(() => jest.setSystemTime(46810000)); background('active'); elapsed(13, 0, 0);
+  await press('Pausar cronômetro'); background('background'); act(() => jest.setSystemTime(90000000)); background('active'); elapsed(13, 0, 0);
+  await press('Finalizar cronômetro'); await press('Voltar ao foco');
+  expect(screen.getByRole('button', { name: 'Iniciar foco' })).toBeOnTheScreen();
+  await press('Abrir cronômetro livre'); elapsed(0, 0, 0); expect(screen.getByRole('button', { name: 'Iniciar cronômetro' })).toBeOnTheScreen();
+});
+it('confirms free hardware back, preserves mode9 and has a direct-link fallback', async () => {
+  await mount('/focus/free'); await act(async () => fireEvent(screen.getByRole('switch', { name: 'Modo de baixa estimulação' }), 'valueChange', true));
+  await press('Iniciar cronômetro'); act(() => { expect(back?.({ type: 'hardwareBackPress', timeStamp: Date.now() })).toBe(true); });
+  await press('Manter cronômetro'); elapsed(0, 0, 0); await press('Voltar ao foco'); await press('Confirmar saída do cronômetro');
+  expect(screen.getByRole('header', { name: 'Pomodoro' })).toBeOnTheScreen();
+  expect(screen.getByRole('switch', { name: 'Modo de baixa estimulação' })).toBeChecked();
+});
+it('discards the free session on external navigation and does not resurrect it on reentry', async () => {
+  await mount('/focus/free'); await press('Iniciar cronômetro'); act(() => jest.advanceTimersByTime(1000)); elapsed(0, 0, 1);
+  const oldBack = back; await act(async () => router.replace('/')); act(() => { expect(oldBack?.({ type: 'hardwareBackPress', timeStamp: Date.now() })).toBe(false); });
+  await press('Abrir Pomodoro'); await press('Abrir cronômetro livre'); elapsed(0, 0, 0);
+  expect(screen.getByText('Sem sessão ativa.')).toBeOnTheScreen();
+});
+it('clears an old free confirmation when the navigator retains the screen and focuses it again', async () => {
+  renderRouter({ ...routes, 'focus/other': () => <Text>Tela sintética de navegação</Text> }, { initialUrl: '/focus/free' });
+  await act(async () => {}); await press('Iniciar cronômetro'); await press('Voltar ao foco');
+  await act(async () => router.push('/focus/other')); await act(async () => router.back());
+  expect(screen.getByText('Sem sessão ativa.')).toBeOnTheScreen(); elapsed(0, 0, 0);
+  expect(screen.queryByText('Sair e descartar esta sessão?')).toBeNull();
+});
+it('retains free confirmed elapsed on clock regression and requires new confirmation if the session changed', async () => {
+  await mount('/focus/free'); await press('Iniciar cronômetro'); act(() => jest.advanceTimersByTime(5000)); elapsed(0, 0, 5);
+  await press('Voltar ao foco'); background('background'); act(() => jest.setSystemTime(1)); background('active');
+  await press('Confirmar saída do cronômetro'); expect(screen.getByText('A sessão mudou. Revise antes de sair.')).toBeOnTheScreen();
+  elapsed(0, 0, 5); await press('Retomar cronômetro'); act(() => jest.advanceTimersByTime(1000)); elapsed(0, 0, 6);
+});
+let stopwatch: ReturnType<typeof useStopwatch>;
+function StopwatchProbe() { const context = useStopwatch(); useEffect(() => { stopwatch = context; }, [context]); return null; }
+it('guards duplicate free commands before render and disposes stale clock callbacks in StrictMode', () => {
+  const view = render(<StrictMode><StopwatchProvider><StopwatchProbe /></StopwatchProvider></StrictMode>);
+  const command = stopwatch.act; const expectedRevision = stopwatch.revision;
+  act(() => {
+    expect(command({ type: 'start', expectedRevision })).toBe(true);
+    expect(command({ type: 'start', expectedRevision })).toBe(false);
+  });
+  const callback = appChanges[appChanges.length - 1]; const captured = stopwatch.act;
+  view.unmount(); act(() => { callback('active'); expect(captured({ type: 'finish', expectedRevision: stopwatch.revision })).toBe(false); });
+  expect(remove).toHaveBeenCalled();
+});
+it('preserves the free final result when restarting with a failing clock and recovers explicitly', () => {
+  let failed = false; let time = 10; const clock = () => { if (failed) throw new Error('synthetic clock'); return time; };
+  render(<StopwatchProvider clock={clock}><StopwatchProbe /></StopwatchProvider>);
+  act(() => { stopwatch.act({ type: 'start', expectedRevision: stopwatch.revision }); }); time = 20;
+  act(() => { stopwatch.act({ type: 'finish', expectedRevision: stopwatch.revision }); }); failed = true;
+  act(() => { stopwatch.act({ type: 'start', expectedRevision: stopwatch.revision }); });
+  expect(stopwatch).toMatchObject({ error: 'clock', session: { status: 'finished', elapsedMs: 10 } }); failed = false;
+  act(() => { stopwatch.act({ type: 'start', expectedRevision: stopwatch.revision }); });
+  expect(stopwatch.session?.elapsedMs).toBe(0); expect(stopwatch.error).toBeNull();
 });
