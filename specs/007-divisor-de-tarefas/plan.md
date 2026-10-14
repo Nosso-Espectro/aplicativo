@@ -105,3 +105,15 @@ celular, dados pessoais ou scripts autônomos não revisados para validar19.
 - US-019: TypeScript em src/features/task-breakdown, modelo/SQLite/editor/lista/rota pequenos, alinhados às convenções atuais.
 - Pendente para20: edição/exclusão de modelos e catálogo comum, sem redefinir seus critérios na19.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.
+
+## Progresso inicial US-019
+
+task-model.ts preparado com títulos explícitos/clonagem/IDs únicos/bool estrito,
+reordenação com IDs/texto/status preservados, remoção do alvo/conclusão reversível
+e progresso0de0/0% sem conclusão falsa. newTaskStep cria draft vazio com status
+false, sem sugerir conteúdo; operações de draft preservam texto ainda não salvo,
+normalizedTaskDraft exige títulos não vazios só ao salvar. IDs seguem convenção
+local existente Date.now/Math.random com injeção sintética nos testes; não são
+credenciais, UUIDs criptográficos ou timestamps de histórico. Nenhuma task
+concluída: SQLite/editor/progresso confirmado/rotas/fluxos ainda faltam. Seis
+testes unitários,lint/typecheck verdes; não comprovam UI, persistência ou nativo.
