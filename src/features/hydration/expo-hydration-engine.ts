@@ -1,10 +1,14 @@
 import { Platform } from 'react-native';
 import type { NotificationPermissionsStatus } from 'expo-notifications';
 import { hydrationNamespace, ownedHydrationIdentifier, validHydrationInterval } from './hydration-model';
+import { createHydrationDailyCapability } from './hydration-daily-capability';
+import { normalizeHydrationReceipt, type HydrationReceipt } from './hydration-receipt';
+import { normalizeQuietWindow, type QuietWindow } from './quiet-hours';
 export type HydrationSchedule = { identifier: string; intervalMinutes: number };
+export type HydrationOwned = string | null | readonly string[];
 const channelId = 'tear-hydration-reminders-v1';
 const unavailable = () => new Error('Hydration notification capability unavailable.');
-export function createExpoHydrationEngine() {
+export function createExpoHydrationEngine({ clock = Date.now }: { clock?: () => number } = {}) {
   const platform = Platform.OS;
   if (platform !== 'android' && platform !== 'ios') throw unavailable();
   if (platform === 'android' && (typeof Platform.Version !== 'number' || !Number.isSafeInteger(Platform.Version))) throw unavailable();
@@ -19,6 +23,7 @@ export function createExpoHydrationEngine() {
   let pending: Promise<unknown> = Promise.resolve();
   const subscriptions = new Set<{ remove(): void }>();
   function alive() { if (disposed) throw unavailable(); }
+  const daily = createHydrationDailyCapability({ notifications, platform, clock, alive, ...(channels ? { channelId } : {}) });
   function enqueue<T>(operation: () => Promise<T>): Promise<T> {
     const next = pending.then(async () => { alive(); return operation(); }).catch(() => { throw unavailable(); });
     pending = next.catch(() => undefined); return next;
@@ -56,6 +61,29 @@ export function createExpoHydrationEngine() {
     if (observed.scheduled.some(entry => entry.identifier === identifier) || observed.presented.includes(identifier)) throw unavailable();
   }
   return {
+    planDaily: (generation: number, intervalMinutes: number, input: QuietWindow) => {
+      try {
+        const quiet = normalizeQuietWindow(input); if (!quiet) throw unavailable();
+        return enqueue(() => daily.plan(generation, intervalMinutes, quiet));
+      } catch { return Promise.reject(unavailable()); }
+    },
+    scheduleDaily: (input: HydrationReceipt, intervalMinutes: number, window: QuietWindow) => {
+      try {
+        const quiet = normalizeQuietWindow(window); if (!quiet) throw unavailable();
+        const receipt = normalizeHydrationReceipt(input, intervalMinutes, quiet);
+        return enqueue(async () => {
+          if (!await allowed(await notifications.getPermissionsAsync())) throw unavailable(); alive();
+          return daily.schedule(receipt, intervalMinutes, quiet);
+        });
+      } catch { return Promise.reject(unavailable()); }
+    },
+    verifyDaily: (input: HydrationReceipt, intervalMinutes: number, window: QuietWindow) => {
+      try {
+        const quiet = normalizeQuietWindow(window); if (!quiet) throw unavailable();
+        const receipt = normalizeHydrationReceipt(input, intervalMinutes, quiet);
+        return enqueue(() => daily.verify(receipt, intervalMinutes, quiet));
+      } catch { return Promise.reject(unavailable()); }
+    },
     permission: () => enqueue(async () => { const result = await allowed(await notifications.getPermissionsAsync()); alive(); return result; }),
     requestPermission: () => enqueue(async () => {
       const current = await notifications.getPermissionsAsync(); alive();
@@ -89,8 +117,7 @@ export function createExpoHydrationEngine() {
             repeats: true, ...(channels ? { channelId } : {}) },
         });
         if (disposed || identifier !== input.identifier) {
-          // This exact returned ID belongs to this schedule call, not a global cancellation.
-          await notifications.cancelScheduledNotificationAsync(identifier);
+          // A mismatched returned ID is not proof that this operation owns another alarm.
           await cancel(input.identifier); throw unavailable();
         }
         const result = await inspect();
@@ -100,10 +127,12 @@ export function createExpoHydrationEngine() {
       });
     },
     cancel: (identifier: string) => ownedHydrationIdentifier(identifier) ? enqueue(() => cancel(identifier)) : Promise.reject(unavailable()),
-    onReceived: (owned: () => string | null, received: (identifier: string, date: number) => void) => {
+    onReceived: (owned: () => HydrationOwned, received: (identifier: string, date: number) => void) => {
       alive(); let active = true;
       const subscription = notifications.addNotificationReceivedListener(event => {
-        if (!active || disposed || event.request.identifier !== owned() || !ownedHydrationIdentifier(event.request.identifier)) return;
+        if (!active || disposed || !ownedHydrationIdentifier(event.request.identifier)) return;
+        const ids = owned();
+        if (Array.isArray(ids) ? !ids.includes(event.request.identifier) : event.request.identifier !== ids) return;
         if (event.request.content.data?.owner !== hydrationNamespace || !Number.isFinite(event.date) || event.date < 0) return;
         // SDK57 forwards iOS epoch seconds unchanged; Android already emits milliseconds.
         const date = platform === 'ios' ? Math.round(event.date * 1000) : event.date;

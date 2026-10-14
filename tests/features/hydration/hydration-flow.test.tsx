@@ -10,7 +10,9 @@ import HydrationRoute from '../../../src/app/hydration';
 import { HydrationProvider, useHydration } from '../../../src/features/hydration/HydrationProvider';
 import { HydrationNotice } from '../../../src/features/hydration/HydrationNotice';
 import { createHydrationController, type HydrationController } from '../../../src/features/hydration/hydration-controller';
-import type { HydrationEngine } from '../../../src/features/hydration/expo-hydration-engine';
+import type { HydrationEngine, HydrationOwned } from '../../../src/features/hydration/expo-hydration-engine';
+import { createDailyHydrationReceipt } from '../../../src/features/hydration/hydration-receipt';
+import { planDailyHydration } from '../../../src/features/hydration/quiet-hours';
 import StartupScreen from '../../../src/app';
 import { LowStimulationProvider } from '../../../src/features/regulation/LowStimulationProvider';
 import { LowStimulationControl } from '../../../src/features/regulation/LowStimulationControl';
@@ -24,7 +26,7 @@ jest.mock('../../../src/features/communication/custom-cards/local-image-storage'
 jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn() }));
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
 let sql: DatabaseSync; let engine: HydrationEngine; let controller: HydrationController;
-let native: Map<string, number>; let current: () => string | null; let receive: (identifier: string, date: number) => void;
+let native: Map<string, number>; let current: () => HydrationOwned; let receive: (identifier: string, date: number) => void;
 let changes: ((state: AppStateStatus) => void)[]; const original = AppState.currentState;
 const create = () => { controller = createHydrationController({ factory: () => engine }); return controller; };
 function Layout() { return <LowStimulationProvider><LowStimulationControl /><SentenceProvider><CustomCardsProvider>
@@ -48,6 +50,17 @@ beforeEach(() => {
   };
   jest.mocked(openDatabaseAsync).mockResolvedValue(adapter as unknown as SQLiteDatabase);
   engine = {
+    planDaily: jest.fn(async (generation, intervalMinutes, quiet) => {
+      const plan = planDailyHydration(intervalMinutes, quiet, Date.now());
+      return createDailyHydrationReceipt(generation, intervalMinutes, quiet, new Intl.DateTimeFormat().resolvedOptions().timeZone, plan.notBeforeMs, plan.slots);
+    }),
+    scheduleDaily: jest.fn(async (receipt, intervalMinutes) => {
+      for (const item of receipt.entries) native.set(item.identifier, intervalMinutes); return receipt.entries.map(item => item.identifier);
+    }),
+    verifyDaily: jest.fn(async receipt => {
+      if (receipt.entries.some(item => !native.has(item.identifier))) throw new Error('Synthetic missing daily ID');
+      return receipt.entries.map(item => item.identifier);
+    }),
     permission: jest.fn(async () => true), requestPermission: jest.fn(async () => true),
     inspect: jest.fn(async () => ({ scheduled: [...native].map(([identifier, intervalMinutes]) => ({ identifier, intervalMinutes })), presented: [] })),
     schedule: jest.fn(async entry => { native.set(entry.identifier, entry.intervalMinutes); }),
@@ -80,6 +93,68 @@ it('keeps default off, validates drafts and saves without permission or schedule
   await press('120 minutos'); await press('Cancelar edição do intervalo'); expect(screen.getByText('Intervalo salvo: 60 minutos.')).toBeOnTheScreen();
   await press('Alterar intervalo'); await press('30 minutos'); await press('Salvar intervalo');
   expect(screen.getByText('Intervalo salvo: 30 minutos.')).toBeOnTheScreen(); expect(engine.schedule).not.toHaveBeenCalled();
+});
+async function editQuiet(start = '22:00', end = '07:00') {
+  await press('Alterar horário silencioso');
+  await act(async () => fireEvent(screen.getByRole('switch', { name: 'Usar horário silencioso' }), 'valueChange', true));
+  fireEvent.changeText(screen.getByLabelText('Início do horário silencioso'), start);
+  fireEvent.changeText(screen.getByLabelText('Fim do horário silencioso'), end);
+}
+it('keeps quiet hours absent by default, validates civil fields and cancels drafts without effects', async () => {
+  await mount(); expect(screen.getByText('Sem horário silencioso.')).toBeOnTheScreen();
+  await press('Alterar horário silencioso'); expect(screen.getByRole('switch', { name: 'Usar horário silencioso' })).not.toBeChecked();
+  await act(async () => fireEvent(screen.getByRole('switch', { name: 'Usar horário silencioso' }), 'valueChange', true));
+  expect(screen.getByLabelText('Início do horário silencioso').props.value).toBe(''); expect(screen.getByLabelText('Fim do horário silencioso').props.value).toBe('');
+  await press('Salvar horário silencioso'); expect(screen.getByText('Escolha início e fim diferentes, no formato HH:MM.')).toBeOnTheScreen();
+  fireEvent.changeText(screen.getByLabelText('Início do horário silencioso'), '07:00'); fireEvent.changeText(screen.getByLabelText('Fim do horário silencioso'), '07:00');
+  await press('Salvar horário silencioso'); expect(screen.getByText('Escolha início e fim diferentes, no formato HH:MM.')).toBeOnTheScreen();
+  fireEvent.changeText(screen.getByLabelText('Fim do horário silencioso'), '25:00'); await press('Salvar horário silencioso');
+  expect(screen.getByRole('button', { name: 'Ativar lembretes' })).toBeDisabled();
+  await press('Cancelar edição do horário silencioso'); expect(screen.getByText('Sem horário silencioso.')).toBeOnTheScreen();
+  expect(engine.requestPermission).not.toHaveBeenCalled(); expect(engine.planDaily).not.toHaveBeenCalled();
+});
+it('persists a midnight-crossing quiet window without scheduling and discards drafts on real route reentry', async () => {
+  await mount(); await editQuiet(); await press('Salvar horário silencioso');
+  expect(screen.getByText('Horário silencioso salvo: 22:00 a 07:00.')).toBeOnTheScreen();
+  expect(engine.requestPermission).not.toHaveBeenCalled(); expect(engine.scheduleDaily).not.toHaveBeenCalled();
+  await press('Alterar horário silencioso'); fireEvent.changeText(screen.getByLabelText('Início do horário silencioso'), '20:00');
+  await press('Voltar ao quadro'); await act(async () => router.push('/hydration'));
+  expect(screen.getByText('Horário silencioso salvo: 22:00 a 07:00.')).toBeOnTheScreen(); expect(screen.queryByLabelText('Início do horário silencioso')).toBeNull();
+  expect(controller.getSnapshot().config!.quietWindow).toEqual({ startMinute: 1320, endMinute: 420 });
+});
+it('confirms the daily plan explicitly, requires pause before editing and resumes only on human command', async () => {
+  await mount(); await editQuiet(); await press('Salvar horário silencioso'); await press('Ativar lembretes');
+  expect(screen.getByText(/Ativar avisos locais em horários diários fora de 22:00 a 07:00/)).toBeOnTheScreen(); expect(engine.requestPermission).not.toHaveBeenCalled();
+  await press('Cancelar ativação dos lembretes'); expect(engine.planDaily).not.toHaveBeenCalled(); await activate();
+  expect(screen.getByText('Lembretes ativos.')).toBeOnTheScreen(); expect(screen.getByRole('button', { name: 'Alterar horário silencioso' })).toBeDisabled();
+  expect(engine.schedule).not.toHaveBeenCalled(); expect(engine.scheduleDaily).toHaveBeenCalledTimes(1);
+  await press('Pausar lembretes'); expect(native.size).toBe(0); await press('Alterar horário silencioso');
+  fireEvent.changeText(screen.getByLabelText('Fim do horário silencioso'), '08:00'); await press('Salvar horário silencioso'); expect(native.size).toBe(0);
+  await press('Retomar lembretes'); await press('Confirmar ativação dos lembretes'); expect(engine.scheduleDaily).toHaveBeenCalledTimes(2);
+  await press('Desativar lembretes'); expect(native.size).toBe(0); expect(screen.getByText('Horário silencioso salvo: 22:00 a 08:00.')).toBeOnTheScreen();
+});
+it('turns the window off only through inactive draft save and preserves the legacy interval path', async () => {
+  await mount(); await editQuiet(); await press('Salvar horário silencioso'); await press('Alterar horário silencioso');
+  await act(async () => fireEvent(screen.getByRole('switch', { name: 'Usar horário silencioso' }), 'valueChange', false));
+  expect(screen.getByText('Horário silencioso salvo: 22:00 a 07:00.')).toBeOnTheScreen(); await press('Salvar horário silencioso');
+  expect(screen.getByText('Sem horário silencioso.')).toBeOnTheScreen(); await activate();
+  expect(engine.schedule).toHaveBeenCalledTimes(1); expect(engine.scheduleDaily).not.toHaveBeenCalled();
+});
+it('keeps the saved window inactive on denial/capacity failure and retries only from explicit commands', async () => {
+  await mount(); await editQuiet(); await press('Salvar horário silencioso'); jest.mocked(engine.requestPermission).mockResolvedValueOnce(false); await activate();
+  expect(engine.planDaily).not.toHaveBeenCalled(); expect(screen.getByText('Permissão de avisos não concedida. Os lembretes continuam inativos.')).toBeOnTheScreen();
+  jest.mocked(engine.planDaily).mockRejectedValueOnce(new Error('Synthetic capacity failure')); await activate(); expect(native.size).toBe(0);
+  expect(screen.getByText('Estado dos lembretes não confirmado.')).toBeOnTheScreen(); await press('Conferir lembretes novamente');
+  expect(engine.scheduleDaily).not.toHaveBeenCalled(); await activate(); expect(screen.getByText('Lembretes ativos.')).toBeOnTheScreen();
+});
+it('preserves mode9 and saved quiet settings through a background reconciliation without rescheduling', async () => {
+  await mount(); await editQuiet(); await press('Salvar horário silencioso'); await activate();
+  await act(async () => fireEvent(screen.getByRole('switch', { name: 'Modo de baixa estimulação' }), 'valueChange', true));
+  await act(async () => changes.forEach(callback => callback('background'))); await act(async () => changes.forEach(callback => callback('active')));
+  expect(screen.getByRole('switch', { name: 'Modo de baixa estimulação' })).toBeChecked(); expect(engine.verifyDaily).toHaveBeenCalled();
+  expect(engine.scheduleDaily).toHaveBeenCalledTimes(1); expect(engine.requestPermission).toHaveBeenCalledTimes(1);
+  jest.mocked(engine.verifyDaily).mockRejectedValueOnce(new Error('Synthetic timezone drift'));
+  await act(async () => changes.forEach(callback => callback('active'))); expect(screen.getByText('Lembretes pausados.')).toBeOnTheScreen(); expect(native.size).toBe(0);
 });
 it('requires confirmation, pause before editing and explicit resume after saving', async () => {
   await mount(); await press('Ativar lembretes'); expect(engine.requestPermission).not.toHaveBeenCalled();
@@ -116,7 +191,7 @@ it('does not falsely confirm a failed cancellation and recovers only on explicit
   expect(screen.getByText('Lembretes pausados.')).toBeOnTheScreen(); expect(engine.schedule).toHaveBeenCalledTimes(1);
 });
 it('shows only a current foreground reminder, closes it and never replays background events', async () => {
-  await mount(); await activate(); const id = current()!;
+  await mount(); await activate(); const owned = current(); const id = typeof owned === 'string' ? owned : owned![0];
   act(() => receive(id, Date.now() + 1)); expect(screen.getByText('Uma pausa para água, se desejar.')).toBeOnTheScreen();
   await press('Fechar lembrete de água'); expect(screen.queryByText('Uma pausa para água, se desejar.')).toBeNull();
   await act(async () => changes.forEach(callback => callback('background'))); act(() => receive(id, Date.now() + 2));

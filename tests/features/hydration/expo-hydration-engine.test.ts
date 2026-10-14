@@ -1,7 +1,8 @@
 import { Platform } from 'react-native';
-import type { NotificationRequestInput } from 'expo-notifications';
+import type { DailyTriggerInput, NotificationRequestInput } from 'expo-notifications';
 import { createExpoHydrationEngine } from '../../../src/features/hydration/expo-hydration-engine';
 import { hydrationIdentifier, hydrationNamespace } from '../../../src/features/hydration/hydration-model';
+import { createDailyHydrationReceipt } from '../../../src/features/hydration/hydration-receipt';
 let mockScheduled = new Map<string, NotificationRequestInput & { identifier: string }>();
 let mockPresented: { request: { identifier: string } }[] = [];
 let mockChannel: { importance: number; sound?: string | null; enableVibrate?: boolean } | null = null;
@@ -10,7 +11,8 @@ let mockListener: (event: { date: number; request: { identifier: string; content
 const mockRemove = jest.fn(); const mockLoad = jest.fn();
 const mockSDK = {
   AndroidImportance: { NONE: 0, LOW: 4 }, AndroidNotificationVisibility: { PRIVATE: 0 }, AndroidNotificationPriority: { LOW: 'low' },
-  IosAuthorizationStatus: { AUTHORIZED: 2, PROVISIONAL: 3, EPHEMERAL: 4 }, SchedulableTriggerInputTypes: { TIME_INTERVAL: 'timeInterval' },
+  IosAuthorizationStatus: { AUTHORIZED: 2, PROVISIONAL: 3, EPHEMERAL: 4 }, SchedulableTriggerInputTypes: { TIME_INTERVAL: 'timeInterval', DAILY: 'daily' },
+  getNextTriggerDateAsync: jest.fn(async (_trigger: DailyTriggerInput): Promise<number | null> => null),
   getPermissionsAsync: jest.fn(async () => mockPermission),
   requestPermissionsAsync: jest.fn(async () => { mockPermission.granted = true; return mockPermission; }),
   getNotificationChannelAsync: jest.fn(async () => mockChannel),
@@ -25,16 +27,136 @@ jest.mock('expo-notifications', () => { mockLoad(); return mockSDK; });
 const entry = { identifier: hydrationIdentifier(1), intervalMinutes: 60 };
 beforeEach(() => {
   jest.clearAllMocks(); mockScheduled = new Map(); mockPresented = []; mockChannel = null;
+  mockSDK.getAllScheduledNotificationsAsync.mockImplementation(async () => [...mockScheduled.values()]);
   mockPermission = { granted: false, canAskAgain: true, ios: { status: 0 } };
   jest.replaceProperty(Platform, 'OS', 'android'); jest.spyOn(Platform, 'Version', 'get').mockReturnValue(35);
 });
-afterEach(() => jest.restoreAllMocks());
-async function granted() { const engine = createExpoHydrationEngine(); await engine.requestPermission(); return engine; }
 it('loads SDK lazily and never requests permissions or creates channels on construction/query', async () => {
   expect(mockLoad).not.toHaveBeenCalled(); const engine = createExpoHydrationEngine(); expect(mockLoad).toHaveBeenCalledTimes(1);
   expect(mockSDK.getPermissionsAsync).not.toHaveBeenCalled(); expect(await engine.permission()).toBe(false);
   expect(mockSDK.requestPermissionsAsync).not.toHaveBeenCalled(); expect(mockSDK.setNotificationChannelAsync).not.toHaveBeenCalled();
 });
+const quiet = { startMinute: 1320, endMinute: 420 };
+const dailyNow = new Date(2026, 9, 14, 12, 0, 0, 0).getTime();
+function nextDaily(input: DailyTriggerInput) {
+  const next = new Date(dailyNow); next.setHours(input.hour, input.minute, 0, 0);
+  if (next.getTime() <= dailyNow) next.setDate(next.getDate() + 1);
+  return next.getTime();
+}
+async function dailyEngine() {
+  const engine = createExpoHydrationEngine({ clock: () => dailyNow }); await engine.requestPermission();
+  mockSDK.getNextTriggerDateAsync.mockImplementation(async input => nextDaily(input)); return engine;
+}
+function shortReceipt() {
+  return createDailyHydrationReceipt(2, 60, quiet, new Intl.DateTimeFormat().resolvedOptions().timeZone, dailyNow + 3600000,
+    [{ hour: 13, minute: 0 }, { hour: 14, minute: 0 }]);
+}
+it.each(['android', 'ios'] as const)('plans and verifies faithful %s DAILY triggers without creating a relative interval', async platform => {
+  jest.replaceProperty(Platform, 'OS', platform); if (platform === 'ios') mockPermission.ios.status = 2;
+  const engine = await dailyEngine(); const receipt = await engine.planDaily(2, 60, quiet);
+  expect(mockSDK.scheduleNotificationAsync).not.toHaveBeenCalled(); expect(receipt.entries.length).toBeGreaterThan(1);
+  if (platform === 'ios') mockSDK.getAllScheduledNotificationsAsync.mockImplementation(async () => [...mockScheduled.values()].map(request => {
+    const input = request.trigger as DailyTriggerInput;
+    return { ...request, trigger: { type: 'calendar', repeats: true,
+      dateComponents: { hour: input.hour, minute: input.minute, calendar: null, timeZone: null, isLeapMonth: false, isRepeatedDay: false } } } as unknown as typeof request;
+  }));
+  const ids = await engine.scheduleDaily(receipt, 60, quiet);
+  expect(ids).toEqual(receipt.entries.map(item => item.identifier)); expect(await engine.verifyDaily(receipt, 60, quiet)).toEqual(ids);
+  for (const [request] of mockSDK.scheduleNotificationAsync.mock.calls) {
+    expect(request.trigger).toMatchObject({ type: 'daily' }); expect(request.content).toMatchObject({ sound: false, vibrate: [] });
+  }
+  expect(mockSDK.requestPermissionsAsync).toHaveBeenCalledTimes(platform === 'ios' ? 0 : 1);
+});
+it.each([null, NaN, Infinity, dailyNow / 1000, dailyNow + 3600000 + 1])('refuses invalid/seconds/unaligned native next date %s before any schedule', async date => {
+  const engine = await dailyEngine(); mockSDK.getNextTriggerDateAsync.mockResolvedValueOnce(date);
+  await expect(engine.planDaily(2, 60, quiet)).rejects.toThrow(); expect(mockSDK.scheduleNotificationAsync).not.toHaveBeenCalled();
+});
+it('omits early native candidates but refuses an empty or unknown daily plan', async () => {
+  const engine = await dailyEngine();
+  mockSDK.getNextTriggerDateAsync.mockResolvedValueOnce(dailyNow + 1000);
+  const receipt = await engine.planDaily(2, 60, quiet); expect(receipt.entries.some(item => item.kind === 'daily' && item.hour === 13)).toBe(false);
+  mockSDK.getNextTriggerDateAsync.mockImplementation(async () => dailyNow + 1000);
+  await expect(engine.planDaily(3, 60, quiet)).rejects.toThrow(); expect(mockSDK.scheduleNotificationAsync).not.toHaveBeenCalled();
+});
+it('enforces the 48 total pending product limit using IDs/count only and refuses existing owned generations', async () => {
+  const engine = await dailyEngine(); const receipt = shortReceipt();
+  for (let i = 0; i < 47; i++) mockScheduled.set(`foreign-${i}`, { identifier: `foreign-${i}`, trigger: null, get content(): never { throw new Error('Foreign body'); } });
+  await expect(engine.scheduleDaily(receipt, 60, quiet)).rejects.toThrow(); expect(mockSDK.scheduleNotificationAsync).not.toHaveBeenCalled();
+  mockScheduled.delete('foreign-46'); expect(await engine.scheduleDaily(receipt, 60, quiet)).toHaveLength(2);
+  await expect(engine.scheduleDaily(receipt, 60, quiet)).rejects.toThrow(); expect(mockSDK.scheduleNotificationAsync).toHaveBeenCalledTimes(2);
+  expect(mockSDK.cancelScheduledNotificationAsync).not.toHaveBeenCalled();
+});
+it.each(['tear-transition-1-5-2', 'tear-hydration-v2-99-0'])('compensates only attempted batch IDs when the SDK returns %s', async divergent => {
+  const engine = await dailyEngine(); const receipt = shortReceipt();
+  mockSDK.scheduleNotificationAsync.mockImplementationOnce(async input => { mockScheduled.set(input.identifier!, { ...input, identifier: input.identifier! }); return input.identifier!; });
+  mockSDK.scheduleNotificationAsync.mockImplementationOnce(async input => {
+    mockScheduled.set(input.identifier!, { ...input, identifier: input.identifier! });
+    mockScheduled.set(divergent, { identifier: divergent, content: {}, trigger: null }); return divergent;
+  });
+  await expect(engine.scheduleDaily(receipt, 60, quiet)).rejects.toThrow();
+  expect(mockScheduled.has(divergent)).toBe(true); expect(mockSDK.cancelScheduledNotificationAsync).not.toHaveBeenCalledWith(divergent);
+  for (const item of receipt.entries) expect(mockScheduled.has(item.identifier)).toBe(false);
+});
+it('compensates earlier and throwing partial schedules and leaves unconfirmed cancellation as an error', async () => {
+  const engine = await dailyEngine(); const receipt = shortReceipt();
+  mockSDK.scheduleNotificationAsync.mockImplementationOnce(async input => { mockScheduled.set(input.identifier!, { ...input, identifier: input.identifier! }); return input.identifier!; });
+  mockSDK.scheduleNotificationAsync.mockImplementationOnce(async input => { mockScheduled.set(input.identifier!, { ...input, identifier: input.identifier! }); throw new Error('synthetic private failure'); });
+  mockSDK.cancelScheduledNotificationAsync.mockRejectedValueOnce(new Error('synthetic cancel failure'));
+  await expect(engine.scheduleDaily(receipt, 60, quiet)).rejects.toThrow('Hydration notification capability unavailable.');
+  expect(mockSDK.cancelScheduledNotificationAsync).toHaveBeenCalledTimes(2);
+  expect(mockScheduled.has(receipt.entries[0].identifier)).toBe(true); expect(mockScheduled.has(receipt.entries[1].identifier)).toBe(false);
+  await engine.cancel(receipt.entries[0].identifier); expect(mockScheduled.size).toBe(0);
+});
+it('snapshots a batch before FIFO execution and compensates a late result after disposal', async () => {
+  const engine = await dailyEngine(); const receipt = shortReceipt(); const ids = receipt.entries.map(item => item.identifier);
+  const scheduling = engine.scheduleDaily(receipt, 60, quiet); receipt.entries.length = 0;
+  expect(await scheduling).toEqual(ids);
+  for (const id of ids) await engine.cancel(id);
+  let finish!: () => void;
+  mockSDK.scheduleNotificationAsync.mockImplementationOnce(input => new Promise(resolve => { finish = () => { mockScheduled.set(input.identifier!, { ...input, identifier: input.identifier! }); resolve(input.identifier!); }; }));
+  const late = engine.scheduleDaily(shortReceipt(), 60, quiet); const failure = expect(late).rejects.toThrow();
+  await new Promise(resolve => setTimeout(resolve, 0)); engine.dispose(); finish(); await failure;
+  expect(mockScheduled.size).toBe(0);
+});
+it('rejects missing/extra schedules and iOS calendar constraints without cancelling on a read-only verification', async () => {
+  jest.replaceProperty(Platform, 'OS', 'ios'); mockPermission.ios.status = 2;
+  const engine = await dailyEngine(); const receipt = shortReceipt();
+  await expect(engine.verifyDaily(receipt, 60, quiet)).rejects.toThrow();
+  for (const item of receipt.entries) mockScheduled.set(item.identifier, { identifier: item.identifier, content: { data: { owner: hydrationNamespace, intervalMinutes: 60 } }, trigger: null });
+  mockSDK.getAllScheduledNotificationsAsync.mockImplementation(async () => [...mockScheduled.values()].map((request, index) => ({ ...request,
+    trigger: { type: 'calendar', repeats: true, dateComponents: { hour: index + 13, minute: 0, year: 2026 } },
+  } as unknown as typeof request)));
+  await expect(engine.verifyDaily(receipt, 60, quiet)).rejects.toThrow(); expect(mockSDK.cancelScheduledNotificationAsync).not.toHaveBeenCalled();
+});
+it('refuses regressive/invalid clocks and timezone drift during native planning without effects', async () => {
+  let time = dailyNow; const engine = createExpoHydrationEngine({ clock: () => time }); await engine.requestPermission();
+  mockSDK.getNextTriggerDateAsync.mockImplementationOnce(async input => { time--; return nextDaily(input); });
+  await expect(engine.planDaily(2, 60, quiet)).rejects.toThrow(); time = NaN;
+  await expect(engine.planDaily(2, 60, quiet)).rejects.toThrow();
+  time = dailyNow; mockSDK.getNextTriggerDateAsync.mockImplementationOnce(async input => {
+    jest.spyOn(Intl.DateTimeFormat.prototype, 'resolvedOptions').mockReturnValue({ timeZone: 'Pacific/Honolulu' } as Intl.ResolvedDateTimeFormatOptions);
+    return nextDaily(input);
+  });
+  await expect(engine.planDaily(2, 60, quiet)).rejects.toThrow(); expect(mockSDK.scheduleNotificationAsync).not.toHaveBeenCalled();
+});
+it('refuses DST-offset ambiguity near a native civil occurrence and invalid generations before probing', async () => {
+  const engine = await dailyEngine();
+  await expect(engine.planDaily(NaN, 60, quiet)).rejects.toThrow(); expect(mockSDK.getNextTriggerDateAsync).not.toHaveBeenCalled();
+  const originalOffset = Date.prototype.getTimezoneOffset;
+  jest.spyOn(Date.prototype, 'getTimezoneOffset').mockImplementation(function (this: Date) {
+    return this.getTime() >= dailyNow + 3600000 ? originalOffset.call(this) + 60 : originalOffset.call(this);
+  });
+  await expect(engine.planDaily(2, 60, quiet)).rejects.toThrow(); expect(mockSDK.scheduleNotificationAsync).not.toHaveBeenCalled();
+});
+it('filters every batch listener ID before reading foreign body and accepts no stale generation', () => {
+  const engine = createExpoHydrationEngine(); const receipt = shortReceipt(); const ids = receipt.entries.map(item => item.identifier); const received = jest.fn();
+  engine.onReceived(() => ids, received);
+  mockListener({ date: dailyNow, request: { identifier: 'tear-hydration-v2-99-0', get content(): never { throw new Error('Other owner content'); } } });
+  for (const identifier of ids) mockListener({ date: dailyNow, request: { identifier, content: { data: { owner: hydrationNamespace } } } });
+  expect(received).toHaveBeenCalledTimes(2); engine.dispose();
+});
+afterEach(() => jest.restoreAllMocks());
+async function granted() { const engine = createExpoHydrationEngine(); await engine.requestPermission(); return engine; }
 it('requests quiet private presentation only explicitly and preserves customized or blocked channels', async () => {
   await granted(); expect(mockSDK.setNotificationChannelAsync).toHaveBeenCalledWith('tear-hydration-reminders-v1', {
     name: 'Lembretes de água', importance: 4, sound: null, enableVibrate: false, vibrationPattern: [], bypassDnd: false,
@@ -99,6 +221,17 @@ it('serializes cancellation after a pending schedule and compensates a late sche
   mockSDK.scheduleNotificationAsync.mockImplementationOnce(input => new Promise(resolve => { finish = () => { mockScheduled.set(input.identifier!, { ...input, identifier: input.identifier! }); resolve(input.identifier!); }; }));
   const late = engine.schedule(entry); const failed = expect(late).rejects.toThrow(); await new Promise(resolve => setTimeout(resolve, 0));
   engine.dispose(); finish(); await failed; expect(mockScheduled.has(entry.identifier)).toBe(false);
+});
+it.each(['tear-transition-1-5-2', 'tear-hydration-v1-99', 'tear-hydration-v2-99-0'])('never cancels divergent returned identifier %s or a newer owner', async returned => {
+  const engine = await granted();
+  mockScheduled.set(returned, { identifier: returned, content: {}, trigger: null });
+  mockSDK.scheduleNotificationAsync.mockImplementationOnce(async input => {
+    mockScheduled.set(input.identifier!, { ...input, identifier: input.identifier! }); return returned;
+  });
+  await expect(engine.schedule(entry)).rejects.toThrow();
+  expect(mockScheduled.has(returned)).toBe(true); expect(mockScheduled.has(entry.identifier)).toBe(false);
+  expect(mockSDK.cancelScheduledNotificationAsync).toHaveBeenCalledWith(entry.identifier);
+  expect(mockSDK.cancelScheduledNotificationAsync).not.toHaveBeenCalledWith(returned);
 });
 it('preserves already confirmed alarms across dispose and processes only current owned received events', async () => {
   const engine = await granted(); await engine.schedule(entry); let owned: string | null = entry.identifier; const received = jest.fn();
