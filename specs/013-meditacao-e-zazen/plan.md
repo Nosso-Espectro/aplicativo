@@ -34,6 +34,24 @@ hardwarebackstale/mode9/CAA/offline). Related/fullJestserial/linttipos/Doctor
 assistivo/reflow/foco/insets/alvos/offline; mocks não aprovam gate.
 Nenhuma task32 verificada/código32 neste refino; árvore limpa antes branch32.
 
+Execução32: zazen-guide.ts/ZazenGuideScreen/rota /meditation/zazen/Ferramentas
+implementados com recurso original local e bibliografia sem links ativos.
+docs/zazen-guide-provenance.md registra fontes/redação/direitos/limites.
+Normalizador captura campo uma vez/IDs estritos e copia/freeze completo,
+rejeita sparse/ausente/corrupção/getter sem detalhes privados; não cria loader.
+Focus/back usa Router real/closeRef atualizado, callback antigo após blur/unmount
+não navega. UI88/headerFrase/drawer e timers31/focus/avisos preservados.
+
+19 testes novos(12modelo7Router),223relacionados19/876Jest101 serial PASS;
+tipos/lint sem warnings/Doctor21/21/56tooling/validadordiffcheck PASS.
+Fixtures iniciais (getter avaliado pelo nome it.each/render sem NavigationContainer)
+corrigidas com factorynames/Router real sem fakeAPI/timeout/supressão.
+Tipo unknown do id corrigido com expectedId após comparação estrita, sem cast.
+Review de conteúdo/RF-RNF/code/privacy/offline/UI/diff não encontrou regressão
+impeditiva; nenhum pacote/config/permissão/DB/histórico/player/voz alterado.
+T006-T009 verificadas; T010 aguarda PR/CI últimohead; T012 nativo PENDENTE.
+Sem host/nativejob/buildlocal/phone/preview8093/tag/release nesta execução.
+
 ## Histórico US031 — Integrada PR99
 
 Retomada após97: PR98 MERGED/main2bb0ec7, PRCI38612713569SUCCESS1min53s
