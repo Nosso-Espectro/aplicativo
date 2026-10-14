@@ -1,5 +1,9 @@
 # Implementation Plan: P0 — Comunicação Visual / CAA
 
+## Home US085 vigente
+
+Issue85 Ready em 2026-10-14 por pedido humano: quadro existente no drawer lateral esquerdo, frase no header e atalhos na home. Modal nativo sem animação/dependência nova, largura limitada ao viewport, SafeArea, fundo oculto aos leitores e foco de abertura/retorno; fechar antes de navegar ao editor. Reutilizar CommunicationBoard e SentenceComposer sem alterar bancos, snapshots, ordem, favoritos ou TTS. Testar abertura/fechamento/back/categorias/composição/atalhos/modo9/erros e regressões. Drawer não dispara fala. Gates reais de leitores/foco/insets/offline permanecem pendentes; nenhuma instalação autorizada por esta mudança.
+
 **Branch**: uma branch curta por Issue (`feat/us-xxx-slug`, `fix/...` ou `chore/...`); não há branch de milestone. **Date**: 2026-09-23. **Spec**: [spec.md](spec.md)
 
 **Input**: Milestone #9, Issues funcionais #1–#5 e história técnica US-041/#41. US-041 integrada pelo PR #42; implementação atual restrita à US-001/#1, Ready conforme backlog consultado em 2026-10-13.

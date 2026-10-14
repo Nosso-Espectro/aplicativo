@@ -1,4 +1,4 @@
-import { CommunicationBoard } from '../features/communication/board/CommunicationBoard';
+import { CommunicationHome } from '../features/communication/board/CommunicationHome';
 import { SentenceComposer } from '../features/communication/sentence/SentenceComposer';
 import { useSentence } from '../features/communication/sentence/SentenceProvider';
 import { useRouter } from 'expo-router';
@@ -13,7 +13,7 @@ export default function StartupScreen() {
   const router = useRouter();
   const custom = useCustomCards();
   return (
-    <CommunicationBoard
+    <CommunicationHome
       favoriteIds={custom.favoriteIds}
       favoriteDisabled={custom.loading || Boolean(custom.error) || custom.favoriteBusy}
       onFavorite={(id, selected) => void custom.setFavorite(id, selected)}

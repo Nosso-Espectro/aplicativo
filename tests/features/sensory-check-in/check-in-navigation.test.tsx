@@ -79,7 +79,7 @@ it('can skip every item including the final one and finishes with no supplied da
   }
   expect(screen.getByText('Resumo do check-in')).toBeOnTheScreen();
   expect(screen.getByText('Nenhuma resposta fornecida.')).toBeOnTheScreen();
-  await press('Voltar ao quadro'); expect(screen.getByRole('header', { name: 'Comunicação' })).toBeOnTheScreen();
+  await press('Voltar ao quadro'); expect(screen.getByRole('header', { name: 'Frase' })).toBeOnTheScreen();
 });
 
 async function finishWithThirst() {

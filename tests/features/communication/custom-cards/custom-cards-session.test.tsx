@@ -10,7 +10,7 @@ jest.mock('../../../../src/features/communication/storage/card-database', () => 
 jest.mock('../../../../src/features/communication/custom-cards/local-image-storage', () => ({ localImages: { copy: jest.fn(), remove: jest.fn(), prune: jest.fn() } }));
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
 const mockPush = jest.fn();
-jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush }) }));
+jest.mock('expo-router', () => ({ useFocusEffect: (effect: () => void) => jest.requireActual('react').useEffect(effect, [effect]), useRouter: () => ({ push: mockPush }) }));
 let saved: CustomCard[];
 function Session() {
   const [editing, setEditing] = useState<string | null>(null);
@@ -31,6 +31,7 @@ beforeEach(() => {
 });
 it('updates the board after edit without rewriting selected snapshots; delete removes only matching occurrences', async () => {
   render(<Session />);
+  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
   await screen.findByRole('button', { name: 'Primeiro título' });
   fireEvent.press(screen.getByRole('button', { name: 'Primeiro título' }));
   fireEvent.press(screen.getByRole('button', { name: 'Sim' }));
@@ -38,9 +39,11 @@ it('updates the board after edit without rewriting selected snapshots; delete re
   fireEvent.press(screen.getByRole('button', { name: 'Editar cartão: Primeiro título' }));
   fireEvent.changeText(screen.getByLabelText('Título do cartão'), 'Título atualizado');
   fireEvent.press(screen.getByRole('button', { name: 'Salvar cartão' }));
-  await screen.findByRole('button', { name: 'Título atualizado' });
+  await screen.findByRole('button', { name: 'Abrir Comunicação' });
   expect(screen.getByLabelText('1. Primeiro título')).toBeOnTheScreen();
   expect(screen.getByLabelText('3. Primeiro título')).toBeOnTheScreen();
+  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
+  await screen.findByRole('button', { name: 'Título atualizado' });
   fireEvent.press(screen.getByRole('button', { name: 'Editar cartão: Título atualizado' }));
   fireEvent.press(screen.getByRole('button', { name: 'Excluir cartão' }));
   fireEvent.press(screen.getByRole('button', { name: 'Confirmar exclusão' }));
@@ -51,10 +54,14 @@ it('updates the board after edit without rewriting selected snapshots; delete re
 it('keeps initial cards usable after storage failure and recovers on retry', async () => {
   jest.mocked(openCardDatabase).mockRejectedValueOnce(new Error('private path'));
   render(<Session />);
+  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
   await screen.findByText(/Não foi possível abrir os cartões e favoritos salvos/);
   fireEvent.press(screen.getByRole('button', { name: 'Sim' }));
+  fireEvent.press(screen.getByRole('button', { name: 'Fechar Comunicação' }));
   expect(screen.getByLabelText('1. Sim')).toBeOnTheScreen();
+  fireEvent.press(screen.getByRole('button', { name: 'Abrir Comunicação' }));
   fireEvent.press(screen.getByRole('button', { name: 'Tentar abrir cartões novamente' }));
   expect(await screen.findByRole('button', { name: 'Primeiro título' })).toBeOnTheScreen();
+  fireEvent.press(screen.getByRole('button', { name: 'Fechar Comunicação' }));
   expect(screen.getByLabelText('1. Sim')).toBeOnTheScreen();
 });

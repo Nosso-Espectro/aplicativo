@@ -16,6 +16,7 @@ jest.mock('../../../src/features/regulation/display-preferences-database', () =>
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
 const mockPush = jest.fn(); const mockBack = jest.fn(); const mockReplace = jest.fn(); let mockHasHistory = true;
 jest.mock('expo-router', () => ({
+  useFocusEffect: (effect: () => void) => jest.requireActual('react').useEffect(effect, [effect]),
   useLocalSearchParams: () => ({}),
   useRouter: () => ({ push: mockPush, back: mockBack, replace: mockReplace, canGoBack: () => mockHasHistory }),
   Stack: (props: { screenOptions: { animation: string } }) => <MockStack {...props} />,
@@ -43,7 +44,7 @@ it('reaches the real route from the board and retains countdown while navigating
   render(<RootLayout />); await act(async () => {});
   await press('Abrir timer de transição'); expect(screen.getByRole('header', { name: 'Timer de transição' })).toBeOnTheScreen();
   fireEvent.changeText(screen.getByLabelText('Minutos do timer'), '1'); await press('Iniciar timer');
-  await press('Voltar ao quadro'); expect(screen.getByRole('header', { name: 'Comunicação' })).toBeOnTheScreen();
+  await press('Voltar ao quadro'); expect(screen.getByRole('header', { name: 'Frase' })).toBeOnTheScreen();
   act(() => jest.advanceTimersByTime(15000)); await press('Abrir timer de transição');
   expect(screen.getByRole('progressbar')).toHaveAccessibilityValue({ max: 60, now: 45 }); expect(operation).toHaveBeenCalledTimes(1);
 });
@@ -59,5 +60,5 @@ it('preserves the global low-stimulation mode, Stack animation and timer session
 it('returns safely to the board when the timer is opened without navigation history', async () => {
   render(<RootLayout />); await act(async () => {}); await press('Abrir timer de transição'); mockHasHistory = false;
   await press('Voltar ao quadro'); expect(mockReplace).toHaveBeenCalledWith('/');
-  expect(screen.getByRole('header', { name: 'Comunicação' })).toBeOnTheScreen();
+  expect(screen.getByRole('header', { name: 'Frase' })).toBeOnTheScreen();
 });

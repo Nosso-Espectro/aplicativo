@@ -158,6 +158,15 @@ aprovados antes de incorporar US-052, lint/typecheck e Expo Doctor 21/21.
 T036 permanece pendente de binário offline, TalkBack/VoiceOver e foco em aparelho.
 Os testes SQLite do host e fronteiras Expo simuladas não substituem essa evidência.
 
+## Home — US-085 / Issue #85
+
+- [x] T043 [US-085] Implementar RF-021: frase no header, ações na home e Comunicação no drawer esquerdo, reutilizando contratos atuais.
+- [x] T044 [US-085] Testar drawer/back/fechar/categorias/composição/retornos/editores/erro/mode9 e regressões CAA/voz/atalhos.
+- [x] T045 [US-085] Revisar acessibilidade/privacidade/offline/diff e executar checks leves antes da entrega.
+- [ ] T046 [US-085] Gate nativo posterior: leitores/foco real/ampliação/insets/alvos/offline em Android/iOS; mocks/build não comprovam.
+
+Evidência US085: quatro testes novos de Expo Router/providers reais, 633 Jest/84 suítes completos, 33 relacionados/5 suítes após ajustes finais de toolbar/foco e estilos; lint/tipos sem warnings, Doctor21/21,56tooling,validador/diffcheck aprovados. Drawer sem animação, fechar fixo no topo, backdrop/back, conteúdo de fundo oculto aos leitores e tentativa de foco de abertura/retorno; contratos de composição/favoritos/edição/voz e todos os atalhos preservados. Nenhuma dependência/permissão/banco/rede nova. Prévia web não validada: erro preexistente em `local-image-storage.web.ts` sem export `createLocalImageStorage`, usado por rotinas; não alterado nesta Issue. Revisão de código sem regressão impeditiva conhecida nos testes, mas T046 e gates nativos anteriores permanecem pendentes. Nenhum celular operado.
+
 ## Identidade visual solicitada — US-052 / Issue #52
 
 - [x] T040 [US-052] Gerar e salvar o ícone raster aprovado em `assets/branding/tear-icon.png`, registrar referência/prompt e preservar exatamente a imagem aprovada. Evidência: PNG RGB 1254x1254 copiado sem edição, aprovado expressamente pelo usuário e documentado em README.
