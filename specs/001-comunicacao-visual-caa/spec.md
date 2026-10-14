@@ -217,6 +217,12 @@ Validação em aparelho e build seguem no gate remoto, sem bloquear desenvolvime
 4. **Given** voz local disponível e ausência de rede, **When** reproduzir uma frase, **Then** a leitura funciona sem servidor remoto. (#3, critério 4.)
 
 
+**Correção de comandos descartados (2026-10-14, #3)**: callbacks de controles já
+desmontados não iniciam stop, consulta/fala ou lease da guarda de áudio. Preservar
+cleanup normal, interrupção e retry autorizados, tokens e liberação de leases.
+Não redefine política de blur, navegação com componente montado ou background.
+RF-009/RF-011; nenhuma nova dependência, permissão ou mudança nativa.
+
 ### US-004 — Criar e editar cartões personalizados (Priority: P0)
 
 GitHub Issue: [#4](https://github.com/Nosso-Espectro/aplicativo/issues/4)

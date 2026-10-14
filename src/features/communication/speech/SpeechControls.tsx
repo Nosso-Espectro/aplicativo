@@ -38,6 +38,7 @@ export function SpeechControls({ text }: { text: string }) {
   }, []);
 
   async function activate() {
+    if (!active.current) return;
     if (phaseRef.current === 'stopping') return;
     if (phaseRef.current === 'busy') {
       cancelled.current = true;

@@ -234,6 +234,17 @@ US-004 e US-005 seguem em branches próprias e só integram quando passarem seus
 Nenhuma história é declarada Ready/Done por constar aqui; verificar DoR, critérios originais e
 Definition of Done antes de executar e concluir cada Issue.
 
+## Correção de comandos desmontados US003
+
+- [x] T064 [US-003] RF-009/RF-011: reproduzir stop/read antigos após desmontagem e impedir efeitos antes de activate, mantendo cleanup normal, tokens e retry, sem política nova de blur/background. Evidência: dois RED reproduzidos (stop extra e pause de som indevida), três testes novos PASS incluindo StrictMode e integração com controlador de som real/engine sintético.
+- [x] T065 [US-003] Validar componentes e integração com guarda/controlador de som, engine/TTS sintéticos, StrictMode e regressões; relacionados/fullserial/lint/tipos/Doctor/tooling/validador/review/CI, mantendo T022/T024 nativos pendentes. Evidência: PR106 anexado, CI38654075840 SUCCESS2min28s no head980c3696e60ae742b2275d83b170245c7ff2f6af; conferir último commit documental antes squash e main push após integração.
+
+Evidência local #3 (2026-10-14):112 relacionados/11 suítes PASS,962Jest/105
+PASS141.327s, lint/tipos sem warnings, Doctor21/21,56toolingPASS4.730s,
+validador/diffcheck/reviewPASS. Primeiro CI do PR106 aprovado; último head
+documental/main push ainda não comprovados. T022/T024 nativos intactos.
+Sem áudio físico/host/buildlocal/phone/preview/tag/release.
+
 ## Correção de controle US004
 
 - [x] T062 [US-004] Reproduzir callbacks antigos e exclusão revogada; proteger editor por foco/ID/intenção, descartando feedback/navegação tardios sem cancelar persistência já autorizada (RF-013–RF-016). Evidência: três testes RED antes da correção, 15 testes do editor PASS e quatro testes Router/provider/SQLiteNode real PASS, incluindo commit retido após saída e confirmação revogada sem SQL.

@@ -37,6 +37,19 @@ async function open() { const view = render(<Session />); await act(async () => 
 async function play() { await act(async () => { fireEvent.press(screen.getByLabelText('Play fixture')); }); }
 async function read() { await act(async () => { fireEvent.press(screen.getByRole('button', { name: 'Ler frase' })); }); }
 
+it('does not pause ambient playback through a read command captured before voice-control unmount', async () => {
+  const view = await open();
+  let node = screen.getByRole('button', { name: 'Ler frase' });
+  while (node.parent && typeof node.props.onPress !== 'function') node = node.parent;
+  expect(typeof node.props.onPress).toBe('function'); const oldRead = node.props.onPress as () => void;
+  view.rerender(<Session voice={false} />); await play();
+  expect(context?.state).toMatchObject({ phase: 'playing', speechActive: false });
+  await act(async () => oldRead());
+  expect(engine.pause).not.toHaveBeenCalled();
+  expect(context?.state).toMatchObject({ phase: 'playing', speechActive: false });
+  expect(speech.isAvailable).not.toHaveBeenCalled(); expect(speech.speak).not.toHaveBeenCalled();
+});
+
 it('initializes without loading audio and remains usable after StrictMode replay', async () => {
   const view = render(<StrictMode><Session /></StrictMode>); await act(async () => { appEvent('active'); });
   expect(factory).not.toHaveBeenCalled(); await play(); expect(engine.play).toHaveBeenCalledTimes(1);
