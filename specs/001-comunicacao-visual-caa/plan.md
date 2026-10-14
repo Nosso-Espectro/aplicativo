@@ -67,6 +67,14 @@ checkpoint868c384 PUSH permanece separada/semPR/DoD. Após97integrada,
 mergeoriginmain na31 somente árvore limpa e repetir checks antes entrega.
 Nenhum comando CI/teste novo implementado neste refinamento; tasks unchecked.
 
+Execução97: workflow Tests alterado em uma linha; serial-ci.test.ts guarda
+comando completo/lint/types/Doctor e propagação de falha, nenhuma exclusão ou
+timeout aumentado.30relacionados3/829Jest97 serial/tiposlintsemwarnings/
+Doctor21/21/56tooling/validadordiffcheck PASS. Revisão de diff/testes/gates:
+nenhum código funcional/deps/permissão/config nativa/cancel-policy alterado.
+CI latesthead/PR e mainpush posteriores ainda devem ser observados; T060
+permanece pendente. Falha main95 não é apagada nem substituída por teste local.
+
 ## Organização vigente US088
 
 Pedido humano por imagens substitui a posição escolhida em US085: CommunicationBoard na home abaixo de SentenceComposer/header; drawer contém apenas os atalhos existentes. Estado de abertura pertence à rota home para fechar antes de router.push; Home mantém lifecycle/foco/back/backdrop e não altera contratos de dados. Quadro embutido evita SafeArea duplicada. Testes passam a abrir menu para ferramentas e compor diretamente na principal. Prévia web via US087, desktop/mobile, sem instalar celular; T053 nativo pendente. Seções US085 abaixo são histórico da organização anterior.

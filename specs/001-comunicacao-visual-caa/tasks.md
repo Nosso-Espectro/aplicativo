@@ -236,7 +236,7 @@ Definition of Done antes de executar e concluir cada Issue.
 
 ## Manutenção US097 — CI leve serial
 
-- [ ] T058 [US-097] RF-028: CI Tests usa --ci --runInBand, mesmos testes/asserts/timeouts/gates, sem retry/exclusões.
-- [ ] T059 [US-097] RF-029: teste de contrato YAML protege comando serial/lint/typecheck/Doctor; docs/Ready antes código.
+- [x] T058 [US-097] RF-028: CI Tests usa --ci --runInBand, mesmos testes/asserts/timeouts/gates, sem retry/exclusões. Evidência: diff de uma linha no workflow, suíte completa829/97 e relacionados30/3 PASS com mesmos limites.
+- [x] T059 [US-097] RF-029: teste de contrato YAML protege comando serial/lint/typecheck/Doctor; docs/Ready antes código. Evidência: serial-ci.test.ts aprovado/propagação de falhas preservada; refino/check-issue97/docsabe07df precedem código.
 - [ ] T060 [US-097] RF-030: related/fullserial/linttipos/Doctor21/21/56toolingvalidadordiffreview/CI latesthead verdes; mainpush observado, nenhuma falha ocultada.
-- [ ] T061 [US-097] RF-031: registrar run main95 FAIL e pendências nativas/artefatos/aparelho/audit, sem host/nativejob/buildlocal/phone/preview/tag/cancelretry.
+- [x] T061 [US-097] RF-031: registrar run main95 FAIL e pendências nativas/artefatos/aparelho/audit, sem host/nativejob/buildlocal/phone/preview/tag/cancelretry. Evidência: plano e Issue97 mantêm run38610475617FAIL e hipótese explícita; registro NÃO aprova build/assinatura/offline/assistivo.
