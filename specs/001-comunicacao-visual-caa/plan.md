@@ -75,6 +75,12 @@ nenhum código funcional/deps/permissão/config nativa/cancel-policy alterado.
 CI latesthead/PR e mainpush posteriores ainda devem ser observados; T060
 permanece pendente. Falha main95 não é apagada nem substituída por teste local.
 
+PR98 anexado, CI38612269263 SUCCESS2min15s no head d3166b9, incluindo Doctor.
+T060 verificada pelos checks locais/CI e observação explícita da main95FAIL;
+antes squash reconferir CI último commit documental, após integração observar
+mainpush novo e registrar resultado na Issue/PR sem ocultar falha.
+Nenhum retry/cancel/nativejob disparado; Android/iOS SKIPPED não são builds.
+
 ## Organização vigente US088
 
 Pedido humano por imagens substitui a posição escolhida em US085: CommunicationBoard na home abaixo de SentenceComposer/header; drawer contém apenas os atalhos existentes. Estado de abertura pertence à rota home para fechar antes de router.push; Home mantém lifecycle/foco/back/backdrop e não altera contratos de dados. Quadro embutido evita SafeArea duplicada. Testes passam a abrir menu para ferramentas e compor diretamente na principal. Prévia web via US087, desktop/mobile, sem instalar celular; T053 nativo pendente. Seções US085 abaixo são histórico da organização anterior.
