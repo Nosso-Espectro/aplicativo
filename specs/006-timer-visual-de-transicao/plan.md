@@ -69,6 +69,30 @@ Testar modelo/tempo/identidade/reconciliação/persistência/UI/mocks de capacid
 gate nativo deve validar relógio/background/cancelamento/entrega/permissões/som/
 vibração/assistivo/offline, sem promessa após force-stop/reboot/restrições.
 
+Persistência US018 preparada em timer-schema.ts/progress-alert-database.ts:
+mesmo arquivo tear-transition-timer.db, schema2 transacional preserva sessão v1
+running/paused sem redefinir duração/deadline/restante. Contador inteiro de sessão
+e revisão persistidos, preferências bool/IDs, marcos registrados e IDs próprios
+de notificações pendentes; nenhum histórico de atividade. Pausar/retomar mantém
+identidade e marcos, iniciar incrementa identidade e limpa marcos da sessão
+anterior. Cancelar não perde IDs nativos pendentes: forget somente após confirmação
+de cancelamento pelo motor, nunca presumir remoção por apagar timer/preferência.
+Reservar intenção antes do RPC cria ID próprio com sessão/marco/revisão, valida
+consentimento/futuro/seleção e impede reserva duplicada ou com IDs da sessão velha.
+Revisões esperadas impedem alterações obsoletas; fila/transação/readback/rollback
+publica só após commit. markDelivered registra decisão do controller e não é
+prova de entrega pelo OS; consumo/reconciliação real ainda a implementar/testar.
+openTimerDatabase mantém read/act e formato TimerSession antigos para módulos
+existentes; quarto argumento opcional expectedSessionNumber deve ser usado pelo
+novo coordenador para recusar alvo de outra identidade mesmo com valores iguais.
+openProgressAlertDatabase expõe snapshot/read/savePreferences/reserve/forget/
+markDelivered. Dois stores usam transações exclusivas do mesmo arquivo e filas
+locais; conflito/SQLITE_BUSY deve ser tratado com retry, não presumir FIFO global
+entre conexões. Futuro schema recusado, metadata ausente não recria identidade.
+Provider/tela/motor nativos ainda não usam essas APIs; nenhuma task de aceitação
+concluída por persistência isolada. SQLite real do Node não comprova SQLite Expo
+nem cancelamento/avisos no dispositivo.
+
 US-017: sessão inicialmente null, depois running/paused/finished, duração e
 restante em milissegundos e término absoluto quando running; validação estrita
 de duração1s–24h e estados coerentes. Relógio recebido pelos cálculos para testes,

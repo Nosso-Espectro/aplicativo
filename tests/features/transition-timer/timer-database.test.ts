@@ -85,8 +85,8 @@ it('detects corrupt state and refuses future schemas without clearing or downgra
   const db = await openTimerDatabase(); const started = await db.act({ type: 'start', durationMs: 10000 }, 1000, null);
   connections[0].exec('UPDATE timer_session SET remaining_ms = -1;'); await expect(db.read()).rejects.toThrow('Invalid timer session.');
   connections[0].prepare('UPDATE timer_session SET remaining_ms = ?').run(started!.remainingMs);
-  connections[0].exec('PRAGMA user_version=2;'); await expect(openTimerDatabase()).rejects.toThrow('Timer storage unavailable.');
-  expect(connections[0].prepare('PRAGMA user_version').get()).toEqual({ user_version: 2 }); expect(await db.read()).toEqual(started);
+  connections[0].exec('PRAGMA user_version=3;'); await expect(openTimerDatabase()).rejects.toThrow('Timer storage unavailable.');
+  expect(connections[0].prepare('PRAGMA user_version').get()).toEqual({ user_version: 3 }); expect(await db.read()).toEqual(started);
 });
 it('cancels only the timer, preserving mode and plan data', async () => {
   const display = await openDisplayPreferencesDatabase(); await display.save({ enabled: true });
