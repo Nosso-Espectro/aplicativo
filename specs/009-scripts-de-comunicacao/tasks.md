@@ -18,6 +18,8 @@ Ready após recomendação funcional documentada sob delegação humana. Cinco t
 
 ## US-024 — Issue #24
 
+Refinamento recomendado documentado sob delegação funcional vigente: scripts pessoais locais/cópia inicial independente/categoria cinco+Outros/draftsavecancel/removeconfirmado/favoritos iniciais e pessoais/filtroordemestável. Modelo/SQLite privado/provider/rotas/TTS confirmado/guardsons/stop/indisponível/testesreais e revisão antes marcar tasks. Sem inicial mutável/DB de outro módulo/autoplay/voz de drafts/rede/history/permissão nova.
+
 - [ ] T006 [US-024] Em `src/features/communication-scripts/script-editor`, atender RF-004 (critério 1 de #24): Deve ser possível criar, editar, excluir e favoritar scripts. Verificar com o cenário correspondente no PR.
 - [ ] T007 [US-024] Em `src/features/communication-scripts/script-editor`, atender RF-005 (critério 2 de #24): Os scripts personalizados devem ficar salvos localmente. Verificar com o cenário correspondente no PR.
 - [ ] T008 [US-024] Em `src/features/communication-scripts/script-editor`, atender RF-006 (critério 3 de #24): O usuário deve poder usar um script no Text-to-Speech. Verificar com o cenário correspondente no PR.
@@ -27,3 +29,4 @@ Ready após recomendação funcional documentada sob delegação humana. Cinco t
 ## Gate nativo separado
 
 - [ ] T011 [US-023] No SHA integrado, verificar clipboard literal real/copiar com um toque/retornos offline/readers/foco/ampliação/insets/alvos/mode9/sem estímulos inesperados. Mocks/build não comprovam essas validações; instalação em aparelho continua requerendo autorização específica.
+- [ ] T012 [US-024] No SHA integrado, verificar SQLiteExpo/reaberturaoffline/backups/favoritos/isolamento, vozlocalptBR/prioridadesons/stop/ownership/foco/readers/ampliação/insets/alvos/modo9 em aparelho/simulador. Build/mocks/SQLiteNode não comprovam; instalação exige autorização específica.

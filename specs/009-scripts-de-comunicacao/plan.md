@@ -33,6 +33,10 @@ Representação física, tipos e migrações serão definidos após a escolha t�
 
 ## Persistência
 
+US024 Ready: implementar modelo script pessoal `{id,revision,text,categoryId}` e favoritos por identidade fonte+ID em DB privado schema1 `tear-communication-scripts.db`. Reusar padrões SQLite já reais: fila exclusiva, TX/readback antescommit/rollback, revisão safe, future-schema/corrupção/stale/removido recusados, filhos/removal explícitos quando aplicável. Catálogo inicial não persiste texto editado. Favoritos iniciais/pessoais só publicam após commit; remover pessoal remove favorito próprio sem tocar outros módulos. Reabertura offline deve preservar favoritos/texto/categoria/IDs/ordem. Nenhum histórico de leitura/cópia ou PIIs em logs/params.
+
+UI024: provider local sob layoutScripts com loading/error/retry/busy, draft separado/revisão inicial/savecancel, exclusão alvo confirmado, cópia inicial independente, categoria cinco+Outros, filtro favoritos/order estável. Rotas editor/detail/retornos/fallback. TTS reutiliza contratos reais `SpeechControls/localSpeech/useSoundSpeechGuard` após revisar ownership/callbacks/stop/unmount/indisponibilidade. Somente script confirmado, uma leitura humana por vez, no autoplay/draft/envio/permissão nova/refactor alheio. Testar UI/router/SQLiteNode real, falhas/stale/rollback/reopen/voice boundary explicitamente; mocks não comprovam SQLiteExpo/voz real.
+
 Persistir scripts personalizados (#24); copiar texto somente por ação do usuário (#23).
 
 US023 não persiste histórico da cópia nem lê/limpa clipboard. API escreve somente o texto do item confirmado por escolha explícita; ref-inflight impede duplicatas, callbacks desmontados não publicam feedback, falha permite retry manual sem expor erro bruto. Sucesso só após a escrita resolver verdadeira; retorno falso/erro não aparenta cópia.
