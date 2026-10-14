@@ -2,6 +2,64 @@
 
 Spec: [spec.md](spec.md). Milestone #21; Issues #31, #32. Plano proposto, sujeito às questões em aberto.
 
+## Plano vigente US031
+
+Retomada após97: PR98 MERGED/main2bb0ec7, PRCI38612713569SUCCESS1min53s
+e mainpush38613136392SUCCESS2min10s com Tests serial/Doctor. Main95FAIL
+continua histórico, contenção não é causa comprovada. Branch31 recebeu
+origin/main por merge e7e1618 em árvore limpa/sem conflitos, sem reescrever
+histórico ou reimplementar modelo/provider/UI. Repetir checks neste estado
+antes T005/PR/DoD; registros de bloqueio95/97 abaixo são históricos.
+
+Checks pós-merge97:28 novos/204relacionados17/857Jest99 serial PASS,
+tipos/lint sem warnings, Doctor21/21,56tooling/validadordiffcheck PASS.
+Revisão manual de modelo/provider/tela/rota/testes/RF-RNF/privacidade/offline:
+nenhuma regressão impeditiva identificada. Diff contra main somente meditação
+e atalho drawer/documentos13, sem pacote/config/permissão/banco/voz alterado.
+T005 aguarda PR/CI último head; T011 assistivo/reflow/foco/insets/clockbg
+e offline em binário real permanece PENDENTE. Preview8093/aparelho intactos.
+
+PR99 anexado, CI38614583004 SUCCESS2min4s no head2865b65; T005 verificada.
+Antes squash autorizado reconferir último commit documental verde e, após
+integração, observar mainpush. Android/iOS SKIPPED NÃO builds. T011 continua
+pendente, guia32 não Ready, nenhuma milestone/release/instalação autorizada.
+
+Atualização após manutenção95: PR96 MERGED/main2af9db2 em2026-10-14T17:53Z,
+CI38610210270SUCCESS1min15s e Doctor21/21 da manutenção. Branch31 recebeu
+origin/main por merge d5471c9 somente árvore limpa, sem conflitos/rebase/force.
+Bloqueio Doctor20/21 do checkpoint abaixo é HISTÓRICO/resolvido pela95.
+Nenhum modelo/provider/UI31 reimplementado ou dependência adicional31.
+Repetir related/fullJestserial/tiposlintDoctor56tooling/validadordiffreview e
+CI do último head31 antes concluir T005/PR/DoD. Contagens anteriores não são
+atestação do estado pós-merge; T011 nativo continua PENDENTE.
+
+Pós-merge95:203relacionados16/856Jest98/linttipossemwarnings/Doctor21/21 PASS.
+Main95push38610475617 teve825PASS/3FAIL: dois testes de navegação excederam
+5000ms e houve falha subsequente; PR96CI verde não oculta esse run. Workflow
+usa paralelismo padrão Jest. [Issue97](https://github.com/Nosso-Espectro/aplicativo/issues/97)
+separa execução serial do CI leve com mesmos testes/asserts/timeouts/gates.
+Contenção é hipótese, não causa comprovada ou defeito funcional descartado.
+Preservar31 em checkpoint/semPR/DoD enquanto manutenção97 é validada;
+após main97 repetir checks31. Não rerun/cancelar jobs nem ampliar timeout.
+
+Checkpoint de qualidade:855Jest98/200relacionados15/tipos/lint semwarnings/56tooling/validadordiffcheck PASS. Doctor ATUAL20/21 FALHA por seis patches ExpoSDK57 novos, não regressão atribuída à31 (manifest/lock idênticos àmain3172bbd). Primeiro timeout de schema resolvido com DNSIPv4 somente no comando; mismatch permanece. [Issue95](https://github.com/Nosso-Espectro/aplicativo/issues/95) separa manutenção da base/patches/changelogs/licenças/API/lock/gates, sem suprimir checks. T005 NÃO verificada/semPR/DoD/entrega31. Preservar código em checkpoint na branch31, integrar main após95 somente árvore limpa e repetir checks antes PR. Nenhuma dependência atualizada31/host/phone/preview/build operado. Falha anterior lint owner/setState corrigida via publicação assíncrona guardada e ready/StrictMode testados; não repetir nem esconder bloqueio Doctor atual.
+
+Implementação31: meditation-model.ts/provider/tela/rota /meditation/Ferramentas reais. Duração1-180/draft10/presets5,10,20,30/start explícito/minimal/restante/pausa-retomada/encerrar/nova prática/geração/clockinvalid-regressivo-overflow/finishúnico/resultado efêmero; aviso visual defaultOFF/optinpolite/dismiss sem replay, nenhum áudio/vibração/TTS/notificação. Provider publica owner assíncrono guardado após cleanup inicialStrictMode; comandos bloqueados até ready, callbacks capturam owner/revisão, intervalo obsoleto não atinge retomada; AppState reconcilia sem promessaJSsuspenso/processomorto. Backfocado/gestosdesabilitados/confirmarsaída/blurdiscard/reentradavazia/fallback/48dp/input-switchhitSlop/wrap/textoescalável/mode9; quadroHome/headerFrase/drawer preservados.
+
+28 testes novos (17modelo/11Router-provider),200relacionados15 e855Jest98 completos PASS. Fonte RN0.86 HardwareBackPressEvent(type/timeStamp) conferida; fixtureRouter reinstala Date.now spy após renderRouter, sem falsa API/timeout/supressão. Fetch rejeitado nos testes de fluxo, sem chamadas; memória apenas/semDB-deps-permissões-conta-rede-histórico/PII/conteúdo clínico. Review do código/RF/RNF/privacidade/offline/UI/isolamento não encontrou regressão impeditiva; readers/reflow/foco/clockbg/lock reais continuam T011. T001-T004 verificadas, T005 aguarda checks finais/CI; nenhuma operação de host/jobs/buildlocal/phone/preview8093. Este estado substitui a ausência de código descrita no refinamento histórico abaixo.
+
+Base integrada3172bbd/US030. Refino funcional [Issue31](https://github.com/Nosso-Espectro/aplicativo/issues/31#issuecomment-6173145689); Ready somente31, guia32 não Ready. Expo57/RN0.86/React19/TSstrict/Router/Node24.21.0/npm11.19.0 reais; os estados históricos de ausência de stack abaixo não são instruções atuais. Nenhum código31 implementado/tasks verificadas neste refinamento.
+
+Ler e seguir os padrões reais de focus/StopwatchProvider/StopwatchScreen, PomodoroProvider/model e transition-timer/visual-timer sem alterar sessões/avisos/bancos existentes. Modelo próprio de contagem regressiva efêmera: duração1-180min/configuração de aviso visualOFF-ON capturadas no iniciar; restante confirmado/baseline/lastclock/revisões, comandos pause/resume/end/new e finish único. Clock inválido/regressivo/overflow pausa preservando restante confirmado e opção de aviso; recomeço inválido não apaga resultado. Tick somente da sessão running, sem decremento artificial por intervalo ou revisões por render. Sem DB/histórico/player/permissão/deps/rede.
+
+Provider de sessão/owner, clock Date.now e AppState conforme padrões existentes: reconciliação ao retornar, callbacks capturados/revisão/stale/dup/dispose e saída descartam efêmero sem atingir outras ferramentas; não prometer execução JS suspensa/processo morto. Resultado final permanece apenas na tela, aviso visual/polite somente se escolhido antes de iniciar/defaultOFF, nunca mídia/notificação/TTS/haptic. Não criar handler global nem repetir conclusão.
+
+UI/rota fina /meditation, acesso na lista Ferramentas: configuração separada durationdraft10/presets5,10,20,30 e switch aviso defaultOFF, iniciar humano; prática minimalista com restante/pausa-retomada/encerrar, nova sessão explícita; confirmar sair ativa-paused, hardwareback focado/gestos/blur externo/unmount/fallback e reentrada vazia. SafeArea/48dp/wrap/texto escalável/foco/mode9; sem conteúdo clínico/guia32. Preservar headerFrase/boardHome/toolsdrawer88 e todos contratos Timer/Pomodoro/cronômetro/sons/CAA.
+
+Testar modelo/provider/Router reais (fronteiras nativas simuladas apenas onde necessárias): intervalo/overflow/defaultOFF/draft/avisoON-OFF/fim único/clockbg/invalid-regressivo/stale/dup/unmount/saídas/retornos/fallback/mode9/offline e regressões relacionadas, fullJest serial/linttipos/Doctor56toolingvalidadordiffreview/CI leve antes DoD. Task só após comportamento; T011 nativo posterior no SHA integrado verifica leitores/ampliação/insets/alvos/foco/offline/clockbg/lock/backgestos. Sem build local/host/jobs/celular/preview8093 nesta Issue; docs não aprovam release.
+
+As seções seguintes são histórico documental de2026-09-23 e não afirmam ausência atual da stack.
+
 ## Stack
 
 Inspeção em 2026-09-23: repositório sem código de aplicação, package.json, dependências ou ferramentas de build/teste. React Native e primeira versão sem backend são diretrizes explícitas do projeto, ainda não implementadas. Expo, linguagem, navegação e biblioteca de persistência não foram escolhidos. Não assumir stack web, banco ou servidor.
