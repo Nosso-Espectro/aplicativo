@@ -11,7 +11,7 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P1 — Divisor de Tarefas](https://github.com/Nosso-Espectro/aplicativo/milestone/15) (número 15).
 
-US-019 Ready após refinamento vivo; ambas histórias continuam abertas e não implementadas. US-020 tem questões próprias pendentes, sem aprovação de milestone/release.
+US-019 verificada localmente após refinamento vivo; PR/integração ainda pendentes. US-020 tem questões próprias pendentes, sem aprovação de milestone/release. Gate nativo US-019 permanece aberto.
 
 ## Contexto
 

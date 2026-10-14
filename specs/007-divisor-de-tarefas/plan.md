@@ -145,3 +145,26 @@ commit tardio/desmontagem, stale removido, StrictMode/abertura e progresso/remov
 confirmados. Lista/detail/checkbox visível/rotas/entrada no quadro ainda faltam;
 editor não está exposto no aplicativo e todas tasks de aceitação permanecem
 pendentes. Testes de UI não provam leitor de tela, foco ou SQLite Expo nativos.
+
+Fluxo US-019 agora integrado: /tasks com TaskProvider em layout próprio e animação
+do modo global; entrada Abrir tarefas no quadro, lista inicial vazia, criação,
+detail/checkbox reversível, editor e retornos/fallback reais. Progresso explícito
+0de0/0% em tarefa vazia; nenhum início automático. Remoção da tarefa confirma
+snapshot/revisão e só apaga seus dados; falha/commit pendente não alteram checkbox
+nem afirmam exclusão. Confirmação de etapa continua só no draft até salvar.
+Seis testes navigation usam Expo Router real e SQLite Node temporário: entrada/
+CRUD/ordem/progresso/reabertura offline, vazio/isolamento, rollback/retry,
+duplicata/pending antes commit, erro de abertura/fallback e modo9/draft cancel.
+Total30relacionados/4suítes. Revisão local: texto202124/branco, controles48dp,
+semântica checkbox/header/alert/polite, fonte escalável/scroll/SafeArea/teclado,
+sem animação/som inesperado, contraste e feedback independente de cor; sem PII
+em rotas (apenasID), rede/permissão/dependência nova ou alteração de outro banco.
+Preservar contratos de revisão/commit e repetir suíte completa/checks/CI antes
+integrar. T001–T006 verificadas; T012 nativo/assistivo/SQLiteExpo/offline/backups
+pendente, sem alegar conformidade WCAG completa. PR/Issue ainda não concluídos
+neste registro; US-020/modelos/catálogo continuam fora do escopo.
+
+Verificação de entrega local: 527 testes Jest/71 suítes completos, 30 relacionados/
+4 suítes, lint/typecheck sem warnings, Doctor21/21, 56 testes Python de tooling,
+validador e diff-check aprovados. Origin/main confirmado2379922 antes do PR;
+nenhuma dependência/nativo/build/host/aparelho operados nesta entrega.

@@ -1,6 +1,6 @@
 # Tasks — Divisor de Tarefas
 
-Milestone #15: [spec.md](spec.md) e [plan.md](plan.md). US-019 Ready em2026-10-14 após refinamento vivo; todas tasks pendentes e nenhuma implementação alegada.
+Milestone #15: [spec.md](spec.md) e [plan.md](plan.md). US-019 implementada e verificada localmente em2026-10-14; integração por PR ainda pendente. US-020 permanece fora desta entrega. Gates nativos não são substituídos pelos testes locais.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -8,12 +8,13 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 
 ## US-019 — Issue #19
 
-- [ ] T001 [US-019] Em `src/features/task-breakdown/task-editor`, atender RF-001 (critério 1 de #19): Deve ser possível criar uma tarefa principal. Verificar com o cenário correspondente no PR.
-- [ ] T002 [US-019] Em `src/features/task-breakdown/task-editor`, atender RF-002 (critério 2 de #19): O usuário deve poder adicionar, editar, ordenar e remover subtarefas. Verificar com o cenário correspondente no PR.
-- [ ] T003 [US-019] Em `src/features/task-breakdown/task-editor`, atender RF-003 (critério 3 de #19): Cada subtarefa deve poder ser marcada como concluída. Verificar com o cenário correspondente no PR.
-- [ ] T004 [US-019] Em `src/features/task-breakdown/task-editor`, atender RF-004 (critério 4 de #19): O progresso da tarefa deve ser persistido localmente. Verificar com o cenário correspondente no PR.
-- [ ] T005 [US-019] Adicionar testes de comportamento de RF-001, RF-002, RF-003, RF-004 em `tests/features/task-breakdown/task-editor`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
-- [ ] T006 [US-019] Revisar RNF-001 a RNF-004 na interface/dados de #19, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+- [x] T001 [US-019] RF-001: TaskEditor/tasks/new permite criar principal com título obrigatório e tarefa vazia válida; task-navigation verifica entrada real pelo quadro e persistência.
+- [x] T002 [US-019] RF-002: TaskEditor adiciona/edita/ordena/remove etapas confirmadas, preservando IDs/status; task-editor/model/database/navigation verificam draft, cancelamento e persistência.
+- [x] T003 [US-019] RF-003: TaskDetail oferece checkbox reversível; provider/database publicam somente após commit. Testes navigation verificam pending/duplicatas/rollback sem sucesso prematuro.
+- [x] T004 [US-019] RF-004: task-database.ts schema1 privado/fila/transação/readback/revisão/rollback/future-schema; testes SQLite Node verificam reabertura offline, isolamento e stale removido.
+- [x] T005 [US-019] 30 testes relacionados/4 suítes cobrem RF-001–RF-004 com fixtures sintéticas, fluxo real de rotas e erros/vazio/retry/cancelamento.
+- [x] T006 [US-019] Revisão local RNF-001–RNF-004 registrada no plan.md: alvos48dp/texto/contraste/controle/sem rede-permissão-dependência nova, armazenamento isolado e modo9 preservado. Gate nativo T012 permanece aberto.
+- [ ] T012 [US-019] No gate da milestone verificar SQLite Expo/offline/backups e dispositivo/assistivo: TalkBack/VoiceOver/foco/ampliação/teclado/insets/scroll/alvos48dp/retorno e controles de progresso/confirmar remoção. SQLite Node e mocks não comprovam esses resultados.
 
 ## US-020 — Issue #20
 
