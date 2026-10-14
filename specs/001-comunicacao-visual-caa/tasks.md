@@ -233,3 +233,10 @@ mapeamento no backlog. Depois, validar composição da US-002; TTS da US-003 dep
 US-004 e US-005 seguem em branches próprias e só integram quando passarem seus testes e checks.
 Nenhuma história é declarada Ready/Done por constar aqui; verificar DoR, critérios originais e
 Definition of Done antes de executar e concluir cada Issue.
+
+## Manutenção US097 — CI leve serial
+
+- [ ] T058 [US-097] RF-028: CI Tests usa --ci --runInBand, mesmos testes/asserts/timeouts/gates, sem retry/exclusões.
+- [ ] T059 [US-097] RF-029: teste de contrato YAML protege comando serial/lint/typecheck/Doctor; docs/Ready antes código.
+- [ ] T060 [US-097] RF-030: related/fullserial/linttipos/Doctor21/21/56toolingvalidadordiffreview/CI latesthead verdes; mainpush observado, nenhuma falha ocultada.
+- [ ] T061 [US-097] RF-031: registrar run main95 FAIL e pendências nativas/artefatos/aparelho/audit, sem host/nativejob/buildlocal/phone/preview/tag/cancelretry.

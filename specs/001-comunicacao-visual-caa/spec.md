@@ -3,7 +3,7 @@ milestone: 9
 priority: P0
 tag: m001-comunicacao-visual-caa
 status: draft
-ready_stories: ["US-041", "US-001", "US-002", "US-003", "US-004", "US-005", "US-052", "US-085", "US-087", "US-088", "US-095"]
+ready_stories: ["US-041", "US-001", "US-002", "US-003", "US-004", "US-005", "US-052", "US-085", "US-087", "US-088", "US-095", "US-097"]
 source_checked: 2026-10-14
 ---
 
@@ -342,6 +342,24 @@ Correção humana em 2026-10-14 com duas imagens: primeira na principal, segunda
 
 **Teste independente**: compor diretamente na home; abrir menu, escolher ferramenta e retornar com frase preservada. RF-023, T050–T053. Não instalar celular nem implementar navegação inferior/sharing.
 
+### US-097 — Executar testes do CI leve em serie (Priority: P0)
+
+GitHub Issue: [#97](https://github.com/Nosso-Espectro/aplicativo/issues/97)
+
+Como mantenedor, quero executar a suite Jest do CI leve em serie, para reduzir contencao entre navegacoes e validar as mesmas regressoes sem relaxar assertions ou timeouts.
+
+#### Critérios de aceite
+
+- [ ] Workflow CI executa a mesma suite completa com --ci --runInBand, sem excluir testes, alterar timeouts ou reduzir asserts; builds nativos permanecem manuais e gates iguais.
+- [ ] Teste de contrato protege comando serial e checks lint/typecheck/Doctor existentes, fontes/documents/specplan/tasksReady sincronizados antes codigo.
+- [ ] Related/fullJestserial/linttipos/Doctor21/21/56tooling/validadordiffcheck/review e CI leve latesthead PASS antes squash; conferir mainpush sem ocultar falhas.
+- [ ] Registrar mainpush95 FAIL e limites nativos/artefatos/aparelho/audit pendentes; nenhum host/nativejob/buildlocal/phone/preview/tagrelease/cancelretry operado.
+
+**Teste independente**: mesma suíte/checks sem supressão, CI serial latesthead e
+mainpush observados. Run38610475617 main95 teve825PASS/3FAIL após dois timeouts;
+contenção é hipótese, não causa comprovada. Ready técnico registrado na Issue97
+antes código, manutenção isolada da US031. RF-028 a RF-031; T058 a T061.
+
 ### US-095 — Alinhar patches do Expo SDK 57 (Priority: P0)
 
 GitHub Issue: [#95](https://github.com/Nosso-Espectro/aplicativo/issues/95)
@@ -431,6 +449,10 @@ Os IDs RF existentes são preservados para não romper o vínculo com plano e ta
 - **RF-025** — Revisar fontes/changelogs/licenças/notices/API utilizadas, sem falsa aprovação nativa. (#95, critério2.)
 - **RF-026** — Executar checks locais/CI leve reais verdes sem suprimir falhas. (#95, critério3.)
 - **RF-027** — Manter builds/artefatos/fluxos reais no gate integrado, sem APK antigo ou instalação automática. (#95, critério4.)
+- **RF-028** — Executar a mesma suíte CI em série sem alterar assertions/timeouts/gates. (#97, critério1.)
+- **RF-029** — Proteger comando serial e checks existentes por teste de contrato. (#97, critério2.)
+- **RF-030** — Validar checks reais/CI latesthead e observar mainpush sem ocultar falha. (#97, critério3.)
+- **RF-031** — Registrar falha main95 e manter limites nativos/host/aparelho pendentes. (#97, critério4.)
 
 Detalhamento de RF-008 aprovado em Clarify (2026-09-23, US-002/#2): a composição
 permanece durante a sessão, inclusive em segundo plano sem encerramento. Após encerramento
@@ -629,6 +651,10 @@ Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma
 | RF-025 | [#95](https://github.com/Nosso-Espectro/aplicativo/issues/95) | US-095 | T055 |
 | RF-026 | [#95](https://github.com/Nosso-Espectro/aplicativo/issues/95) | US-095 | T056 |
 | RF-027 | [#95](https://github.com/Nosso-Espectro/aplicativo/issues/95) | US-095 | T057 |
+| RF-028 | [#97](https://github.com/Nosso-Espectro/aplicativo/issues/97) | US-097 | T058 |
+| RF-029 | [#97](https://github.com/Nosso-Espectro/aplicativo/issues/97) | US-097 | T059 |
+| RF-030 | [#97](https://github.com/Nosso-Espectro/aplicativo/issues/97) | US-097 | T060 |
+| RF-031 | [#97](https://github.com/Nosso-Espectro/aplicativo/issues/97) | US-097 | T061 |
 | RNF-001 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |
 | RNF-002 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |
 | RNF-003 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |
