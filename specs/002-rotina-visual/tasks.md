@@ -46,3 +46,8 @@ offline no binário ainda pendentes; testes do host não substituem essas evidê
 T017: revisão estática de contraste, nomes, texto escalável, alvos 48dp, estados
 vazios/erros e nenhuma transmissão de conteúdo realizada. Leitor de tela, foco,
 offline e interrupção/reabertura do binário permanecem pendentes. Nenhum build local.
+
+## Correção de ciclo de vida — US-006 / Issue #6
+
+- [ ] T018 [US-006] Reproduzir commit pendente/desmontagem e proteger comandos/continuações do editor por owner de montagem/foco; preservar commit autorizado, save/retry atual e contratos de reordenação, sem novo schema/dependências/permissões.
+- [ ] T019 [US-006] Testar sucesso/falha tardios, blur/retorno/callbacks antigos/StrictMode; revisar UI/privacidade/diff e executar related/full Jest serial, lint/tipos/Doctor/tooling/validador e CI do último head antes integração. Não fechar #6 nem marcar T006/T011/T017 nativos.

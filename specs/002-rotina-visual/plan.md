@@ -84,6 +84,18 @@ Base integrada da US-041 e fronteiras locais de imagem da US-004 reutilizadas. S
 
 ## Riscos
 
+### Correção US-006: continuações do editor
+
+Reprodução inicial: manter save pendente, desmontar o editor e resolver o commit;
+o fechamento antigo não pode navegar. Rotas fornecem o estado de foco real do
+Router. O editor captura um owner por ativação (montagem/foco), invalidado na
+limpeza; uma nova ativação não aceita o owner anterior. Comandos antigos não
+iniciam save/picker; continuações antigas não publicam feedback nem fechamento.
+O finally libera somente o busy da operação/ativação correspondente. Preservar
+gravações já autorizadas, provider/DAO, schema, permissões e dependências.
+Testar sucesso/falha tardios, unmount/blur/retorno, callbacks antigos, StrictMode
+e sucesso/retry atual. T006/T011/T017 continuam pendentes no gate nativo.
+
 Rotina vazia, imagem ausente, falha de persistência e etapa removida durante edição; preservar ordem/status (#6–#8).
 
 Refinamentos de #6/#7/#8 foram registrados nas Issues sob delegação do usuário. Validação de imagens, progresso persistido, operação offline e acessibilidade em Android/iOS permanece necessária para o gate; a base/host não comprovam suporte em todas as versões mínimas. Ver [auditoria](../../docs/backlog-audit.md).
