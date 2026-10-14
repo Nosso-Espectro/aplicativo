@@ -3,7 +3,7 @@ milestone: 16
 priority: P1
 tag: m008-check-in-corporal-e-sensorial
 status: draft
-ready_stories: ["US-021"]
+ready_stories: ["US-021", "US-022"]
 source_checked: 2026-10-14
 ---
 
@@ -11,7 +11,7 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P1 — Check-in Corporal e Sensorial](https://github.com/Nosso-Espectro/aplicativo/milestone/16) (número 16).
 
-Estado consultado: aberta; todas as histórias abaixo estão abertas. Especificação em revisão, não implementação concluída.
+Estado consultado em2026-10-14: #21 integrada pelo PR78/fechada; #22 aprovada e Ready, ainda sem implementação. Gates nativos pendentes; nenhuma release pronta.
 
 ## Contexto
 
@@ -93,7 +93,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Para #21: resumo, sugestões e atalhos de #22, histórico, banco de respostas, IA, backend, sincronização, novas permissões, áudio e animação. #22 ainda não Ready.
+Histórico, banco de respostas, IA, backend, sincronização, novas permissões, voz/envio/ações automáticas, lembretes P2 e interpretação clínica. #21 entregou perguntas; #22 estende o mesmo fluxo com resumo/atalhos aprovados abaixo.
 
 ## Refinamento aprovado de US-021 (2026-10-14)
 
@@ -102,9 +102,19 @@ Aprovação humana: [registro em #21](https://github.com/Nosso-Espectro/aplicati
 - Oito perguntas locais: sede, fome, dor, cansaço, incômodo com ruído, incômodo com luz, temperatura e vontade de ficar sozinho.
 - Sete perguntas usam Sim/Não/Não sei; temperatura usa Frio/Confortável/Calor/Não sei. Nenhuma opção inicialmente selecionada.
 - Uma pergunta por tela, seleção reversível, continuar explicitamente ou pular. Voltar preserva a resposta na sessão; pular remove eventual resposta anterior, sem inferir resposta.
-- Respostas somente em memória durante o check-in. Sair, finalizar ou desmontar a rota descarta a sessão; nova entrada começa vazia. Não há resumo, diagnóstico nem prescrição nesta história.
+- Respostas somente em memória durante o check-in. #21 isolada descartava ao finalizar; #22 agora estende explicitamente a sessão até sair do resumo. Sair/desmontar continua descartando; nova entrada começa vazia. Sem diagnóstico ou prescrição.
 - Entrada pelo quadro, rota própria, retorno ao quadro mesmo por entrada direta. Alvos de pelo menos 48dp, texto escalável, sem áudio/animação inesperada; modo de baixa estimulação preservado.
 - Uso útil sem rede, sem DB/API/permissões novas e sem respostas em parâmetros de navegação, logs ou telemetria.
+
+## Refinamento aprovado de US-022 (2026-10-14)
+
+Aprovação e delegação de próximas decisões funcionais: [registro em #22](https://github.com/Nosso-Espectro/aplicativo/issues/22#issuecomment-6164360679). Critérios originais preservados.
+
+- Finalizar perguntas mostra resumo literal dos itens respondidos na ordem das perguntas. Sim/Não/Não sei e a escala de temperatura são apresentados sem inferência, diagnóstico ou classificação. Perguntas puladas ausentes, resumo vazio com mensagem neutra.
+- Respostas somente em memória até sair do resumo. Voltar ao quadro, abrir ferramenta, back/blur/unmount descarta. Nova entrada vazia. Nenhum histórico, DB ou respostas em params/logs/rede.
+- Possibilidades opcionais neutras: “Você pode abrir o painel de regulação” e “Você pode revisar seu contato de confiança”. Disponíveis independentemente das respostas, sem prescrição, execução ou estímulo automático.
+- Atalhos explícitos às rotas existentes de regulação/contato; Água abre apenas cartão CAA local existente para exibição, sem adicionar à frase/voz/envio/lembrete automático. Ausência do cartão oferece fallback neutro e retorno ao quadro.
+- SafeArea/ScrollView/texto escalável/alvos48dp/mode9, sem novas dependências ou permissões. Testes nativos/assistivos continuam gate separado.
 
 ## Dependências funcionais
 
@@ -121,9 +131,9 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-CHECK-01 — Escalas de #21 resolvidas pelo refinamento aprovado acima; sugestões e revisão do conteúdo de #22 permanecem pendentes. Não inferir diagnóstico.
-- Q-CHECK-02 — “Água” em #22 é cartão CAA (#1) ou lembretes P2 (#29)? Resolver destino antes de implementar atalho.
-- Q-CHECK-03 — #21 resolvida: respostas efêmeras somente em memória na sessão. Retenção/transição para resumo de #22 deve ser refinada nessa história; coleta para Histórico P3 (#38) não autorizada.
+- Q-CHECK-01 — Resolvida: escalas de #21 e possibilidades neutras de #22 aprovadas acima. Não inferir diagnóstico.
+- Q-CHECK-02 — Resolvida: Água é exibição do cartão CAA local, não lembretes P2.
+- Q-CHECK-03 — Resolvida para #21/#22: memória somente até sair do check-in/resumo; histórico P3 não autorizado.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 

@@ -34,7 +34,7 @@ it('rejects incompatible answers and stale or rapid duplicate screen events', ()
   expect(checkInReducer(next, { type: 'skip', question: 'thirst' })).toBe(next);
   expect(checkInReducer(next, { type: 'previous', question: 'thirst' })).toBe(next);
 });
-it('supports temperature independently and clears all answers on finishing or resetting', () => {
+it('supports temperature independently, freezes answers for the summary and clears them on reset', () => {
   let state = emptyCheckIn();
   for (const question of checkInQuestions.slice(0, 6)) {
     state = checkInReducer(state, { type: 'answer', question: question.id, value: 'unknown' });
@@ -46,7 +46,7 @@ it('supports temperature independently and clears all answers on finishing or re
   state = checkInReducer(state, { type: 'answer', question: 'alone', value: 'no' });
   expect(Object.keys(state.answers)).toHaveLength(8);
   const finished = checkInReducer(state, { type: 'next', question: 'alone' });
-  expect(finished.answers).toEqual({}); expect(finished.finished).toBe(true);
+  expect(finished.answers).toEqual(state.answers); expect(finished.finished).toBe(true);
   expect(checkInReducer(finished, { type: 'answer', question: 'alone', value: 'yes' })).toBe(finished);
   expect(checkInReducer(state, { type: 'reset' })).toEqual(emptyCheckIn());
   expect(checkInReducer(finished, { type: 'reset' })).toEqual(emptyCheckIn());
