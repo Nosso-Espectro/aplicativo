@@ -37,7 +37,9 @@ Suíte completa serial 828 testes/96 suítes PASS; tipos/lint sem warnings,
 audio/notification-capabilities foram corrigidas sem remover checks de capacidades;
 suíte completa repetida e verde. Revisão do diff: manifest/lock/notices/testes/docs
 somente, nenhuma configuração/permissão ou código funcional alterado. CI leve do
-último head e PR ainda pendentes; T056 não é concluída antes dessas evidências.
+PR96 anexado; CI38609833005 SUCCESS 1min49s no head af8c04d, incluindo Doctor.
+CI do último commit documental deve ser reconferido antes squash autorizado;
+Android/iOS SKIPPED não são builds.
 
 Ambos builds remotos/artefatos/notices/assinatura e fluxos nativos no novo SHA
 integrado ficam PENDENTES; APK/aparelho c265d4f não validam estes patches.
