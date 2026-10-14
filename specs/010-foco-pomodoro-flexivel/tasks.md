@@ -2,14 +2,16 @@
 
 ## US-082 — Issue #82
 
-Ready após refino sob delegação funcional e alinhamento spec/plan; sem código82. #25/#26 integradas, T011/T012 nativos ainda pendentes.
+Ready após refino sob delegação funcional e alinhamento spec/plan; implementação82 validada localmente, PR/CI/merge ainda pendentes. #25/#26 integradas, T011/T012/T018 nativos ainda pendentes.
 
-- [ ] T013 [US-082] RF-007: validar foco/pausa1-180min inteiros/default25/5, preservar presets; draft/apply/cancel sem início automático.
-- [ ] T014 [US-082] RF-008: capturar cópia dos dois tempos na sessão, preservar próxima fase humana/pausa/clock/owner/revisão; recusar edição/início antigo durante sessão.
-- [ ] T015 [US-082] RF-009: UI Personalizado/campos/aplicar/cancelar/erro, editar apenas sem sessão, escolha efêmera/reentrada25/5/retornos/mode9/alvos48dp/texto ampliável; sem DB/deps/permissões/estímulos/rede novos.
-- [ ] T016 [US-082] Testes modelo/provider/Router limites/erro/draft/apply/cancel/captura/guards/stale/clock/AppState/saídas/reentrada/mode9/regressões25-26/Timer/CAA.
+- [x] T013 [US-082] RF-007: validar foco/pausa1-180min inteiros/default25/5, preservar presets; draft/apply/cancel sem início automático.
+- [x] T014 [US-082] RF-008: capturar cópia dos dois tempos na sessão, preservar próxima fase humana/pausa/clock/owner/revisão; recusar edição/início antigo durante sessão.
+- [x] T015 [US-082] RF-009: UI Personalizado/campos/aplicar/cancelar/erro, editar apenas sem sessão, escolha efêmera/reentrada25/5/retornos/mode9/alvos48dp/texto ampliável; sem DB/deps/permissões/estímulos/rede novos.
+- [x] T016 [US-082] Testes modelo/provider/Router limites/erro/draft/apply/cancel/captura/guards/stale/clock/AppState/saídas/reentrada/mode9/regressões25-26/Timer/CAA.
 - [ ] T017 [US-082] Review RNF-001 a RNF-004/UIprivacyofflineclean/diff, related/fullserial/linttiposDoctor56toolingvalidador/CI últimohead antesintegração; tasks só comportamento comprovado.
 - [ ] T018 [US-082] Gate posterior real no SHA integrado: leitores/teclado/foco/reflow/insets/alvos/clockbg/offline/back; mocks/CIleve não aprovam binário e não autorizam aparelho.
+
+Evidência local82: 25 novos (12modelo/13Router),248relacionados20/901Jest102 completos PASS; limites/cópias/fases humanas/pausa/erro/choiceRevision/foco/retornos/reentrada/mode9 verificados, fetch rejeitado sem chamadas. Revisão corrigiu preset já selecionado que invalidava controles sem render: teste de regressão verde. Matcher de texto exato corrigido mantendo seis cenários inválidos. Tipos/lint/Doctor21/21/56tooling/validador/diff e CI são registrados no plano; T017 aguarda último head remoto. Testes JS não validam T018.
 
 Milestone #18: [spec.md](spec.md) e [plan.md](plan.md). US025 entregue pelo PR83 em 2026-10-14. US026 implementada e validada localmente; PR/CI/merge devem confirmar entrega. Gates nativos T011/T012 pendentes.
 

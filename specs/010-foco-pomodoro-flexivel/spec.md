@@ -42,7 +42,7 @@ Recomendação registrada na Issue #26 sob delegação funcional de 2026-10-14; 
 - Finalizar mantém o decorrido da sessão nesta tela até nova sessão explícita ou saída, sem histórico/pontuação/meta/mínimo de duração. Nova sessão começa em zero.
 - Memória apenas, sem DB/rede/logs de sessão/dependência/permissão nova. Saída explícita ativa confirma descarte; saída externa/blur/unmount/processo morto descarta. Reentrada vazia. Não mudar de modo enquanto ativo sem finalizar/sair conforme confirmação.
 - Relógio inválido/regressivo ou cálculo fora de inteiro seguro pausa preservando último decorrido confirmado; recuperação por retomada humana ou finalização. Revisões/owner descartam comandos e callbacks antigos. Nenhum limite competitivo inventado, inferência ou diagnóstico.
-- Personalização #82 não Ready e Pomodoro #25 integrado fora da implementação desta branch; preservar seus fluxos.
+- Personalização #82 separada e Pomodoro #25 integrado fora da implementação daquela branch #26; preservar seus fluxos.
 
 ## Refinamento US-025
 
@@ -54,7 +54,7 @@ Decisão registrada em [#25](https://github.com/Nosso-Espectro/aplicativo/issues
 - Estado local somente em memória, sem histórico, DB, rede, logs de sessão ou novas permissões. Em segundo plano, comparar o prazo ao retornar, sem replay ou avanço por múltiplas fases. Reinício do app começa vazio.
 - A sessão pertence ao layout da ferramenta. Sair encerra e descarta; fluxo explícito de saída de sessão ativa confirma antes de abandonar. Saída externa/desmontagem descarta sem executar ações tardias. Nenhuma promessa de execução em processo morto.
 - Relógio inválido/regressivo pausa com erro genérico e recuperação humana, sem tempo negativo ou transição inferida. Rótulos, estado, comandos e modo de baixa estimulação permanecem acessíveis; alvos mínimos 48dp e texto escalável.
-- Personalização de intervalos está registrada separadamente na [#82](https://github.com/Nosso-Espectro/aplicativo/issues/82), não Ready, e não pertence à branch #25. Cronômetro livre #26 também não pertence a esta entrega.
+- Personalização de intervalos está registrada separadamente na [#82](https://github.com/Nosso-Espectro/aplicativo/issues/82) e não pertence à branch #25. Cronômetro livre #26 também não pertence à entrega daquela branch.
 
 ## Contexto
 

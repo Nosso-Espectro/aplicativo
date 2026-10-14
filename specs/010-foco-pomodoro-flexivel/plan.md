@@ -10,6 +10,14 @@ Testes modelo limites/NaN/decimal/overflow/cópias/presetregressão/clock/stale/
 
 Seções anteriores abaixo são histórico #25/#26; declarações antigas de ausência de código ou #82 não Ready não substituem este plano.
 
+### Implementação local US082
+
+`pomodoro-model.ts` preserva os exports de presets e acrescenta escolha custom com validação1-180/cópia dos números antes uso; foco e pausa em ms capturados na sessão, usados por resume/next sem ler draft. `PomodoroScreen` mantém escolha/draft apenas na abertura focada, campos numéricos com validação conjunta/aplicar/cancelar e revisão própria de escolha para recusar callbacks de antes da edição. Inatividade do provider e foco também guardam iniciar/editar/abrir cronômetro; blur/unmount descarta estado local e sessão. Preset já selecionado é no-op sem invalidar callbacks. Provider mantém implementação/owner/AppState anteriores; seu tipo de comando deriva do modelo, sem API nova inventada.
+
+25 testes novos (12modelo/13Router),248relacionados20/901Jest102 completos PASS na versão corrigida. Review RF-007 a RF-009/RNF/UIprivacyofflineclean não encontrou regressão impeditiva restante: texto18/escalável/alvos48dp, radios/campos rotulados/erros e comandos explícitos, nenhum estímulo/dado externo/DB/dependência/permissão novo. Leitores/teclado/reflow/insets/clockbg/offline reais ainda T018, sem alegar conformidade integral por mocks. T013-T016 verificadas; T017 aguarda checks finais/PR/CI. Nenhum host/jobs/buildlocal/phone/preview8093 operado.
+
+Checks locais encerrados: typecheck e lint finais sem warnings PASS; Doctor21/21,56tooling (4.996s), validador16specs/48Issues/48stories/263tasks/20skills e diffcheck PASS. Doctor/tooling não foram alterados pela correção pontual do controle; related/full/tipos/lint repetidos na versão corrigida. PR/CI últimohead ainda pendentes; nenhuma aprovação nativa/build/release.
+
 Spec: [spec.md](spec.md). Milestone #18; Issues #25, #26. US025 entregue pelo PR83; US026 refinada e Ready em 2026-10-14.
 
 ## Plano vigente US026
