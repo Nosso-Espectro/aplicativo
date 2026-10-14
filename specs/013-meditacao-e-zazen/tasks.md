@@ -1,6 +1,6 @@
 # Tasks — Meditação e Zazen
 
-Milestone #21: [spec.md](spec.md) e [plan.md](plan.md). US031 implementada na branch própria; T001-T004 verificadas localmente, T005 aguarda checks finais/CI e integração, T011 nativo pendente. US032 não Ready/não implementada.
+Milestone #21: [spec.md](spec.md) e [plan.md](plan.md). US031 implementada na branch própria; T001-T005 verificadas com checks locais/CI, aguarda último head verde antes integração. T011 nativo pendente. US032 não Ready/não implementada.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -12,7 +12,7 @@ Executar somente depois da Definition of Ready. Não há marcação [P] nesta de
 - [x] T002 [US-031] Provider/clockAppState/owner/stale-dup-dispose e UIrota /meditation/Ferramentas/minimal/restante/comandosessenciais/confirmarsair/hardwarebackfocado/gestos/blurunmountdescarta/reentradavazia/fallback/48dpescalávelmode9; RF-002 sem alterar Timer/CAA/Pomodoro/sons.
 - [x] T003 [US-031] Aviso final visual discreto configurado antes de iniciar/defaultOFF/polite sóoptin/semfaixaOFF/resultadoapenas tela/semreplay-auto-restart/sem áudio-vib-TTS-notificação-player-permissão; RF-003 sem promessa JSsuspenso/processomorto.
 - [x] T004 [US-031] Testes modelo/provider/Router para RF-001 a RF-003: duração/draft/avisoON-OFF/pausarretomar/fim único/clockbg-invalid-regressivo-overflow/stale-dup-unmount/saídas-retornos-fallback/mode9/offline/regressões Timer/Pomodoro/cronômetro/sons/CAA; fixtures sintéticas.
-- [ ] T005 [US-031] Review RNF-001 a RNF-004/cleanprivacyoffline/UI; related/fullJestserial/linttipos/Doctor56toolingvalidadordiffcheck/CIleve antesintegração; tasks sócomportamento. Sem buildlocal/host/phone/preview8093.
+- [x] T005 [US-031] Review RNF-001 a RNF-004/cleanprivacyoffline/UI; related/fullJestserial/linttipos/Doctor56toolingvalidadordiffcheck/CIleve antesintegração; tasks sócomportamento. Sem buildlocal/host/phone/preview8093. Evidência:28novos/204relacionados17/857Jest99/linttipossemwarnings/Doctor21/21/56toolingvalidadordiffreview PASS; PR99 anexado, CI38614583004SUCCESS2min4s no head2865b65. Antes squash reconferir último commit documental verde; Android/iOS SKIPPED não são builds. T011 nativo separado permanece pendente.
 - [ ] T011 [US-031] Gate real posterior SHA integrado: assistivo/leitores/foco/textoampliado/insets/alvos/backgestos/clockbackground-lock/AppState/offline; mocks/build/assinatura não aprovam nativo, nenhum aparelho autorizado por refinamento.
 
 ## US-032 — Issue #32

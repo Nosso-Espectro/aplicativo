@@ -19,6 +19,11 @@ e atalho drawer/documentos13, sem pacote/config/permissão/banco/voz alterado.
 T005 aguarda PR/CI último head; T011 assistivo/reflow/foco/insets/clockbg
 e offline em binário real permanece PENDENTE. Preview8093/aparelho intactos.
 
+PR99 anexado, CI38614583004 SUCCESS2min4s no head2865b65; T005 verificada.
+Antes squash autorizado reconferir último commit documental verde e, após
+integração, observar mainpush. Android/iOS SKIPPED NÃO builds. T011 continua
+pendente, guia32 não Ready, nenhuma milestone/release/instalação autorizada.
+
 Atualização após manutenção95: PR96 MERGED/main2af9db2 em2026-10-14T17:53Z,
 CI38610210270SUCCESS1min15s e Doctor21/21 da manutenção. Branch31 recebeu
 origin/main por merge d5471c9 somente árvore limpa, sem conflitos/rebase/force.
