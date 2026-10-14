@@ -102,7 +102,9 @@ reais e SQLite do Node com commit retido: a gravação conclui, mas não navega 
 replace ou blur/retorno. Suíte completa 934 testes/104 suítes PASS (140,437s),
 lint/tipos sem avisos, Doctor21/21, 56 testes tooling, validador/diff check PASS.
 Revisão do diff preserva dados/schema/status, layout e alvos de 48dp; nenhuma
-permissão/dependência/rede/estímulo nova. CI do último head ainda necessária.
+permissão/dependência/rede/estímulo nova. PR103 anexado; CI38639608287 SUCCESS
+2min10s no head6f5921c. Reconferir CI do último commit documental antes squash;
+Android/iOS SKIPPED não são builds. Issue6 permanece aberta para os gates.
 
 Rotina vazia, imagem ausente, falha de persistência e etapa removida durante edição; preservar ordem/status (#6–#8).
 
