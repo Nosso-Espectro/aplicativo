@@ -30,6 +30,8 @@ common-task-catalog.ts valida recurso completo/IDs/ordem/quatro etapas e retorna
 
 Checks finais locais encerrados: tipos e lint sem warnings PASS, Doctor21/21,56tooling (4.901s), validador16specs/49Issues/49stories/269tasks/20skills e diffcheck PASS. Related280/21 e full926/103 (142.8s) repetidos após mover busyRef para layout effect, sem supressão. T019 ainda aguarda PR/CI último head; nenhum build/assistivo/SQLiteExpo aprovado por estes checks.
 
+PR102 anexado; CI38630024488 SUCCESS1min44s no head8710d28225c9c16d5a6ab71e8d9eaedf9df0d332. T015-T019 verificadas; conferir novo head documental verde antes squash. Android/iOS SKIPPED não são builds; T020 e gates nativos anteriores permanecem pendentes.
+
 Spec: [spec.md](spec.md). Milestone #15; Issues #19, #20. US-019 integrada/PR75; US-020 Ready após aprovação explícita. Registros de progresso abaixo são históricos, não anulam este estado.
 
 ## Stack
