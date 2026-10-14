@@ -190,6 +190,13 @@ Evidência US085: quatro testes novos de Expo Router/providers reais, 633 Jest/8
 - [x] T041 [US-052] Implementar RF-020: configurar ícone Android/iOS, favicon e tela de inicialização nativa via Expo SplashScreen, usando o asset local sem áudio, animação ou timer artificial. Evidência: teste de configuração/PNG, fonte local e padrão automático Expo Router, sem timers ou alteração da comunicação.
 - [ ] T042 [US-052] Testar configuração/asset e regressões do quadro; executar checks leves, acionar build remoto e atualizar o app por USB com `adb install -r`, sem apagar dados; registrar evidências e limitações em quickstart.
 
+## Manutenção SDK57 — US-095 / Issue #95
+
+- [ ] T054 [US-095] RF-024: atualizar só os seis patches recomendados, manifest/lock coerentes/ignore-scripts; preservar dependências funcionais/pessoais/US031 e revisar transitive churn.
+- [ ] T055 [US-095] RF-025: fontes/changelogs/version-integrity/licenças/notices exatos e contratos reais notifications(timestamp-nextdate-DAILY)/Router; sem falsa aprovação nativa ou causa histórica de crash.
+- [ ] T056 [US-095] RF-026: related/fullJestserial/linttipos/Doctor21/21/56toolingvalidadordiffcheck/review e CIleve verdes sem suprimir check, PR própria antesintegração.
+- [ ] T057 [US-095] RF-027: registrar ambos nativos/artefatos/licenças/assinatura/fluxos reais pendentes no SHA integrado, sem APKantigo/installauto/hostjobsphone/buildlocal/preview/tagrelease.
+
 ## Fase 8: Polish e verificações transversais
 
 **Objetivo**: verificar coerência entre histórias implementadas e Definition of Done, sem antecipar

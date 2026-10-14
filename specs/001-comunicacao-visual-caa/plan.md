@@ -1,5 +1,13 @@
 # Implementation Plan: P0 — Comunicação Visual / CAA
 
+## Manutenção SDK57 US095
+
+Issue95/Ready/baseoriginmain3172bbd: Doctor online20/21 pede patches publicados2026-10-14, manifests31 iguais àmain; sem atribuir o bloqueio àfeature ou inventar falha nativa. Manutenção isolada na branch chore95, US031 limpa/push/checkpoint8931ead preservado. Somente expo57.0.29/asset57.0.20/constants57.0.22/linking57.0.13/notifications57.0.23/router57.0.27; SDK57/React19/RN0.86/Node24.21.0/npm11.19.0 mantidos, nenhuma dependência funcional nova.
+
+Antes de editar versão: conferir registry/version-integrity/licença/changelogs/fontes primárias. Expo/router patches novos sem mudanças user-facing listadas; notifications23 corrige import crash no Expo GoAndroid, não prova causa de crashesSSH antigos. Instalar por lockfile ignore-scripts, sem lifecycle/buildlocal/auditfixforce, limitar transitive churn ao necessário e revisar diff. Notices integrais devem corresponder às versões/fontes instaladas, especialmente asset/notifications; manter copyright/licençasupstream. Revalidar timestamps iOSseconds/Androidms, getNextTriggerDateAsync msambos, DAILY Androiddaily/iOScalendar e exportsRouter; não simular prova nativa.
+
+Jestserial completo/linttipos/Doctor21/21/56tooling/validadordiffcheck/review/CIleve reais antesintegração; tasks somente verificadas. Ambos nativos/artefatos/noticesassinatura/manifestlicençasrede/assistivo/offline no SHAintegrado continuam gates pendentes; acessoadminfresh ausente jáavisado12:40Z não repetirnemrecuperarsegredos/CIkey/wrappersondagem. Nenhumhost/jobs/phone/preview8093/tagrelease nesta manutenção. Apósmerge95, sincronizar rootFFpreservandopessoais e integrar originmain na31 somenteárvorelimpa, repetir checks31 antesPR/DoD. Nenhum código/pacote95 implementado neste refinamento.
+
 ## Organização vigente US088
 
 Pedido humano por imagens substitui a posição escolhida em US085: CommunicationBoard na home abaixo de SentenceComposer/header; drawer contém apenas os atalhos existentes. Estado de abertura pertence à rota home para fechar antes de router.push; Home mantém lifecycle/foco/back/backdrop e não altera contratos de dados. Quadro embutido evita SafeArea duplicada. Testes passam a abrir menu para ferramentas e compor diretamente na principal. Prévia web via US087, desktop/mobile, sem instalar celular; T053 nativo pendente. Seções US085 abaixo são histórico da organização anterior.
