@@ -8,12 +8,15 @@ import { TransitionTimerProvider } from '../features/transition-timer/Transition
 import { RegulationSoundsProvider } from '../features/regulation-sounds/RegulationSoundsProvider';
 import { ProgressAlertsProvider } from '../features/transition-timer/ProgressAlertsProvider';
 import { ProgressAlertNotice } from '../features/transition-timer/ProgressAlertNotice';
+import { HydrationProvider } from '../features/hydration/HydrationProvider';
+import { HydrationNotice } from '../features/hydration/HydrationNotice';
 
 function ApplicationStack() {
   const { navigationAnimation } = useLowStimulationPresentation();
   return <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
     <LowStimulationControl />
     <ProgressAlertNotice />
+    <HydrationNotice />
     <View style={{ flex: 1 }}><Stack screenOptions={{ headerShown: false, animation: navigationAnimation }} /></View>
   </View>;
 }
@@ -22,7 +25,7 @@ export default function RootLayout() {
   return (
     <LowStimulationProvider><SentenceProvider>
       <CustomCardsProvider>
-        <RegulationSoundsProvider><TransitionTimerProvider><ProgressAlertsProvider><ApplicationStack /></ProgressAlertsProvider></TransitionTimerProvider></RegulationSoundsProvider>
+        <RegulationSoundsProvider><TransitionTimerProvider><ProgressAlertsProvider><HydrationProvider><ApplicationStack /></HydrationProvider></ProgressAlertsProvider></TransitionTimerProvider></RegulationSoundsProvider>
       </CustomCardsProvider>
     </SentenceProvider></LowStimulationProvider>
   );

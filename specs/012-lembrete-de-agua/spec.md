@@ -11,7 +11,7 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P2 — Lembrete de Água](https://github.com/Nosso-Espectro/aplicativo/milestone/20) (número 20).
 
-Milestone aberta; US029 Ready após refinamento sob delegação funcional, ainda sem código. US030 conserva questões próprias, não Ready. Nenhuma implementação/gate/release concluídos.
+Milestone aberta; US029 Ready após refinamento sob delegação funcional, implementação em validação na branch própria. US030 conserva questões próprias, não Ready. Nenhum gate nativo/release concluído.
 
 ## Refinamento US029
 
@@ -19,6 +19,7 @@ Recomendação registrada na [Issue29](https://github.com/Nosso-Espectro/aplicat
 
 - Intervalo relativo em minutos inteiros30-720, draft inicial60/presets30,60,120. O critério permite intervalo OU horários; horários civis/fuso/DST e silêncio ficam para refino30. Valores não são indicação clínica nem quantidade de água. Default disabled, sem inferir perfil/check-in.
 - Configuração privada local persistida: intervalo/revisão/disabled-paused-active e recibos técnicos dos agendamentos próprios. Draft/savecancel separado do confirmado. Sem histórico de consumo/respostas/conta/servidor/telemetria/PII em conteúdo ou logs.
+- Complemento em [29](https://github.com/Nosso-Espectro/aplicativo/issues/29#issuecomment-6169838154): salvar intervalo exige estado paused/disabled, sem reagendar avisos ativos silenciosamente; orientar Pausar antes e Retomar explícito depois. Journal de cancelamento conserva o identificador de ativação interrompida; uma revisão nova toma posse da recuperação e invalida commits antigos. Compensação tardia cancela somente seu ID e não altera journal de outro owner.
 - Ativar/retomar explícitos com confirmação de avisos locais e permissão somente depois dessa ação. Negada/indisponível não aparenta ativação, conserva intervalo/retry humano, sem abrir/mudar ajustes OS automaticamente. Pausar cancela próprios/conserva configuração; retomar começa intervalo completo novo. Desativar cancela próprios/conserva intervalo, nunca cancelAll.
 - expo-notifications57.0.22 existente, API local a revisar antes de código. Um agendamento repetitivo por intervalo; primeiro aviso após intervalo completo. Conteúdo genérico Água / Uma pausa para água, se desejar. Solicitar apresentação silenciosa sem som/badge/vibração; OS/canais/preferências regem entrega/comportamento. Sem push/tokens/backend/deps/privilégio exato/voz/player/haptic ou handler global que altere timer.
 - Reabertura verifica configuração/permissão/IDs próprios sem novo pedido de permissão ou recriação silenciosa da agenda. Ausência/estado não confirmado exige pausa recuperável/Retomar humano, sem replay/catch-up. Sem promessa de exatidão/sobrevivência a reboot/force-stop/restrições.
