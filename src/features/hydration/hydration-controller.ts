@@ -1,7 +1,8 @@
 import { createExpoHydrationEngine, type HydrationEngine } from './expo-hydration-engine';
 import { openHydrationDatabase, type HydrationDatabase } from './hydration-database';
 import { ownedHydrationIdentifier, type HydrationConfig } from './hydration-model';
-import { hydrationReceiptGeneration } from './hydration-receipt';
+import { hydrationReceiptGeneration, type HydrationReceipt } from './hydration-receipt';
+import { isQuietAt, normalizeQuietWindow, type QuietWindow } from './quiet-hours';
 export type HydrationState = {
   config: HydrationConfig | null; loading: boolean; busy: boolean; confirmed: boolean;
   error: 'storage' | 'permission' | 'operation' | null; banner: boolean;
@@ -13,10 +14,17 @@ export function createHydrationController({ database = openHydrationDatabase, fa
 } = {}) {
   let state: HydrationState = { config: null, loading: true, busy: false, confirmed: false, error: null, banner: false };
   const listeners = new Set<() => void>();
+  let clockFloor = -1;
   let disposed = false; let work = 0; let foreground = true; let enteredAt = readClock(); let receivedAt = -1;
   let dbPromise: Promise<HydrationDatabase> | null = null; let native: HydrationEngine | null = null;
   let unsubscribe: (() => void) | null = null; let intent: Intent | null = null;
-  function readClock() { try { const value = clock(); return Number.isSafeInteger(value) && value >= 0 ? value : NaN; } catch { return NaN; } }
+  function readClock() {
+    try {
+      const value = clock();
+      if (!Number.isSafeInteger(value) || value < 0 || value < clockFloor || !Number.isFinite(new Date(value).getTime())) return NaN;
+      clockFloor = value; return value;
+    } catch { return NaN; }
+  }
   function update(patch: Partial<HydrationState>) { if (disposed) return; state = { ...state, ...patch }; listeners.forEach(listener => listener()); }
   function cleanup() {
     if (!disposed || work > 0) return;
@@ -31,9 +39,16 @@ export function createHydrationController({ database = openHydrationDatabase, fa
     if (!native) {
       if (disposed) throw new Error('Hydration owner unavailable.');
       const candidate = factory();
-      try { unsubscribe = candidate.onReceived(() => state.confirmed && state.config?.status === 'active' && !state.busy && !state.config.journal ? state.config.identifier : null,
+      try { unsubscribe = candidate.onReceived(() => state.confirmed && state.config?.status === 'active' && !state.busy && !state.config.journal
+        ? state.config.receipt?.entries.map(entry => entry.identifier) ?? [] : [],
         (_identifier, date) => {
           if (disposed || !foreground || !Number.isSafeInteger(enteredAt) || date < enteredAt || date <= receivedAt) return;
+          if (state.config?.quietWindow) {
+            try {
+              const now = readClock();
+              if (now < enteredAt || date > now || isQuietAt(now, state.config.quietWindow) || isQuietAt(date, state.config.quietWindow)) return;
+            } catch { return; }
+          }
           receivedAt = date; update({ banner: true });
         }); native = candidate;
       } catch (error) { try { candidate.dispose(); } catch {} throw error; }
@@ -56,19 +71,24 @@ export function createHydrationController({ database = openHydrationDatabase, fa
     const prepared = await storage.prepareCancellation(status, config.revision);
     return cancelPrepared(storage, prepared);
   }
-  async function compensate(storage: HydrationDatabase, identifier: string) {
-    await engine().cancel(identifier);
+  async function compensate(storage: HydrationDatabase, receipt: HydrationReceipt) {
+    let failed = false;
+    for (const entry of receipt.entries) try { await engine().cancel(entry.identifier); } catch { failed = true; }
+    if (failed) throw new Error('Hydration cancellation unconfirmed.');
     const current = await storage.read();
+    const identifier = receipt.entries[0].identifier;
     if ((!current.journal && current.identifier === identifier) || (current.journal?.kind === 'activate' && current.journal.identifier === identifier)) {
       const target = current.journal?.receipt ?? current.receipt;
-      if (target?.entries.length !== 1) return current;
+      if (target?.generation !== receipt.generation || target.entries.length !== receipt.entries.length
+        || target.entries.some((entry, index) => entry.identifier !== receipt.entries[index].identifier)) return current;
       const prepared = await storage.prepareCancellation('paused', current.revision);
-      return storage.confirmCancellation(prepared.revision, [identifier]);
+      return storage.confirmCancellation(prepared.revision, receipt.entries.map(entry => entry.identifier));
     }
     return current;
   }
   async function reload() {
     if (disposed || state.busy) return;
+    const reconcileInactive = state.error === 'operation' && native !== null;
     work++; update({ loading: true, busy: true, confirmed: false, error: null, banner: false });
     let storage: HydrationDatabase | null = null;
     try {
@@ -78,9 +98,20 @@ export function createHydrationController({ database = openHydrationDatabase, fa
       else if (config.status === 'active') {
         const capability = engine(); const permission = await capability.permission(); const observed = await capability.inspect();
         if (disposed) return;
-        const matching = observed.scheduled.length === 1 && observed.scheduled[0].identifier === config.identifier
+        let matching = observed.scheduled.length === 1 && observed.scheduled[0].identifier === config.identifier
           && observed.scheduled[0].intervalMinutes === config.intervalMinutes && observed.presented.every(id => id === config.identifier);
+        if (config.quietWindow && config.receipt) {
+          try {
+            const ids = await capability.verifyDaily(config.receipt, config.intervalMinutes, config.quietWindow);
+            matching = Number.isSafeInteger(readClock()) && ids.length === config.receipt.entries.length && new Set(ids).size === ids.length
+              && config.receipt.entries.every(entry => ids.includes(entry.identifier)) && observed.presented.every(id => ids.includes(id));
+          } catch { matching = false; }
+        }
         if (!permission || !matching) config = await recover(storage, config, 'paused');
+      } else if (reconcileInactive) {
+        const observed = await engine().inspect();
+        if (disposed) return;
+        if (observed.scheduled.length || observed.presented.length) config = await recover(storage, config, 'paused');
       }
       update({ config, loading: false, busy: false, confirmed: true });
     } catch {
@@ -111,22 +142,35 @@ export function createHydrationController({ database = openHydrationDatabase, fa
     save: (minutes: number, expectedRevision: number) => run(expectedRevision, (storage, _config, token) => {
       if (!alive(token)) throw new Error('Hydration intent canceled.'); return storage.saveInterval(minutes, expectedRevision);
     }),
+    saveQuiet: (input: QuietWindow | null, expectedRevision: number) => {
+      let quiet: QuietWindow | null;
+      try { quiet = normalizeQuietWindow(input); } catch { return Promise.resolve(false); }
+      return run(expectedRevision, (storage, _config, token) => {
+        if (!alive(token)) throw new Error('Hydration intent canceled.'); return storage.saveQuietWindow(quiet, expectedRevision);
+      });
+    },
     activate: (expectedRevision: number) => run(expectedRevision, async (storage, config, token) => {
-      if (config.status === 'active' || config.journal || !state.confirmed || config.quietWindow) throw new Error('Hydration configuration unavailable.');
+      if (config.status === 'active' || config.journal || !state.confirmed) throw new Error('Hydration configuration unavailable.');
+      if (config.quietWindow && !Number.isSafeInteger(readClock())) throw new Error('Hydration clock unavailable.');
       const capability = engine(); const allowed = await capability.requestPermission();
       if (!alive(token)) return storage.read();
       if (!allowed) throw new PermissionDenied();
-      const prepared = await storage.prepareActivation(expectedRevision);
-      if (prepared.journal?.kind !== 'activate') throw new Error('Hydration journal unavailable.');
+      const plan = config.quietWindow ? await capability.planDaily(expectedRevision + 1, config.intervalMinutes, config.quietWindow) : undefined;
+      if (!alive(token)) return storage.read();
+      const prepared = await storage.prepareActivation(expectedRevision, plan);
+      if (prepared.journal?.kind !== 'activate' || !prepared.journal.receipt) throw new Error('Hydration journal unavailable.');
       const identifier = prepared.journal.identifier;
+      const receipt = prepared.journal.receipt;
       try {
-        if (!alive(token)) return compensate(storage, identifier);
-        await capability.schedule({ identifier, intervalMinutes: prepared.intervalMinutes });
-        if (!alive(token)) return compensate(storage, identifier);
-        const active = await storage.confirmActivation(identifier, prepared.revision);
-        if (!alive(token)) return compensate(storage, identifier);
+        if (!alive(token)) return compensate(storage, receipt);
+        let confirmed: string[];
+        if (prepared.quietWindow) confirmed = await capability.scheduleDaily(receipt, prepared.intervalMinutes, prepared.quietWindow);
+        else { await capability.schedule({ identifier, intervalMinutes: prepared.intervalMinutes }); confirmed = [identifier]; }
+        if (!alive(token)) return compensate(storage, receipt);
+        const active = await storage.confirmActivation(identifier, prepared.revision, confirmed);
+        if (!alive(token)) return compensate(storage, receipt);
         return active;
-      } catch (error) { await compensate(storage, identifier); throw error; }
+      } catch (error) { await compensate(storage, receipt); throw error; }
     }),
     pause: (expectedRevision: number) => run(expectedRevision, (storage, config) => recover(storage, config, 'paused')),
     disable: (expectedRevision: number) => run(expectedRevision, (storage, config) => recover(storage, config, 'disabled')),

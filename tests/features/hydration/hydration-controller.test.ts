@@ -7,7 +7,8 @@ import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
 import { createHydrationController } from '../../../src/features/hydration/hydration-controller';
 import { openHydrationDatabase } from '../../../src/features/hydration/hydration-database';
 import { ownedHydrationIdentifier } from '../../../src/features/hydration/hydration-model';
-import type { HydrationEngine, HydrationSchedule } from '../../../src/features/hydration/expo-hydration-engine';
+import type { HydrationEngine, HydrationSchedule, HydrationOwned } from '../../../src/features/hydration/expo-hydration-engine';
+import { createDailyHydrationReceipt } from '../../../src/features/hydration/hydration-receipt';
 jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn() }));
 let directory: string; let connections: DatabaseSync[]; let failCommit: boolean;
 let native: Map<string, number>; const controllers: ReturnType<typeof createHydrationController>[] = [];
@@ -29,9 +30,12 @@ beforeEach(() => {
 });
 afterEach(() => { controllers.splice(0).forEach(controller => controller.dispose()); for (const sql of connections) try { sql.close(); } catch {} rmSync(directory, { recursive: true, force: true }); });
 async function harness() {
-  const database = await openHydrationDatabase(); let owned = () => null as string | null; let received = (_identifier: string, _date: number) => {};
+  const database = await openHydrationDatabase(); let owned = () => null as HydrationOwned; let received = (_identifier: string, _date: number) => {};
   const remove = jest.fn(); let time = 10000;
   const engine: HydrationEngine = {
+    planDaily: jest.fn(async () => { throw new Error('Daily boundary not enabled in this interval harness'); }),
+    scheduleDaily: jest.fn(async () => { throw new Error('Daily boundary not enabled in this interval harness'); }),
+    verifyDaily: jest.fn(async () => { throw new Error('Daily boundary not enabled in this interval harness'); }),
     permission: jest.fn(async () => true), requestPermission: jest.fn(async () => true),
     inspect: jest.fn(async () => ({ scheduled: [...native].filter(([id]) => ownedHydrationIdentifier(id)).map(([identifier, intervalMinutes]) => ({ identifier, intervalMinutes })), presented: [] })),
     schedule: jest.fn(async (entry: HydrationSchedule) => { native.set(entry.identifier, entry.intervalMinutes); }),
@@ -42,7 +46,7 @@ async function harness() {
   const controller = createHydrationController({ database: async () => database, factory, clock: () => time }); controllers.push(controller);
   return { database, engine, factory, controller, remove, time: (value: number) => { time = value; },
     revision: () => controller.getSnapshot().config!.revision,
-    emit(identifier: string, date: number) { if (identifier === owned()) received(identifier, date); },
+    emit(identifier: string, date: number) { const ids = owned(); if (Array.isArray(ids) ? ids.includes(identifier) : identifier === ids) received(identifier, date); },
   };
 }
 it('loads disabled configuration without importing native capability, requesting permission or scheduling', async () => {
@@ -50,11 +54,113 @@ it('loads disabled configuration without importing native capability, requesting
   expect(h.controller.getSnapshot()).toMatchObject({ confirmed: true, config: { status: 'disabled', intervalMinutes: 60 }, error: null });
   expect(await h.controller.save(120, h.revision())).toBe(true); expect(h.factory).not.toHaveBeenCalled();
 });
-it('does not silently use a repeating interval for quiet settings before daily capability integration', async () => {
+it('does not silently use a repeating interval when native daily capability is unavailable', async () => {
   const h = await harness(); await h.controller.reload(); await h.database.saveQuietWindow({ startMinute: 1320, endMinute: 420 }, h.revision());
   await h.controller.reload(); expect(await h.controller.activate(h.revision())).toBe(false);
-  expect(h.engine.schedule).not.toHaveBeenCalled(); expect(h.engine.requestPermission).not.toHaveBeenCalled();
+  expect(h.engine.schedule).not.toHaveBeenCalled(); expect(h.engine.requestPermission).toHaveBeenCalledTimes(1);
+  expect(h.engine.planDaily).toHaveBeenCalledTimes(1);
   expect(h.controller.getSnapshot().config).toMatchObject({ status: 'disabled', quietWindow: { startMinute: 1320, endMinute: 420 } });
+});
+const dailyQuiet = { startMinute: 1320, endMinute: 420 };
+const dailyTime = new Date(2026, 9, 14, 12).getTime();
+async function quietHarness() {
+  const h = await harness(); h.time(dailyTime); await h.controller.reload();
+  expect(await h.controller.saveQuiet(dailyQuiet, h.revision())).toBe(true);
+  jest.mocked(h.engine.planDaily).mockImplementation(async (generation, intervalMinutes, quiet) =>
+    createDailyHydrationReceipt(generation, intervalMinutes, quiet, new Intl.DateTimeFormat().resolvedOptions().timeZone,
+      dailyTime + intervalMinutes * 60000, [{ hour: 13, minute: 0 }, { hour: 14, minute: 0 }]));
+  jest.mocked(h.engine.scheduleDaily).mockImplementation(async (receipt, intervalMinutes) => {
+    for (const item of receipt.entries) native.set(item.identifier, intervalMinutes);
+    return receipt.entries.map(item => item.identifier);
+  });
+  jest.mocked(h.engine.verifyDaily).mockImplementation(async receipt => {
+    if (receipt.entries.some(item => !native.has(item.identifier))) throw new Error('Missing synthetic native request');
+    return receipt.entries.map(item => item.identifier);
+  });
+  return h;
+}
+it('records the whole daily plan before scheduling and publishes active only after all native IDs and DB confirm', async () => {
+  const h = await quietHarness(); const gate = deferred<void>();
+  jest.mocked(h.engine.scheduleDaily).mockImplementationOnce(async receipt => {
+    expect(await h.database.read()).toMatchObject({ status: 'disabled', journal: { kind: 'activate', receipt } });
+    await gate.promise; for (const item of receipt.entries) native.set(item.identifier, 60); return receipt.entries.map(item => item.identifier);
+  });
+  const activation = h.controller.activate(h.revision()); await new Promise(resolve => setTimeout(resolve, 0));
+  expect(h.controller.getSnapshot()).toMatchObject({ busy: true, config: { status: 'disabled' } });
+  expect(await h.controller.activate(h.revision())).toBe(false); gate.resolve(); expect(await activation).toBe(true);
+  expect(h.engine.schedule).not.toHaveBeenCalled(); expect(h.controller.getSnapshot()).toMatchObject({ confirmed: true, config: { status: 'active', journal: null } });
+  expect(h.controller.getSnapshot().config!.receipt!.entries).toHaveLength(2);
+  expect(await h.controller.saveQuiet(null, h.revision())).toBe(false); expect(native.size).toBe(2);
+});
+it('rejects partial daily acknowledgement and compensates every operation ID before recovering inactive', async () => {
+  const h = await quietHarness();
+  jest.mocked(h.engine.scheduleDaily).mockImplementationOnce(async receipt => {
+    for (const item of receipt.entries) native.set(item.identifier, 60); return [receipt.entries[0].identifier];
+  });
+  expect(await h.controller.activate(h.revision())).toBe(false); expect(native.size).toBe(0);
+  expect(await h.database.read()).toMatchObject({ status: 'paused', journal: null, quietWindow: dailyQuiet });
+  expect(h.engine.cancel).toHaveBeenCalledTimes(2);
+});
+it('preserves a durable batch journal when active commit and compensation commit fail', async () => {
+  const h = await quietHarness();
+  jest.mocked(h.engine.scheduleDaily).mockImplementationOnce(async receipt => {
+    for (const item of receipt.entries) native.set(item.identifier, 60); failCommit = true; return receipt.entries.map(item => item.identifier);
+  });
+  expect(await h.controller.activate(h.revision())).toBe(false); expect(native.size).toBe(0);
+  expect(await h.database.read()).toMatchObject({ status: 'disabled', journal: { kind: 'activate', receipt: { entries: expect.any(Array) } } });
+  failCommit = false; await h.controller.reload(); expect(await h.database.read()).toMatchObject({ status: 'paused', journal: null });
+});
+it('keeps a batch cancel journal and possible alarms on native failure then retries only owned IDs', async () => {
+  const h = await quietHarness(); await h.controller.activate(h.revision()); native.set('tear-transition-1-5-2', 5);
+  jest.mocked(h.engine.cancel).mockRejectedValueOnce(new Error('Synthetic cancellation error'));
+  expect(await h.controller.pause(h.revision())).toBe(false);
+  expect(await h.database.read()).toMatchObject({ status: 'active', journal: { kind: 'cancel' } });
+  await h.controller.reload(); expect(h.controller.getSnapshot()).toMatchObject({ confirmed: true, config: { status: 'paused', journal: null } });
+  expect([...native.keys()]).toEqual(['tear-transition-1-5-2']); expect(h.engine.cancel).not.toHaveBeenCalledWith('tear-transition-1-5-2');
+});
+it('restores a verified daily batch without scheduling and pauses divergence without automatic resume', async () => {
+  const h = await quietHarness(); await h.controller.activate(h.revision()); jest.clearAllMocks();
+  await h.controller.reload(); expect(h.controller.getSnapshot().config!.status).toBe('active');
+  expect(h.engine.verifyDaily).toHaveBeenCalledTimes(1); expect(h.engine.requestPermission).not.toHaveBeenCalled(); expect(h.engine.scheduleDaily).not.toHaveBeenCalled();
+  jest.mocked(h.engine.verifyDaily).mockRejectedValueOnce(new Error('Synthetic timezone/next-date divergence'));
+  await h.controller.reload(); expect(h.controller.getSnapshot().config!.status).toBe('paused'); expect(native.size).toBe(0);
+  expect(h.engine.scheduleDaily).not.toHaveBeenCalled(); expect(h.engine.requestPermission).not.toHaveBeenCalled();
+});
+it('compensates a late whole batch after dispose and does not erase another owners newer batch', async () => {
+  const old = await quietHarness(); const gate = deferred<void>(); let oldIds: string[] = [];
+  jest.mocked(old.engine.scheduleDaily).mockImplementationOnce(async receipt => {
+    oldIds = receipt.entries.map(item => item.identifier); await gate.promise;
+    for (const id of oldIds) native.set(id, 60); return oldIds;
+  });
+  const activation = old.controller.activate(old.revision()); await new Promise(resolve => setTimeout(resolve, 0));
+  const next = await quietHarness(); await next.controller.activate(next.revision()); const nextIds = next.controller.getSnapshot().config!.receipt!.entries.map(item => item.identifier);
+  old.controller.dispose(); gate.resolve(); expect(await activation).toBe(false);
+  expect(oldIds.every(id => !native.has(id))).toBe(true); expect(nextIds.every(id => native.has(id))).toBe(true);
+  expect((await next.database.read()).receipt!.entries.map(item => item.identifier)).toEqual(nextIds);
+});
+it('accepts foreground events from every current batch ID only outside silence at delivery and current time', async () => {
+  const h = await quietHarness(); await h.controller.activate(h.revision()); const ids = h.controller.getSnapshot().config!.receipt!.entries.map(item => item.identifier);
+  h.time(dailyTime + 3600000); h.emit(ids[1], dailyTime + 3600000); expect(h.controller.getSnapshot().banner).toBe(true);
+  h.controller.dismissBanner(); const silent = new Date(2026, 9, 14, 23).getTime(); h.time(silent);
+  h.emit(ids[0], silent); expect(h.controller.getSnapshot().banner).toBe(false);
+  const following = new Date(2026, 9, 15, 8).getTime(); h.time(following); h.emit(ids[0], silent); expect(h.controller.getSnapshot().banner).toBe(false);
+  h.emit(ids[0], following); expect(h.controller.getSnapshot().banner).toBe(true); h.controller.dismissBanner();
+  h.time(NaN); h.emit(ids[1], following + 1); expect(h.controller.getSnapshot().banner).toBe(false);
+});
+it('pauses a previously confirmed batch on a regressive controller clock without request or automatic scheduling', async () => {
+  const h = await quietHarness(); await h.controller.activate(h.revision()); h.time(dailyTime - 1);
+  jest.clearAllMocks(); await h.controller.reload();
+  expect(h.controller.getSnapshot().config!.status).toBe('paused'); expect(native.size).toBe(0);
+  expect(h.engine.requestPermission).not.toHaveBeenCalled(); expect(h.engine.scheduleDaily).not.toHaveBeenCalled();
+  expect(await h.controller.activate(h.revision())).toBe(false); expect(h.engine.requestPermission).not.toHaveBeenCalled();
+});
+it('recovers an inactive leftover only on a failed-operation reconciliation without scheduling or touching foreign alarms', async () => {
+  const h = await quietHarness(); const oldId = 'tear-hydration-v1-1'; native.set(oldId, 60); native.set('tear-transition-1-5-2', 5);
+  jest.mocked(h.engine.planDaily).mockRejectedValueOnce(new Error('Synthetic leftover owned request'));
+  expect(await h.controller.activate(h.revision())).toBe(false); expect(h.controller.getSnapshot().config!.status).toBe('disabled');
+  jest.clearAllMocks(); await h.controller.reload();
+  expect(h.controller.getSnapshot()).toMatchObject({ confirmed: true, config: { status: 'paused', journal: null, quietWindow: dailyQuiet } });
+  expect([...native.keys()]).toEqual(['tear-transition-1-5-2']); expect(h.engine.requestPermission).not.toHaveBeenCalled(); expect(h.engine.scheduleDaily).not.toHaveBeenCalled();
 });
 it('refuses cancellation of a newer v2 generation before touching any existing older schedule', async () => {
   const h = await harness(); await h.controller.reload(); await h.controller.activate(h.revision());
