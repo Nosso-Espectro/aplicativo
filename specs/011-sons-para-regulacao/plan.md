@@ -62,10 +62,10 @@ testes tooling exercitam integridade/ausência/duplicação/níveis e preservaç
 Suíte tooling56 verde, lint/tipos e validador verdes. Escuta e loop imperceptível
 não alegados; documentação de origem/limites no README junto aos arquivos.
 
-Dependências/configuração, engine/controller e provider integrado à voz avaliados;
-UI/slider, rota/acesso, opção confirmada de background e revisão de interface
-ainda faltam. Nenhuma task concluída
-pelo modelo/assets isolados, nenhum fluxo de reprodução alegado como entregue.
+Dependências/configuração, engine/controller/provider/TTS, tela/slider e rota
+com acesso real pelo quadro implementados e avaliados. Nenhuma task foi concluída
+pelo modelo/assets isolados; T001–T004 somente verificadas após fluxo integrado,
+T005 continua pendente de validação nativa/assistiva da milestone.
 
 Assets locais essenciais, sem banco novo ou restauração de autoplay. Seleção,
 volume e opção não persistidos nesta história; retomada de processo exige nova
@@ -176,8 +176,7 @@ gate real; mocks não comprovam prioridade de áudio em aparelho.
 22 testes do controller e oito do adapter (36 com seis do modelo) exercitam
 cancelamento/duplicatas/estado observado/buffering/erros/gain0/background/leases,
 limites/readiness/lifecycle. Provider/adapter agora conectados ao RootLayout,
-mas a tela/rota de sons ainda ausentes; nenhum som emitido ou critério de fluxo
-marcado entregue nessa implementação.
+e tela/rota agora presentes; nenhum som real emitido neste desenvolvimento.
 
 RegulationSoundsProvider cria controller no efeito e descarta no cleanup,
 seguro para replay StrictMode; assinatura de snapshots e AppState são removidas,
@@ -204,14 +203,38 @@ Doctor21/21 e validador verdes nessa etapa anterior. Após controller/adapter:
 suíte351/52, tooling56, lint/tipos sem warnings, Doctor21/21 verdes. Assets,
 capacidades/controller/adapter e provider/TTS preparados; após integração,
 suíte362/53, tooling56, lint/tipos, Doctor21/21 verdes. Tela de sons/slider/rota e
-empacotamento nativo ainda não validados.
+empacotamento nativo ainda não validados nessa etapa intermediária.
+
+Etapa final local: RegulationSoundsScreen/rota regulation-sounds e comando
+Abrir sons no quadro. Quatro radios com labels honestos e checked explícito,
+nenhuma seleção inicial/autoplay; play/pause/retry, estado real e cancelamento
+durante load. Slider0–100/ganho0, adjustable/valor textual/ações acessíveis,
+erro preservando volume, sem retomar áudio ao ajustar. Switch background exige
+pergunta explícita sobre bloqueio/silencioso antes do setter, cancel mantém off,
+flag só muda após confirmação do controller; desabilitado durante busy/voz.
+Back/CAA continuam acessíveis mesmo em Contextnull ou erro. Opções podem cancelar
+pedido de som anterior, confirmação congela opções/gain; nenhum atalho fictício.
+Navegação real mantém escolha/gain/playback entre quadro/sons, sem novo play,
+preserva modo9/Stacknone e fallback de retorno sem histórico.
+
+Oito testes screen e três navigation, 58 relacionados/6 suítes incluindo fases
+anteriores; suíte completa373/55, tooling56, lint/tipos sem warnings,
+Doctor21/21 e validador verdes. Review local sem problema impeditivo encontrado.
+Estilos existentes neutros/brancos, textos escaláveis/flexShrink/rowswrap,
+contentmax720, alvos48dp/radio/botões/slider/Switch, nenhuma animação nova.
+Contraste calculado sobre branco: texto303438=12.54:1, heading202124=16.10:1,
+comandos16634D=7.18:1, cinza72777D=4.52:1; sem estado só por cor. Sem preferência
+clínica inferida, afirmação de tratamento ou garantia auditiva. Sem conteúdo
+pessoal em mídia/logs/rede, sem gravação. Assistivo real/foco/fontes ampliadas,
+layout/insets/screenshots/volume/loops/background/TTS e manifesto final não
+testados em aparelho; T005 permanece pendente, não release aprovada.
 
 ## Riscos
 
 Arquivo indisponível, falha de reprodução e interrupção do áudio; cancelamento do timer separado do player (#27/#28).
 
-US-027 Ready após refinamento e confirmação de capacidades da stack; implementação
-e escuta nativa ainda faltam. Q-SOM-02 de término #28 não resolvida; não antecipar
+US-027 implementação local verificada, aguardando PR/CI/integração/build remoto;
+escuta nativa e gates ainda faltam. Q-SOM-02 de término #28 não resolvida; não antecipar
 timer ou liberar milestone. Auditoria #51 e segurança do host #61 continuam
 pendentes, não autorizam instalação no celular. Ver [auditoria](../../docs/backlog-audit.md).
 
@@ -219,5 +242,5 @@ pendentes, não autorizam instalação no celular. Ver [auditoria](../../docs/ba
 
 - Diretriz confirmada: React Native; MVP sem backend.
 - US-027: TypeScript, assets locais procedurais declarados, engine/slider SDK recomendados, escolhas voláteis e coordenação mínima com TTS existente.
-- Pendente: UI/rotas/slider/confirmação de background e revisão de interface; validação nativa de permissões/escuta/background/TTS/lifecycle e política própria de término #28.
+- Pendente: PR/CI/integração e gate nativo/assistivo de permissões/escuta/background/TTS/lifecycle; política própria de término #28.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.

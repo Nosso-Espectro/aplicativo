@@ -49,6 +49,6 @@ grosseiros; **não provam loop imperceptível, qualidade percebida, conforto ou
 segurança auditiva**. Escuta, dispositivo/codec, volume real, interrupções e
 reprodução offline/background ainda dependem do gate nativo de US-027.
 
-Os arquivos estão preparados, mas player/UI e empacotamento real ainda não foram
-entregues nesta etapa. Gerá-los não inicia áudio, não concede permissão e não
-conclui RF-001/RF-003 sem o fluxo de reprodução implementado e testado.
+Player/UI e testes do fluxo agora implementados na US-027; empacotamento remoto
+e validações em aparelho permanecem no gate. Gerar arquivos não inicia áudio
+nem concede permissão; reprodução e segundo plano continuam sob ação explícita.

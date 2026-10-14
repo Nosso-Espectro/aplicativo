@@ -44,6 +44,11 @@ export default function StartupScreen() {
         <MaterialIcons name="chat-bubble-outline" size={24} color="#16634D" accessible={false} />
         <Text style={{ color: '#16634D', fontSize: 18, flexShrink: 1 }}>Contato de confiança</Text>
       </Pressable>
+      <Pressable accessibilityRole="button" accessibilityLabel="Abrir sons" onPress={() => router.push('/regulation-sounds')}
+        style={{ minHeight: 48, padding: 12, flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+        <MaterialIcons name="graphic-eq" size={24} color="#16634D" accessible={false} />
+        <Text style={{ color: '#16634D', fontSize: 18, flexShrink: 1 }}>Sons</Text>
+      </Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel="Abrir timer de transição" onPress={() => router.push('/transition-timer')}
         style={{ minHeight: 48, flexDirection: 'row', gap: 8, alignItems: 'center', padding: 12 }}>
         <MaterialIcons name="timer" size={24} color="#16634D" accessible={false} />

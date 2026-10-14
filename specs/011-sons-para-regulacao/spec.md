@@ -11,7 +11,7 @@ source_checked: 2026-10-13
 
 Milestone GitHub: [P1 — Sons para Regulação](https://github.com/Nosso-Espectro/aplicativo/milestone/19) (número 19).
 
-Milestone e Issues #27/#28 abertas. US-027 Ready após refinamento vivo e confirmação da stack/capacidades; nenhuma funcionalidade desta milestone entregue. US-028 conserva política própria de término.
+Milestone e Issues #27/#28 abertas. US-027 implementada/testada localmente na branch própria, aguardando PR/CI/integração; gate nativo pendente. US-028 conserva política própria de término e permanece fora dessa implementação.
 
 ## Contexto
 
