@@ -11,6 +11,7 @@ import { openCardDatabase } from '../../../src/features/communication/storage/ca
 import { openDisplayPreferencesDatabase } from '../../../src/features/regulation/display-preferences-database';
 import { openTimerDatabase } from '../../../src/features/transition-timer/timer-database';
 import { startTimer } from '../../../src/features/transition-timer/visual-timer';
+import { versionedTimerFixture } from '../transition-timer/versioned-timer-fixture';
 import { openTrustedContactDatabase } from '../../../src/features/support-plan/trusted-contact-database';
 import { emptyTrustedContact } from '../../../src/features/support-plan/trusted-contact';
 import { createExpoSoundEngine } from '../../../src/features/regulation-sounds/expo-sound-engine';
@@ -30,7 +31,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   jest.mocked(openCardDatabase).mockResolvedValue({ list: async () => [], listFavorites: async () => [], setFavorite: async () => [], save: async () => [], remove: async () => [] });
   jest.mocked(openDisplayPreferencesDatabase).mockResolvedValue({ read: async () => ({ enabled: false }), save: async value => ({ ...value }) });
-  jest.mocked(openTimerDatabase).mockResolvedValue({ read: async () => null, act: timerAction });
+  jest.mocked(openTimerDatabase).mockResolvedValue(versionedTimerFixture(async () => null, timerAction));
   jest.mocked(openTrustedContactDatabase).mockResolvedValue({ read: async () => ({ ...emptyTrustedContact }), save: saveContact });
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
 });
@@ -65,7 +66,7 @@ it('keeps contact load failures recoverable without blocking return or other too
   expect(openWhatsAppDraft).not.toHaveBeenCalled(); expect(createExpoSoundEngine).not.toHaveBeenCalled();
 });
 it('preserves sound choices, restored timer and voluntary low-stimulation mode across real routes', async () => {
-  jest.mocked(openTimerDatabase).mockResolvedValue({ read: async () => startTimer(60000, Date.now()), act: timerAction });
+  jest.mocked(openTimerDatabase).mockResolvedValue(versionedTimerFixture(async () => startTimer(60000, Date.now()), timerAction));
   await openPanel(); await act(async () => fireEvent(screen.getByRole('switch', { name: 'Modo de baixa estimulação' }), 'valueChange', true));
   await press('Sons'); fireEvent.press(screen.getByRole('radio', { name: 'Ruído marrom' }));
   fireEvent(screen.getByLabelText('Volume do som'), 'valueChange', 0); await press('Voltar ao painel');

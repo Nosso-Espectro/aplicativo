@@ -2,17 +2,19 @@ import { useState, type ComponentProps } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { durationFromInput, type TimerSession } from './visual-timer';
+import { durationFromInput } from './visual-timer';
+import type { VersionedTimerSession } from './timer-database';
 import { useTransitionTimer } from './TransitionTimerProvider';
+import { ProgressAlertSettings } from './ProgressAlertSettings';
 
 export function TransitionTimerScreen({ onClose, backLabel = 'Voltar ao quadro' }: { onClose(): void; backLabel?: string }) {
   const timer = useTransitionTimer();
   const [minutes, setMinutes] = useState(''); const [seconds, setSeconds] = useState('0');
   const [invalidDuration, setInvalidDuration] = useState(false);
-  const [cancelTarget, setCancelTarget] = useState<TimerSession | null>(null);
+  const [cancelTarget, setCancelTarget] = useState<VersionedTimerSession | null>(null);
   const unavailable = timer.loading || timer.error === 'read' || timer.busy;
   const active = timer.visual?.phase === 'running' || timer.visual?.phase === 'paused';
-  const confirming = cancelTarget !== null && cancelTarget === timer.session;
+  const confirming = cancelTarget !== null && cancelTarget.session === timer.session && cancelTarget.sessionNumber === timer.sessionNumber;
   const remainingSeconds = timer.visual?.remainingSeconds ?? 0;
   const hours = Math.floor(remainingSeconds / 3600); const minutePart = Math.floor(remainingSeconds % 3600 / 60); const secondPart = remainingSeconds % 60;
   const timeLabel = `Tempo restante: ${hours ? `${hours} ${hours === 1 ? 'hora' : 'horas'}, ` : ''}${minutePart} ${minutePart === 1 ? 'minuto' : 'minutos'} e ${secondPart} ${secondPart === 1 ? 'segundo' : 'segundos'}`;
@@ -60,14 +62,15 @@ export function TransitionTimerScreen({ onClose, backLabel = 'Voltar ao quadro' 
           </>}
           {timer.visual?.phase === 'running' && <Command icon="pause" label="Pausar timer" disabled={unavailable || confirming} onPress={() => void timer.act({ type: 'pause' })} />}
           {timer.visual?.phase === 'paused' && <Command icon="play-arrow" label="Retomar timer" disabled={unavailable || confirming} onPress={() => void timer.act({ type: 'resume' })} />}
-          {timer.session && <Command icon="close" label="Cancelar timer" disabled={unavailable || confirming} onPress={() => setCancelTarget(timer.session)} />}
+          {timer.session && <Command icon="close" label="Cancelar timer" disabled={unavailable || confirming} onPress={() => setCancelTarget({ session: timer.session, sessionNumber: timer.sessionNumber })} />}
           {confirming && <View style={styles.confirmation}>
             <Text accessibilityRole="alert" style={styles.text}>Cancelar este timer e remover sua sessão salva?</Text>
-            <Command icon="close" label="Confirmar cancelamento do timer" disabled={unavailable} onPress={() => void timer.act({ type: 'cancel' }, cancelTarget)} />
+            <Command icon="close" label="Confirmar cancelamento do timer" disabled={unavailable} onPress={() => void timer.act({ type: 'cancel' }, cancelTarget!.session, cancelTarget!.sessionNumber)} />
             <Command icon="arrow-back" label="Manter timer" disabled={timer.busy} onPress={() => setCancelTarget(null)} />
           </View>}
         </>}
         {timer.busy && <Text accessibilityLiveRegion="polite" style={styles.text}>Salvando timer…</Text>}
+        <ProgressAlertSettings />
       </ScrollView>
     </KeyboardAvoidingView>
   </SafeAreaView>;

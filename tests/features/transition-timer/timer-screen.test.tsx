@@ -5,6 +5,7 @@ import { TransitionTimerProvider } from '../../../src/features/transition-timer/
 import { TransitionTimerScreen } from '../../../src/features/transition-timer/TransitionTimerScreen';
 import { openTimerDatabase, type TimerAction } from '../../../src/features/transition-timer/timer-database';
 import { pauseTimer, resumeTimer, startTimer, type TimerSession } from '../../../src/features/transition-timer/visual-timer';
+import { versionedTimerFixture } from './versioned-timer-fixture';
 jest.mock('../../../src/features/transition-timer/timer-database', () => ({ openTimerDatabase: jest.fn() }));
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
 let stored: TimerSession | null; let appStateEvent: (state: AppStateStatus) => void;
@@ -20,7 +21,7 @@ beforeEach(() => {
     else stored = null;
     return stored && { ...stored };
   });
-  jest.mocked(openTimerDatabase).mockResolvedValue({ read, act: operation });
+  jest.mocked(openTimerDatabase).mockResolvedValue(versionedTimerFixture(read, operation));
   jest.spyOn(AppState, 'addEventListener').mockImplementation((_type, listener) => { appStateEvent = listener; return { remove }; });
 });
 afterEach(() => { jest.restoreAllMocks(); jest.useRealTimers(); });
@@ -85,6 +86,7 @@ it('does not optimistically start and blocks duplicate pending requests', async 
   operation.mockImplementationOnce(() => new Promise<TimerSession | null>((resolve) => { finish = resolve; }));
   await open(); duration('1'); fireEvent.press(screen.getByRole('button', { name: 'Iniciar timer' }));
   fireEvent.press(screen.getByRole('button', { name: 'Iniciar timer' }));
+  await act(async () => {});
   expect(operation).toHaveBeenCalledTimes(1); expect(screen.getByText('Salvando timer…')).toBeOnTheScreen();
   expect(screen.queryByRole('progressbar')).toBeNull(); expect(screen.getByRole('button', { name: 'Iniciar timer' })).toBeDisabled();
   await act(async () => { finish(startTimer(60000, Date.now())); }); expect(screen.getByText('Em andamento')).toBeOnTheScreen();
@@ -129,4 +131,15 @@ it('deduplicates initialization under StrictMode effect replay', async () => {
   render(<StrictMode><Session /></StrictMode>); await act(async () => {});
   await waitFor(() => expect(screen.getByRole('button', { name: 'Iniciar timer' })).toBeOnTheScreen());
   expect(openTimerDatabase).toHaveBeenCalledTimes(1); expect(read).toHaveBeenCalledTimes(1); expect(operation).not.toHaveBeenCalled();
+});
+it('refuses stale cancellation after a different timer acquires identical values, preserving the new identity', async () => {
+  await open(); duration('1'); await press('Iniciar timer'); await press('Cancelar timer');
+  const database = await openTimerDatabase(); const old = await database.readVersioned();
+  const absent = await database.actVersioned({ type: 'cancel' }, Date.now(), old);
+  const current = await database.actVersioned({ type: 'start', durationMs: 60000 }, Date.now(), absent);
+  expect(current.session).toEqual(old.session); expect(current.sessionNumber).not.toBe(old.sessionNumber);
+  await press('Confirmar cancelamento do timer');
+  expect(screen.getByText('Não foi possível confirmar a alteração do timer.')).toBeOnTheScreen();
+  expect(await database.readVersioned()).toEqual(current);
+  await press('Atualizar timer salvo'); expect(screen.queryByRole('button', { name: 'Confirmar cancelamento do timer' })).toBeNull();
 });

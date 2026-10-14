@@ -85,8 +85,8 @@ it('detects corrupt state and refuses future schemas without clearing or downgra
   const db = await openTimerDatabase(); const started = await db.act({ type: 'start', durationMs: 10000 }, 1000, null);
   connections[0].exec('UPDATE timer_session SET remaining_ms = -1;'); await expect(db.read()).rejects.toThrow('Invalid timer session.');
   connections[0].prepare('UPDATE timer_session SET remaining_ms = ?').run(started!.remainingMs);
-  connections[0].exec('PRAGMA user_version=2;'); await expect(openTimerDatabase()).rejects.toThrow('Timer storage unavailable.');
-  expect(connections[0].prepare('PRAGMA user_version').get()).toEqual({ user_version: 2 }); expect(await db.read()).toEqual(started);
+  connections[0].exec('PRAGMA user_version=3;'); await expect(openTimerDatabase()).rejects.toThrow('Timer storage unavailable.');
+  expect(connections[0].prepare('PRAGMA user_version').get()).toEqual({ user_version: 3 }); expect(await db.read()).toEqual(started);
 });
 it('cancels only the timer, preserving mode and plan data', async () => {
   const display = await openDisplayPreferencesDatabase(); await display.save({ enabled: true });
@@ -94,4 +94,35 @@ it('cancels only the timer, preserving mode and plan data', async () => {
   const db = await openTimerDatabase(); const started = await db.act({ type: 'start', durationMs: 1000 }, 1000, null);
   await db.act({ type: 'cancel' }, 1500, started); expect(await db.read()).toBeNull();
   expect(await display.read()).toEqual({ enabled: true }); expect(await plans.read()).toEqual(plan);
+});
+it('reads and commits session and identity together, maintaining identity over pause/resume and reopening', async () => {
+  const db = await openTimerDatabase(); expect(await db.readVersioned()).toEqual({ session: null, sessionNumber: null });
+  const first = await db.actVersioned({ type: 'start', durationMs: 10000 }, 1000, await db.readVersioned());
+  expect(first.sessionNumber).toBe(1); expect(await db.readVersioned()).toEqual(first);
+  const paused = await db.actVersioned({ type: 'pause' }, 2000, first);
+  const resumed = await db.actVersioned({ type: 'resume' }, 3000, paused);
+  expect(resumed.sessionNumber).toBe(1);
+  connections[0].close(); const reopened = await openTimerDatabase(); expect(await reopened.readVersioned()).toEqual(resumed);
+});
+it('rejects a versioned action from another identity even if payload and deadline are identical', async () => {
+  const db = await openTimerDatabase();
+  const first = await db.actVersioned({ type: 'start', durationMs: 10000 }, 1000, await db.readVersioned());
+  const absent = await db.actVersioned({ type: 'cancel' }, 1000, first);
+  const second = await db.actVersioned({ type: 'start', durationMs: 10000 }, 1000, absent);
+  expect(first.session).toEqual(second.session); expect(second.sessionNumber).toBe(2);
+  await expect(db.actVersioned({ type: 'cancel' }, 1000, first)).rejects.toThrow('Timer session changed.');
+  expect(await db.readVersioned()).toEqual(second);
+});
+it('does not publish a new versioned identity after a failed commit', async () => {
+  const db = await openTimerDatabase(); const absent = await db.readVersioned(); failCommit = true;
+  await expect(db.actVersioned({ type: 'start', durationMs: 10000 }, 1000, absent)).rejects.toThrow(); failCommit = false;
+  expect(await db.readVersioned()).toEqual(absent);
+  expect((await db.actVersioned({ type: 'start', durationMs: 10000 }, 1000, absent)).sessionNumber).toBe(1);
+});
+it('refuses a saved session without a valid identity instead of assigning one during read', async () => {
+  const db = await openTimerDatabase();
+  await db.actVersioned({ type: 'start', durationMs: 10000 }, 1000, await db.readVersioned());
+  connections[0].exec('UPDATE timer_alert_state SET session_counter = 0');
+  await expect(db.readVersioned()).rejects.toThrow('Invalid timer identity.');
+  expect(connections[0].prepare('SELECT session_counter FROM timer_alert_state').get()).toEqual({ session_counter: 0 });
 });

@@ -24,8 +24,25 @@ instalar APK ou declarar release por esta evidência.
 
 ## US-018 — Issue #18
 
-- [ ] T006 [US-018] Em `src/features/transition-timer/progress-alerts`, atender RF-004 (critério 1 de #18): O usuário deve poder ativar avisos em marcos como 10, 5 e 2 minutos. Verificar com o cenário correspondente no PR.
-- [ ] T007 [US-018] Em `src/features/transition-timer/progress-alerts`, atender RF-005 (critério 2 de #18): Os avisos devem respeitar configurações de som e vibração do usuário. Verificar com o cenário correspondente no PR.
-- [ ] T008 [US-018] Em `src/features/transition-timer/progress-alerts`, atender RF-006 (critério 3 de #18): Deve ser possível desabilitar todos os avisos. Verificar com o cenário correspondente no PR.
-- [ ] T009 [US-018] Adicionar testes de comportamento de RF-004, RF-005, RF-006 em `tests/features/transition-timer/progress-alerts`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
+Ready em 2026-10-14 após refinamento na Issue18. T006–T009 verificadas;
+T010 permanece no gate nativo/assistivo descrito abaixo.
+
+- [x] T006 [US-018] Em `src/features/transition-timer/progress-alerts`, atender RF-004 (critério 1 de #18): O usuário deve poder ativar avisos em marcos como 10, 5 e 2 minutos. Verificar com o cenário correspondente no PR.
+- [x] T007 [US-018] Em `src/features/transition-timer/progress-alerts`, atender RF-005 (critério 2 de #18): Os avisos devem respeitar configurações de som e vibração do usuário. Verificar com o cenário correspondente no PR.
+- [x] T008 [US-018] Em `src/features/transition-timer/progress-alerts`, atender RF-006 (critério 3 de #18): Deve ser possível desabilitar todos os avisos. Verificar com o cenário correspondente no PR.
+- [x] T009 [US-018] Adicionar testes de comportamento de RF-004, RF-005, RF-006 em `tests/features/transition-timer/progress-alerts`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
 - [ ] T010 [US-018] Revisar RNF-001 a RNF-004 na interface/dados de #18, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+
+US-018:85 testes relacionados em cinco suítes; suíte497/67,56 tooling,
+lint/tipos sem warnings,Doctor21/21,validador/diffcheck verdes. UI em fluxo real do
+timer, draft/salvar/cancelar/erro/retry, consent independente/negação/resposta
+tardia e desabilitar todos com cancelamento confirmado. Revisão local de código,
+semântica/contraste/alvos48dp/texto escalável, privacidade/isolamento/offline e
+rollback; nenhum diagnóstico, dado pessoal, push/backend/player/haptic novo.
+T010 permanece pendente para SQLite Expo/offline/backups, TalkBack/VoiceOver/foco/
+ampliação/insets/Modal, permissões/manifesto/licenças nativas mescladas/ausência real
+de rede, entrega/cancelamento/som/vibração/canais/DND/relógio/background/bloqueio/
+restrições e RPC tardio. Não confundir mocks/SQLite Node/build com esses testes.
+Build remoto no SHA integrado ainda precisa ocorrer quando o host estiver
+acessível e seus processos/lock puderem ser conferidos; não disparar Android
+duplicado nem mudar backend por inferência. Nenhuma instalação foi autorizada.

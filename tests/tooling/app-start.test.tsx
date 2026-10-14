@@ -1,4 +1,5 @@
 import { renderRouter, screen } from 'expo-router/testing-library';
+import { act } from '@testing-library/react-native';
 import StartupScreen from '../../src/app';
 import RootLayout from '../../src/app/_layout';
 
@@ -10,6 +11,7 @@ describe('app bootstrap', () => {
     );
 
     expect(await screen.findByRole('header', { name: 'TEAr' })).toBeOnTheScreen();
+    await act(async () => {});
     expect(getPathname()).toBe('/');
   });
 });

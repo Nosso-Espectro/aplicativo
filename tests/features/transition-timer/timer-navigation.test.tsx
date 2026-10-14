@@ -6,6 +6,7 @@ import StartupScreen from '../../../src/app';
 import TimerRoute from '../../../src/app/transition-timer';
 import { openTimerDatabase, type TimerAction } from '../../../src/features/transition-timer/timer-database';
 import { startTimer, type TimerSession } from '../../../src/features/transition-timer/visual-timer';
+import { versionedTimerFixture } from './versioned-timer-fixture';
 import { openCardDatabase } from '../../../src/features/communication/storage/card-database';
 import { openDisplayPreferencesDatabase } from '../../../src/features/regulation/display-preferences-database';
 jest.mock('../../../src/features/transition-timer/timer-database', () => ({ openTimerDatabase: jest.fn() }));
@@ -28,7 +29,7 @@ let stored: TimerSession | null;
 const operation = jest.fn();
 beforeEach(() => {
   jest.clearAllMocks(); jest.useFakeTimers({ now: 10000 }); stored = null; mockHasHistory = true;
-  jest.mocked(openTimerDatabase).mockResolvedValue({ read: async () => stored && { ...stored }, act: operation });
+  jest.mocked(openTimerDatabase).mockResolvedValue(versionedTimerFixture(async () => stored && { ...stored }, operation));
   operation.mockReset().mockImplementation(async (action: TimerAction, nowMs: number) => { stored = action.type === 'start' ? startTimer(action.durationMs, nowMs) : null; return stored && { ...stored }; });
   jest.mocked(openCardDatabase).mockResolvedValue({ list: async () => [], listFavorites: async () => [], setFavorite: async () => [], save: async () => [], remove: async () => [] });
   jest.mocked(openDisplayPreferencesDatabase).mockResolvedValue({ read: async () => ({ enabled: false }), save: async (value) => ({ ...value }) });
