@@ -15,6 +15,7 @@ jest.mock('../../../src/features/regulation/display-preferences-database', () =>
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
 const mockPush = jest.fn(); const mockBack = jest.fn(); const mockReplace = jest.fn(); let mockHasHistory = true;
 jest.mock('expo-router', () => ({
+  useLocalSearchParams: () => ({}),
   useRouter: () => ({ push: mockPush, back: mockBack, replace: mockReplace, canGoBack: () => mockHasHistory }),
   Stack: (props: { screenOptions: { animation: string } }) => <MockStack {...props} />,
 }));

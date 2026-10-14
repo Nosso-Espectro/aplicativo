@@ -7,7 +7,7 @@ import { useRegulationSounds } from './RegulationSoundsProvider';
 import { soundOptions } from './sound-settings';
 
 const phaseLabels = { idle: 'Parado', loading: 'Carregando som', playing: 'Reproduzindo', paused: 'Pausado', stopping: 'Interrompendo som', error: 'Não foi possível confirmar o controle do som.' };
-export function RegulationSoundsScreen({ onClose }: { onClose(): void }) {
+export function RegulationSoundsScreen({ onClose, backLabel = 'Voltar ao quadro' }: { onClose(): void; backLabel?: string }) {
   const sounds = useRegulationSounds();
   const [confirmBackground, setConfirmBackground] = useState(false);
   const [gainError, setGainError] = useState(false);
@@ -21,7 +21,7 @@ export function RegulationSoundsScreen({ onClose }: { onClose(): void }) {
     catch { setGainError(true); }
   }
   return <SafeAreaView style={styles.screen}><ScrollView contentContainerStyle={styles.content}>
-    <Command icon="arrow-back" label="Voltar ao quadro" onPress={onClose} />
+    <Command icon="arrow-back" label={backLabel} onPress={onClose} />
     <Text accessibilityRole="header" style={styles.heading}>Sons</Text>
     {!sounds && <Text style={styles.text} accessibilityLiveRegion="polite">Preparando controles de som</Text>}
     {sounds && state && <>

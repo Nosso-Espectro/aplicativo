@@ -1,7 +1,6 @@
-import { useRouter } from 'expo-router';
+import { usePanelReturn } from '../features/regulation/usePanelReturn';
 import { TrustedContactScreen } from '../features/support-plan/TrustedContactScreen';
 
 export default function TrustedContactRoute() {
-  const router = useRouter();
-  return <TrustedContactScreen onClose={() => router.canGoBack() ? router.back() : router.replace('/')} />;
+  return <TrustedContactScreen {...usePanelReturn('Cancelar e voltar')} />;
 }

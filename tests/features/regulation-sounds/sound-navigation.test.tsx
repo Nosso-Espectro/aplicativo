@@ -16,7 +16,7 @@ jest.mock('../../../src/features/regulation/display-preferences-database', () =>
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
 jest.mock('@react-native-community/slider', () => 'Slider');
 const mockPush = jest.fn(); const mockBack = jest.fn(); const mockReplace = jest.fn(); let mockHistory = true;
-jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush, back: mockBack, replace: mockReplace, canGoBack: () => mockHistory }), Stack: (props: { screenOptions: { animation: string } }) => <MockStack {...props} /> }));
+jest.mock('expo-router', () => ({ useLocalSearchParams: () => ({}), useRouter: () => ({ push: mockPush, back: mockBack, replace: mockReplace, canGoBack: () => mockHistory }), Stack: (props: { screenOptions: { animation: string } }) => <MockStack {...props} /> }));
 function MockStack({ screenOptions }: { screenOptions: { animation: string } }) {
   const [route, setRoute] = useState('/');
   useEffect(() => { mockPush.mockImplementation(setRoute); mockBack.mockImplementation(() => setRoute('/')); mockReplace.mockImplementation(setRoute); }, []);

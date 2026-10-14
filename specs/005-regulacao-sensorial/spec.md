@@ -11,7 +11,7 @@ source_checked: 2026-10-13
 
 Milestone GitHub: [P0 — Regulação Sensorial](https://github.com/Nosso-Espectro/aplicativo/milestone/11) (número 11).
 
-US-009 implementada; revisão nativa/assistiva pendente. Destinos reais de US-010 integrados (#17/PR70, #27/PR71, #13/PR68 e CAA); painel Ready após refinamento vivo, ainda não implementado. A milestone não está concluída.
+US-009 implementada; revisão nativa/assistiva pendente. US-010 implementada na branch da Issue com quatro destinos reais, entrada no quadro e retorno contextual testados; aguardando CI/integração. T006/T011 e gates nativos permanecem pendentes. A milestone não está concluída.
 
 ## Contexto
 
@@ -52,9 +52,9 @@ Como pessoa em sobrecarga, quero acessar em poucos toques ferramentas de regula�
 
 #### Critérios de aceite
 
-- [ ] O painel deve oferecer atalhos para comunicação, sons, temporizador e contato de apoio.
-- [ ] O painel deve ser acessível a partir da tela inicial.
-- [ ] Os controles devem possuir alvos de toque amplos e textos objetivos.
+- [x] O painel deve oferecer atalhos para comunicação, sons, temporizador e contato de apoio.
+- [x] O painel deve ser acessível a partir da tela inicial.
+- [x] Os controles devem possuir alvos de toque amplos e textos objetivos.
 
 ### Definition of Done original (comum às Issues #9, #10)
 

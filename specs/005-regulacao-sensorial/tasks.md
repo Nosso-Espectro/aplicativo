@@ -30,8 +30,26 @@ fluxos. Nenhuma instalação, build local ou release realizados nesta história.
 
 ## US-010 — Issue #10
 
-- [ ] T007 [US-010] Em `src/features/regulation/quick-panel`, atender RF-005 (critério 1 de #10): O painel deve oferecer atalhos para comunicação, sons, temporizador e contato de apoio. Verificar com o cenário correspondente no PR.
-- [ ] T008 [US-010] Em `src/features/regulation/quick-panel`, atender RF-006 (critério 2 de #10): O painel deve ser acessível a partir da tela inicial. Verificar com o cenário correspondente no PR.
-- [ ] T009 [US-010] Em `src/features/regulation/quick-panel`, atender RF-007 (critério 3 de #10): Os controles devem possuir alvos de toque amplos e textos objetivos. Verificar com o cenário correspondente no PR.
-- [ ] T010 [US-010] Adicionar testes de comportamento de RF-005, RF-006, RF-007 em `tests/features/regulation/quick-panel`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
+- [x] T007 [US-010] Em `src/features/regulation/quick-panel`, atender RF-005 (critério 1 de #10): O painel deve oferecer atalhos para comunicação, sons, temporizador e contato de apoio. Verificar com o cenário correspondente no PR.
+- [x] T008 [US-010] Em `src/features/regulation/quick-panel`, atender RF-006 (critério 2 de #10): O painel deve ser acessível a partir da tela inicial. Verificar com o cenário correspondente no PR.
+- [x] T009 [US-010] Em `src/features/regulation/quick-panel`, atender RF-007 (critério 3 de #10): Os controles devem possuir alvos de toque amplos e textos objetivos. Verificar com o cenário correspondente no PR.
+- [x] T010 [US-010] Adicionar testes de comportamento de RF-005, RF-006, RF-007 em `tests/features/regulation/quick-panel`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
 - [ ] T011 [US-010] Revisar RNF-001 a RNF-004 na interface/dados de #10, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+
+Evidências US-010 em 2026-10-14: 15 testes em três suítes do painel; 23 testes
+incluindo regressões de acesso direto dos destinos. Suíte completa388/58,
+lint/tipos, Doctor21/21,56 tooling e validador aprovados. Expo Router real em
+testes abre os quatro destinos em dois comandos desde o quadro, sem iniciar
+som/timer/handoff; retorno ao painel usa origem estrita, acesso direto conserva
+rótulos e fallback ao quadro sem histórico. Ausência/erro do contato não bloqueia
+retorno nem sons; escolhas/volume do som, timer restaurado e modo voluntário são
+preservados sem remontar providers. Nenhum banco, dependência, permissão ou saída
+de rede novos. Revisão do diff sem achado bloqueante: escopo limitado a painel,
+entrada e retorno. Superfície branca, texto18/header26 escaláveis, flexShrink,
+scroll/maxWidth720 e alvos64dp; ícones existentes não duplicam nomes acessíveis,
+cores16634D/202124 em branco preservam contraste. Sem decoração, autoplay ou
+animação nova; apresentação global #9 inalterada. T011 permanece pendente para
+TalkBack/VoiceOver, foco real, ampliação/insets/alvos reais e revisão em aparelho;
+testes de componentes não comprovam esses fluxos. Nenhum build local, som real,
+operação de celular ou release. CI leve/integração e build remoto são registrados
+no PR/GitHub, não presumidos por estes checks locais.
