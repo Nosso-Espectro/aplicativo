@@ -3,7 +3,7 @@ milestone: 11
 priority: P0
 tag: m005-regulacao-sensorial
 status: draft
-ready_stories: ["US-009"]
+ready_stories: ["US-009", "US-010"]
 source_checked: 2026-10-13
 ---
 
@@ -11,7 +11,7 @@ source_checked: 2026-10-13
 
 Milestone GitHub: [P0 — Regulação Sensorial](https://github.com/Nosso-Espectro/aplicativo/milestone/11) (número 11).
 
-US-009 implementada e verificada nos checks leves, com revisão nativa/assistiva e build remoto pendentes do gate. US-010 conserva dependências de destinos/painel ainda pendentes; a milestone não está concluída.
+US-009 implementada; revisão nativa/assistiva pendente. Destinos reais de US-010 integrados (#17/PR70, #27/PR71, #13/PR68 e CAA); painel Ready após refinamento vivo, ainda não implementado. A milestone não está concluída.
 
 ## Contexto
 
@@ -112,7 +112,20 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 - Q-REG-01 — Decisão de sequência registrada na #10 sob delegação humana: entregar os destinos originais #17 (timer) e #27 (sons) no MVP, cada qual após Ready/em branch própria, antes do painel real. Não mudar prioridades, esconder/trocar/simular atalhos ou antecipar #18. A opção de produto está resolvida; entrega dos destinos e integração #10 continuam pendentes. Ver [origem](https://github.com/Nosso-Espectro/aplicativo/issues/10#issuecomment-6155218484).
 - Q-REG-02 — Resolvida para #9 na origem: switch global acessível, alternância em um toque quando visível; no modal de cartão retornar ao quadro antes de alternar. Modo ligado remove transições animadas do Stack e imagem decorativa da marca nos quadros; mantém TEAr/cabeçalhos/pictogramas/textos/ações/voz voluntária/dados. Contraste AA aplicável, texto escalável e alvos48dp preservados, superfícies neutras. Preferência local inicialmente desligada, restauração e escrita com falhas recuperáveis/estado confirmado; enquanto desconhecida, apresentação calma sem bloquear comunicação. Redução de movimento do sistema respeitada independentemente da preferência, sem alterar configurações globais. Quantidade de toques/destinos do painel #10 continua a refinar.
-- Q-REG-03 — Painel #10 e acesso direto do cartão #12 têm dependência de integração recíproca. Nenhuma milestone pode ser declarada concluída sem validar ambos os fluxos.
+- Q-REG-03 — Sequência refinada: os critérios originais de #10 requerem comunicação/sons/timer/contato, não cartão. Entregar esses quatro destinos no painel, depois #12 implementa seu cartão e acesso direto real pelo painel em branch própria; não simular esse acesso ou fechar #12 antes de validar. Nenhuma milestone pode ser declarada concluída sem os fluxos/gates pertinentes.
+
+US-010: comando Painel de regulação na tela inicial, quatro atalhos objetivos
+Comunicação/Sons/Timer de transição/Contato de confiança, dois toques até destino,
+alvos mínimos64dp/ícone+texto/texto escalável/layout reduzido/neutro. Manter
+switch global voluntário #9, sem habilitar modo automaticamente ou copiar dados.
+Nenhum atalho inicia áudio/timer/WhatsApp/envio. Comunicação leva ao quadro real;
+demais destinos usam origem de retorno allowlisted para voltar ao painel com
+rótulo correto, sem URL arbitrária/dado pessoal. Back sem histórico tem fallback
+ao quadro; estados de ausência/falha pertencem aos módulos reais, volta/CAA
+continuam disponíveis, sem ocultar ou substituir destinos. Sem banco/dependência/
+permissão novos, sem inferência clínica ou navegação inferior nessa história.
+Refinamento delegado na [origem](https://github.com/Nosso-Espectro/aplicativo/issues/10#issuecomment-6157843303),
+preservando três critérios/P0. Ready não marca tasks por documentação.
 
 Refinamento da [US-009](https://github.com/Nosso-Espectro/aplicativo/issues/9#issuecomment-6154669659)
 sob delegação explícita do usuário preserva os quatro critérios originais e a

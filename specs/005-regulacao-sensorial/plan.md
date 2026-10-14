@@ -32,6 +32,24 @@ Módulo proposto: `src/features/regulation/`.
 
 ## Modelo de dados
 
+US-010 Ready após destinos reais integrados e refinamento. Catálogo local de
+quatro comandos/paths allowlisted: comunicação→quadro, sons→regulation-sounds,
+timer→transition-timer, contato→trusted-contact. Sem dados pessoais ou banco.
+Dois toques desde a tela inicial, nenhum início de mídia/timer/handoff.
+Painel reduzido com ícone/texto e alvos64dp; global Switch/movimento #9 permanece
+voluntário, sem duplicar controller/preferências ou remontar stores.
+Rota própria e comando no quadro; origem de retorno allowlisted diferencia
+Voltar ao painel de Voltar ao quadro nos três destinos, mantendo defaults
+existentes para acesso direto e fallback seguro sem histórico. Mudanças nos
+destinos ficam restritas a esse contrato, não refatorar suas funcionalidades.
+Comunicação volta ao quadro real; navegação inferior/cartão#12 fora desta branch.
+Depois do painel, #12 adiciona cartão/acesso real próprio; não simular criterion.
+Testar RootLayout/rotas reais e todos quatro fluxos, cancelamento/retorno,
+modo/estado dos módulos preservados e ausência/falhas sem iniciar side-effects,
+sem operar celular/WhatsApp ou usar dados pessoais nos fixtures. Mocks não
+validam assistivo/insets/voz/áudio nativos; checks leves/CI e builds só remotos.
+Nenhuma taskUS010 concluída; implementation ainda falta.
+
 US-009: preferência `{enabled:boolean}`, defaultfalse, validação estrita sem
 coerção. Apresentação remove imagem decorativa somente quando modo ativo; animação
 Stack none quando modo ativo OU redução de movimento do sistema, default nos
