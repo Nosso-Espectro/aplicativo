@@ -10,11 +10,14 @@ import { emptyProgressAlerts, type ProgressAlertPreferences } from '../../../src
 import { createProgressAlertCoordinator } from '../../../src/features/transition-timer/progress-alert-coordinator';
 import type { ProgressAlertEngine } from '../../../src/features/transition-timer/expo-progress-alert-engine';
 import * as engineModule from '../../../src/features/transition-timer/expo-progress-alert-engine';
-import { createElement, StrictMode, useEffect } from 'react';
+import { createElement, Fragment, StrictMode, useEffect } from 'react';
 import { AppState, Text, type AppStateStatus } from 'react-native';
-import { act, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { TransitionTimerProvider, useTransitionTimer } from '../../../src/features/transition-timer/TransitionTimerProvider';
 import { ProgressAlertsProvider, useProgressAlerts } from '../../../src/features/transition-timer/ProgressAlertsProvider';
+import { ProgressAlertSettings } from '../../../src/features/transition-timer/ProgressAlertSettings';
+import { ProgressAlertNotice } from '../../../src/features/transition-timer/ProgressAlertNotice';
+jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
 jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn() }));
 let directory: string; let connections: DatabaseSync[]; let failReadback: boolean; let failCommit: boolean;
 const enabled: ProgressAlertPreferences = { enabled: true, marks: [10, 5, 2], systemNotifications: true };
@@ -308,7 +311,8 @@ let timerContext: ReturnType<typeof useTransitionTimer>;
 function ProviderProbe() {
   const alerts = useProgressAlerts(); const timer = useTransitionTimer();
   useEffect(() => { alertsContext = alerts; timerContext = timer; }, [alerts, timer]);
-  return createElement(Text, null, alerts?.loading ? 'Loading' : 'Ready');
+  return createElement(Fragment, null, createElement(Text, null, alerts?.loading ? 'Loading' : 'Ready'),
+    createElement(ProgressAlertSettings), createElement(ProgressAlertNotice));
 }
 async function providerFixture(preferences = { ...enabled, systemNotifications: false }, strict = false, nowMs = 1000) {
   jest.useFakeTimers({ now: 1000 }); alertsContext = null;
@@ -423,5 +427,135 @@ it('shows one current committed native callback crossing and ignores duplicate o
     expect(ownGetter().some(entry => entry.identifier === id)).toBe(false);
     const saved = await fixture.alerts.read(); fixture.view.unmount();
     await act(async () => { received(id); }); expect(await fixture.alerts.read()).toEqual(saved);
+  } finally { fixture.cleanup(); }
+});
+
+async function pressAlertCommand(label: string) {
+  await act(async () => { fireEvent.press(screen.getByRole('button', { name: label })); });
+}
+async function chooseVisualTen() {
+  await pressAlertCommand('Configurar avisos');
+  await act(async () => {
+    fireEvent(screen.getByRole('switch', { name: 'Ativar avisos progressivos' }), 'valueChange', true);
+    fireEvent.press(screen.getByRole('checkbox', { name: 'Avisar com 10 minutos restantes' }));
+  });
+}
+it('edits explicit default-off visual choices and saves offline without requesting system permission', async () => {
+  const fixture = await providerFixture(emptyProgressAlerts);
+  const fetch = jest.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('offline'));
+  try {
+    await chooseVisualTen();
+    expect(screen.getByRole('switch', { name: 'Avisos do sistema' })).not.toBeChecked();
+    expect((await fixture.alerts.read()).preferences).toEqual(emptyProgressAlerts);
+    await pressAlertCommand('Salvar avisos');
+    expect((await fixture.alerts.read()).preferences).toEqual({ enabled: true, marks: [10], systemNotifications: false });
+    expect(screen.getByText('Avisos salvos.')).toBeOnTheScreen(); expect(fixture.factory).not.toHaveBeenCalled();
+    expect(fetch).not.toHaveBeenCalled(); expect(timerContext.session?.phase).toBe('running');
+  } finally { fixture.cleanup(); }
+});
+it('discards an edited draft on cancellation without changing confirmed preferences or the timer', async () => {
+  const fixture = await providerFixture(emptyProgressAlerts);
+  try {
+    const before = await fixture.alerts.read(); await chooseVisualTen(); await pressAlertCommand('Cancelar edição dos avisos');
+    expect(await fixture.alerts.read()).toEqual(before); expect(screen.getByText('Avisos desativados')).toBeOnTheScreen();
+    await pressAlertCommand('Configurar avisos');
+    expect(screen.getByRole('switch', { name: 'Ativar avisos progressivos' })).not.toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Avisar com 10 minutos restantes' })).not.toBeChecked();
+  } finally { fixture.cleanup(); }
+});
+it('asks only after explicit system confirmation and does not save or schedule until the separate save command', async () => {
+  const fixture = await providerFixture(emptyProgressAlerts);
+  try {
+    await chooseVisualTen();
+    await act(async () => { fireEvent(screen.getByRole('switch', { name: 'Avisos do sistema' }), 'valueChange', true); });
+    expect(fixture.factory).not.toHaveBeenCalled();
+    await pressAlertCommand('Não ativar avisos do sistema'); expect(fixture.factory).not.toHaveBeenCalled();
+    await act(async () => { fireEvent(screen.getByRole('switch', { name: 'Avisos do sistema' }), 'valueChange', true); });
+    await pressAlertCommand('Permitir avisos do sistema');
+    expect(fixture.engine.requestPermission).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('switch', { name: 'Avisos do sistema' })).toBeChecked();
+    expect((await fixture.alerts.read()).preferences).toEqual(emptyProgressAlerts); expect(fixture.engine.schedule).not.toHaveBeenCalled();
+    await pressAlertCommand('Salvar avisos');
+    expect(fixture.engine.schedule).toHaveBeenCalledTimes(1); expect((await fixture.alerts.read()).preferences.systemNotifications).toBe(true);
+  } finally { fixture.cleanup(); }
+});
+it('preserves visual choices after denied system access and permits saving without native scheduling', async () => {
+  const fixture = await providerFixture(emptyProgressAlerts);
+  try {
+    jest.mocked(fixture.engine.requestPermission).mockResolvedValue(false); await chooseVisualTen();
+    await act(async () => { fireEvent(screen.getByRole('switch', { name: 'Avisos do sistema' }), 'valueChange', true); });
+    await pressAlertCommand('Permitir avisos do sistema');
+    expect(screen.getByRole('switch', { name: 'Avisos do sistema' })).not.toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Avisar com 10 minutos restantes' })).toBeChecked();
+    expect(screen.getByRole('alert')).toHaveTextContent('Não foi possível confirmar os avisos. Suas escolhas foram preservadas.');
+    await pressAlertCommand('Salvar avisos');
+    expect((await fixture.alerts.read()).preferences).toEqual({ enabled: true, marks: [10], systemNotifications: false });
+    expect(fixture.engine.schedule).not.toHaveBeenCalled();
+  } finally { fixture.cleanup(); }
+});
+it('keeps the draft and confirmed version after failed save and confirms success only after explicit recovery', async () => {
+  const fixture = await providerFixture(emptyProgressAlerts);
+  try {
+    await chooseVisualTen(); failCommit = true; await pressAlertCommand('Salvar avisos'); failCommit = false;
+    expect((await fixture.alerts.read()).preferences).toEqual(emptyProgressAlerts);
+    expect(screen.queryByText('Avisos salvos.')).toBeNull(); expect(screen.getByRole('checkbox', { name: 'Avisar com 10 minutos restantes' })).toBeChecked();
+    await pressAlertCommand('Tentar avisos novamente'); await pressAlertCommand('Salvar avisos');
+    expect(screen.getByText('Avisos salvos.')).toBeOnTheScreen(); expect((await fixture.alerts.read()).preferences.marks).toEqual([10]);
+  } finally { failCommit = false; fixture.cleanup(); }
+});
+it('does not claim disable-all after cancellation failure and retains future choices when cancellation finally succeeds', async () => {
+  const fixture = await providerFixture(enabled);
+  try {
+    const session = (await fixture.alerts.read()).session;
+    jest.mocked(fixture.engine.cancel).mockRejectedValueOnce(new Error('synthetic private detail'));
+    await pressAlertCommand('Desabilitar todos os avisos');
+    expect(screen.getByText('Avisos ativados')).toBeOnTheScreen(); expect(screen.queryByText('Avisos salvos.')).toBeNull();
+    await pressAlertCommand('Desabilitar todos os avisos');
+    const confirmed = await fixture.alerts.read(); expect(confirmed.preferences).toEqual({ ...enabled, enabled: false, systemNotifications: false });
+    expect(confirmed.pending).toEqual([]); expect(confirmed.session).toEqual(session); expect(fixture.scheduled.size).toBe(0);
+    expect(screen.getByText('Avisos desativados')).toBeOnTheScreen();
+  } finally { fixture.cleanup(); }
+});
+it('keeps cancel available during permission work and never restores a cancelled draft after a late response', async () => {
+  const fixture = await providerFixture(emptyProgressAlerts);
+  try {
+    let finish!: (allowed: boolean) => void;
+    jest.mocked(fixture.engine.requestPermission).mockImplementationOnce(() => new Promise<boolean>(resolve => { finish = resolve; }));
+    await chooseVisualTen(); await act(async () => { fireEvent(screen.getByRole('switch', { name: 'Avisos do sistema' }), 'valueChange', true); });
+    await pressAlertCommand('Permitir avisos do sistema'); expect(alertsContext?.busy).toBe(true);
+    await pressAlertCommand('Cancelar edição dos avisos'); await act(async () => { finish(true); });
+    await waitFor(() => expect(alertsContext?.busy).toBe(false));
+    expect((await fixture.alerts.read()).preferences).toEqual(emptyProgressAlerts); expect(fixture.engine.schedule).not.toHaveBeenCalled();
+    await pressAlertCommand('Configurar avisos'); expect(screen.getByRole('switch', { name: 'Avisos do sistema' })).not.toBeChecked();
+  } finally { fixture.cleanup(); }
+});
+it('presents a polite scalable notice with a48dp close command and dismisses without changing persisted data', async () => {
+  const fixture = await providerFixture(undefined, false, 599000);
+  try {
+    await act(async () => { jest.advanceTimersByTime(1000); }); await act(async () => { jest.advanceTimersByTime(1000); });
+    await waitFor(() => expect(alertsContext?.busy).toBe(false));
+    const text = screen.getByText('Faltam 10 minutos.'); expect(text.props.accessibilityLiveRegion).toBe('polite'); expect(text.props.allowFontScaling).not.toBe(false);
+    expect(screen.getByRole('button', { name: 'Fechar aviso do timer' })).toHaveStyle({ minHeight: 48, minWidth: 48 });
+    const confirmed = await fixture.alerts.read(); await pressAlertCommand('Fechar aviso do timer');
+    expect(screen.queryByText('Faltam 10 minutos.')).toBeNull(); expect(await fixture.alerts.read()).toEqual(confirmed);
+  } finally { fixture.cleanup(); }
+});
+it('blocks duplicate save and draft cancellation during an explicit pending commit without premature success', async () => {
+  const fixture = await providerFixture(emptyProgressAlerts);
+  try {
+    await chooseVisualTen(); await act(async () => { fireEvent(screen.getByRole('switch', { name: 'Avisos do sistema' }), 'valueChange', true); });
+    await pressAlertCommand('Permitir avisos do sistema');
+    let finish!: () => void; let entered!: () => void;
+    const reached = new Promise<void>(resolve => { entered = resolve; });
+    jest.mocked(fixture.engine.schedule).mockImplementationOnce(async entry => {
+      entered(); await new Promise<void>(resolve => { finish = resolve; }); fixture.scheduled.add(entry.identifier);
+    });
+    await act(async () => { fireEvent.press(screen.getByRole('button', { name: 'Salvar avisos' })); await reached; });
+    expect(screen.getByRole('button', { name: 'Salvar avisos' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Cancelar edição dos avisos' })).toBeDisabled();
+    expect(screen.queryByText('Avisos salvos.')).toBeNull();
+    await act(async () => { fireEvent.press(screen.getByRole('button', { name: 'Salvar avisos' })); });
+    expect(fixture.engine.schedule).toHaveBeenCalledTimes(1);
+    await act(async () => { finish(); }); await waitFor(() => expect(screen.getByText('Avisos salvos.')).toBeOnTheScreen());
   } finally { fixture.cleanup(); }
 });

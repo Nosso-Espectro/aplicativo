@@ -11,7 +11,7 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P1 — Timer Visual de Transição](https://github.com/Nosso-Espectro/aplicativo/milestone/14) (número 14).
 
-US-017 integrada pelo PR70. US-018 Ready após refinamento vivo para avisos voluntários/locais, ainda não implementada. Builds e revisão nativa/assistiva permanecem no gate; a milestone não está concluída.
+US-017 integrada pelo PR70. US-018 implementada e verificada localmente para avisos voluntários/locais, com integração via PR. Builds e revisão nativa/assistiva permanecem no gate; a milestone não está concluída.
 
 ## Contexto
 
@@ -51,9 +51,9 @@ Como usuário, quero receber avisos antes do fim de uma atividade, para evitar u
 
 #### Critérios de aceite
 
-- [ ] O usuário deve poder ativar avisos em marcos como 10, 5 e 2 minutos.
-- [ ] Os avisos devem respeitar configurações de som e vibração do usuário.
-- [ ] Deve ser possível desabilitar todos os avisos.
+- [x] O usuário deve poder ativar avisos em marcos como 10, 5 e 2 minutos.
+- [x] Os avisos devem respeitar configurações de som e vibração do usuário.
+- [x] Deve ser possível desabilitar todos os avisos.
 
 ### Definition of Done original (comum às Issues #17, #18)
 

@@ -5,6 +5,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { durationFromInput } from './visual-timer';
 import type { VersionedTimerSession } from './timer-database';
 import { useTransitionTimer } from './TransitionTimerProvider';
+import { ProgressAlertSettings } from './ProgressAlertSettings';
 
 export function TransitionTimerScreen({ onClose, backLabel = 'Voltar ao quadro' }: { onClose(): void; backLabel?: string }) {
   const timer = useTransitionTimer();
@@ -69,6 +70,7 @@ export function TransitionTimerScreen({ onClose, backLabel = 'Voltar ao quadro' 
           </View>}
         </>}
         {timer.busy && <Text accessibilityLiveRegion="polite" style={styles.text}>Salvando timer…</Text>}
+        <ProgressAlertSettings />
       </ScrollView>
     </KeyboardAvoidingView>
   </SafeAreaView>;

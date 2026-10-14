@@ -330,3 +330,32 @@ utilizável com schedule pendente/cleanup obsoleto, rollback/retry sem replay e
 callbacks duplicados/desmontados. Bootstrap passou a aguardar efeitos assíncronos
 com act, sem suprimir avisos do React. UI e verificações nativas/assistivas ainda
 pendentes; nenhuma task US-018 concluída por essa integração interna.
+
+## Entrega local US-018
+
+ProgressAlertSettings integrado ao ScrollView real do timer: editor voluntário,
+Switch enabled, checkboxes10/5/2, opção do sistema com explicação/confirmar/cancelar
+antes do pedido nativo. Draft só é descartado após salvar confirmado ou cancelar;
+negação conserva escolhas visuais, falha/retry mantém estado e não mostra sucesso.
+Cancelar durante pedido de permissão invalida resposta tardia sem salvar/autoplay;
+durante salvar explícito, duplicatas e cancelamento do draft ficam bloqueados até
+resultado. Desabilitar todos confirma cancelamento próprio antes de sinalizar
+desativação e conserva marcos para próximas sessões, sem apagar o timer.
+
+ProgressAlertNotice no Stack exibe marco foreground persistido em faixa neutra,
+texto18 escalável/LiveRegion polite e fechar48dp, sem animação/som/haptic nem
+floating card. Modal nativo fullscreen continua acima do Stack, sem novos
+controles globais por cima dele; foco/anúncio assistivo nessa situação é gate
+nativo, não verificação alegada. Modo9/back/painel/timer permanecem inalterados.
+
+Nove testes UI integrados novos com SQL real do Node/engine falso: defaultoff/
+offline/salvar/cancelar, consent independente/negação, erro/retry/draft,
+desabilitação falha/confirmada mantendo escolhas e sessão, resposta tardia após
+cancelar, aviso escalável/fechar sem gravação e duplicatas/sucesso prematuro.
+85 testes US-018 em cinco suítes,497 testes/67 suítes completos,56 tooling,
+lint/tipos sem warnings,Doctor21/21,validador/diffcheck verdes. T006–T009 locais
+verificadas; T010 permanece no gate. Revisão não encontrou regressão local
+impeditiva; não equivale a host seguro, notificação nativa validada, assistivo,
+build aprovado ou milestone/release concluída. O host SSH ainda não permite
+verificação administrativa dos processos/lock: build nativo deve aguardar isso,
+sem duplicar jobs ou instalar APK sem consentimento específico.
