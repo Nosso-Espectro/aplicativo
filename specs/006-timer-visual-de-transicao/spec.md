@@ -132,7 +132,7 @@ escolhas para próximas sessões, migrar SQLite preservando timerv1 sem históri
 Foreground visual sem áudio/haptics próprios. Avisos do sistema opção independente
 inicialmente desligada, confirmação de bloqueio/segundo plano e possível som/
 vibração conforme preferências do OS/TEAr/canais; consultar/solicitar permissão só
-nesse comando. Não ignorar silencioso/DND/criar alarmes exatos/críticos/sobrescrever
+nesse comando. Não ignorar silencioso/DND/pedir privilégios de alarmes exatos/críticos/sobrescrever
 canais personalizados; não prometer controles independentes sem API nativa.
 Sem opção não agendar nem solicitar permissão. Falha/negação/restrição conserva
 timer/visuais; cancelamento/agendamento próprio serial/idempotente, sem sucesso
@@ -141,7 +141,11 @@ Só notificações locais/metadados genéricos Timer de transição/Faltam N min
 sem dado pessoal/tokenpush/rede/backend ou alterar outras notificações. Sem
 garantia após force-stop/reboot/bateria/relógio; reconciliar futuros ao reabrir.
 Preservar modo9/CAA/sons; sound timer28 fora de escopo. Candidataexpo-notifications
-SDK57.0.22 ainda não instalada; revisar APIs/licenças/audit/permissões antes uso.
+SDK57.0.22 fixada e configuração local-only preparada, sem engine/UI/avisos ainda.
+Esclarecimento técnico na [origem](https://github.com/Nosso-Espectro/aplicativo/issues/18#issuecomment-6158406778):
+SDK pode usar exact internamente Android antigo e inexato Android12+ sem
+privilégio; bloquear permissões especiais, não prometer pontualidade. Capacidade
+POST_NOTIFICATIONS/VIBRATE/boot não é consentimento runtime ou início de avisos.
 Q-TIMER-01/02 para18 resolvidas nesta política, tasks/gates continuam pendentes.
 
 | Requisito | Issue | História | Task principal |

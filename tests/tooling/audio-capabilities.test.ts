@@ -47,7 +47,7 @@ it('declares only the media foreground service, not an exported or recording ser
   ]);
 });
 
-it('blocks microphone permission and does not add recording foreground or notification permissions', () => {
+it('blocks microphone/recording permission while preserving the explicit local-notification capability', () => {
   const permissions = results.android.manifest.manifest['uses-permission'];
   const effective = permissions.filter(permission => permission.$['tools:node'] !== 'remove')
     .map(permission => permission.$['android:name']);
@@ -55,7 +55,7 @@ it('blocks microphone permission and does not add recording foreground or notifi
     'android.permission.MODIFY_AUDIO_SETTINGS', 'android.permission.FOREGROUND_SERVICE',
     'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
   ]));
-  for (const name of ['RECORD_AUDIO', 'FOREGROUND_SERVICE_MICROPHONE', 'POST_NOTIFICATIONS']) {
+  for (const name of ['RECORD_AUDIO', 'FOREGROUND_SERVICE_MICROPHONE']) {
     expect(effective).not.toContain(`android.permission.${name}`);
   }
   expect(permissions).toContainEqual({ $: { 'android:name': 'android.permission.RECORD_AUDIO', 'tools:node': 'remove' } });

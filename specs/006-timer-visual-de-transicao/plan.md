@@ -43,8 +43,27 @@ reagendafuturos. Sistema rege som/vibração/canais/silencioso/DND, sem áudio/h
 próprios ou alterar configuração global/canais personalizados/alarmes exatos.
 Sem notificação opcional nenhuma permissão/pedido; timer e CAA preservados em
 falha/negação. Metadados genéricos, sem push/backend/rede/dados pessoais.
-MatrizExpo57 sugere expo-notifications~57.0.22, ainda não instalada; fonte/API/
-licenças/audit/manifest avaliados antes integração. Referência primária:
+expo-notifications57.0.22 agora fixada no lock; três entradas npm novas
+(notifications,application57.0.3,badgin1.2.3), sem churn das entradas anteriores.
+Instalação sem scripts; metadata libc preservada após primeira execução por
+runtime incorreto, install novamente no Node24.21.0/npm11.19.0 confirmado.
+Audit antes/depois mantém66 apontamentos/mesmos pacotes afetados (16moderate,
+49high,1critical), #51 continua aberta. MIT Expo nos pacotes; badgin omiteLICENSE
+no npm e no gitHead/tag, texto upstream identificado por blobSHA documentado em
+notices, distribuído junto às licenças anteriores. Não é auditoria completa.
+Plugin nativo local-only remove serviçoFirebase eInitProvider/auto-init/analytics
+Android e entitlementAPNs iOS após mods SDK; mantém backgroundaudio e WhatsApp.
+POST_NOTIFICATIONS/VIBRATE (antes bloqueado)/RECEIVE_BOOT_COMPLETED são capacidades
+da fila local voluntária, não solicitação runtime/início de avisos. Bloquear
+SCHEDULE_EXACT_ALARM/USE_EXACT_ALARM/ACCESS_NOTIFICATION_POLICY/microfone.
+Esclarecimento técnico na [origem](https://github.com/Nosso-Espectro/aplicativo/issues/18#issuecomment-6158406778):
+SDK interno usa inexato Android12+ sem privilégio e pode usar exact em Android
+antigo; não pedir privilégio/alterar OS/prometer entrega pontual. FirebaseMessaging
+é dependência nativa da biblioteca, mas não usar APIs de token/tópicos/push;
+entitlement/serviço/auto-init removidos não substituem gate de manifesto mesclado/
+ausência real de rede/licenças nativas finais. Engine/UI/reconcile ainda pendentes.
+Introspecção avalia mods em memória sem prebuild/compilação/projetos gerados.
+Referência primária:
 [SDK Notifications](https://docs.expo.dev/versions/v57.0.0/sdk/notifications/).
 Testar modelo/tempo/identidade/reconciliação/persistência/UI/mocks de capacidades;
 gate nativo deve validar relógio/background/cancelamento/entrega/permissões/som/
