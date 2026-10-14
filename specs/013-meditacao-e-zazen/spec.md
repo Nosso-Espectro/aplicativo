@@ -11,7 +11,7 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P2 — Meditação e Zazen](https://github.com/Nosso-Espectro/aplicativo/milestone/21) (número 21).
 
-Estado consultado: aberta; todas as histórias abaixo estão abertas. Especificação em revisão, não implementação concluída.
+Milestone aberta. US031 implementada na branch própria, sem PR/entrega: gate Doctor20/21 bloqueado pelos patches SDK57, manutenção técnica separada na Issue95. US032 sem Ready/implementação. Gates nativos e release não concluídos.
 
 ## Refinamento US031
 
