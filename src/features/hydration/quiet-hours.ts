@@ -1,4 +1,4 @@
-import { validHydrationInterval } from './hydration-model';
+import { validHydrationInterval } from './hydration-interval';
 export type QuietWindow = { startMinute: number; endMinute: number };
 export type HydrationDailyTime = { hour: number; minute: number };
 const invalid = () => new Error('Invalid hydration quiet hours.');

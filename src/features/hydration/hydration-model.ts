@@ -1,3 +1,5 @@
+import { validHydrationInterval } from './hydration-interval';
+export { validHydrationInterval } from './hydration-interval';
 export const hydrationPresets = [30, 60, 120] as const;
 export const hydrationNamespace = 'tear-hydration-v1';
 export type HydrationStatus = 'disabled' | 'paused' | 'active';
@@ -14,9 +16,6 @@ export type HydrationConfig = {
 const invalid = () => new Error('Invalid hydration configuration.');
 export function initialHydrationConfig(): HydrationConfig {
   return { revision: 0, intervalMinutes: 60, status: 'disabled', identifier: null, journal: null };
-}
-export function validHydrationInterval(value: number) {
-  return Number.isInteger(value) && value >= 30 && value <= 720;
 }
 export function hydrationIdentifier(revision: number) {
   if (!Number.isSafeInteger(revision) || revision < 1) throw invalid();
