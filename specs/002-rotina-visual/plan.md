@@ -84,6 +84,19 @@ Base integrada da US-041 e fronteiras locais de imagem da US-004 reutilizadas. S
 
 ## Riscos
 
+### Correção US-008: player e consentimento de reinício
+
+Reproduzir callback de progresso após unmount e confirmação capturada antes de
+Manter rotina concluída. Usar foco real do Router e owner por ativação/ID de
+rotina. Intenção de reinício possui token próprio, validado antes de confirmar
+ou repetir; cancelar/sair/outra intenção invalida o token. Continuações antigas
+não publicam feedback nem liberam busy atual. Commit previamente autorizado
+pode concluir, sem promessa de cancelamento da transação. Preservar DAO,
+expectedId, schema/permissões/dependências e feedback da ativação atual.
+Testes componentes/StrictMode e Router/provider/SQLiteNode real devem cobrir
+callbacks/blur/retorno/commit/falha tardios, cancelamento de reinício e retry.
+T017 nativa permanece pendente; correção não fecha #8.
+
 ### Correção US-006: continuações do editor
 
 Reprodução inicial: manter save pendente, desmontar o editor e resolver o commit;

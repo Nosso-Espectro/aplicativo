@@ -51,3 +51,8 @@ offline e interrupção/reabertura do binário permanecem pendentes. Nenhum buil
 
 - [x] T018 [US-006] Reproduzir commit pendente/desmontagem e proteger comandos/continuações do editor por owner de montagem/foco; preservar commit autorizado, save/retry atual e contratos de reordenação, sem novo schema/dependências/permissões. Evidência: teste falhou antes da correção por back tardio; oito regressões novas PASS, incluindo dois fluxos Router/provider/SQLiteNode real com commit retido.
 - [x] T019 [US-006] Testar sucesso/falha tardios, blur/retorno/callbacks antigos/StrictMode; revisar UI/privacidade/diff e executar related/full Jest serial, lint/tipos/Doctor/tooling/validador e CI do último head antes integração. Evidência: oito regressões novas, 934 Jest/104 suítes PASS, lint/tipos sem warnings, Doctor21/21, 56 tooling/validador/diff/review PASS. PR103 anexado; CI38639608287 SUCCESS 2min10s no head6f5921c. Último commit documental deve manter CI verde antes squash. Não fecha #6 nem marca T006/T011/T017 nativos.
+
+## Correção do player — US-008 / Issue #8
+
+- [ ] T020 [US-008] Reproduzir ações após descarte e confirmação revogada; proteger owner de foco/montagem/rotina e intenção de reinício/cancelamento/retry, preservando commits autorizados e guardas transacionais existentes.
+- [ ] T021 [US-008] Testar componentes/Router/provider/SQLiteNode real/StrictMode, blur/retorno/ações antigas/falhas/commit/rollback e regressões #6/#7/CAA/timers; revisar UI/privacidade/diff e checks leves/CI último head antes merge. Não fechar #8 ou aprovar T017 nativa.
