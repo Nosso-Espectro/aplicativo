@@ -11,7 +11,7 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P1 — Scripts de Comunicação](https://github.com/Nosso-Espectro/aplicativo/milestone/17) (número 17).
 
-Estado consultado em2026-10-14: #23 entregue pelo PR80/fechada; #24 refinada e Ready, ainda sem código. Gates nativos/assistivos pendentes, sem release pronta.
+Estado consultado em2026-10-14: #23 entregue pelo PR80/fechada; #24 implementada e verificada localmente, integração/CI ainda a confirmar na entrega. Gates nativos/assistivos pendentes, sem release pronta.
 
 ## Contexto
 
