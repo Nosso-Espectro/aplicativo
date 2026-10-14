@@ -231,3 +231,37 @@ instalação no aparelho por inferência. Ver [auditoria](../../docs/backlog-aud
 - US-017: TypeScript, módulo pequeno por capacidade, estado confirmado/SQLite separado, relógio injetável nos cálculos; provider/tela/rota alinhados aos padrões atuais.
 - Pendente: política de avisos/som/vibração de #18; não antecipar nesta branch.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.
+
+## Progresso parcial US-018: reconciliação
+
+progress-alert-reconciliation.ts calcula cancelamentos, intenções futuras e
+consumo de marcos passados/presentes sem efeitos nativos. Um marco consumido
+impede repetição, mas não prova entrega pelo OS: o nome legado delivered do
+snapshot/tabela representa este registro mínimo de decisão. consumeElapsed
+registra marcos alcançados inclusive em pausa/reabertura/conclusão, sem emitir
+rajadas; consumeOwned exige ID registrado da identidade atual, inclusive quando
+observado antes do deadline após alteração do relógio. Não apaga ownership.
+Rollback/readback/revisões/identidade antiga e reabertura continuam protegidos.
+
+progress-alert-coordinator.ts coordena este store e o adaptador por fila própria:
+persistir intenção antes de schedule, query antes de retry, cancelar/dismiss e
+confirmar ausência antes de forget/desabilitação. Restaurar visual-only não
+carrega SDK; opção confirmada consulta permissão sem solicitar, e confirmação
+humana permanece necessária para requestSystemPermission e habilitação nova.
+Perda de permissão cancela apenas IDs próprios e informa erro, mantendo escolhas
+locais. Falhas/RPC incerto preservam intents/estado para retry explícito, sem
+ultrapassar chamada pendente. Revisões são relidas antes/depois dos RPCs; schedule
+que se torna obsoleto é cancelado, sem aplicar a ação a uma sessão nova. dispose
+impede publicação/forget posteriores e delega cleanup de schedule tardio ao motor.
+
+25 testes novos de cálculo e integração com SQLite real do Node/engine falso;
+468 testes/66 suítes completos, lint/tipos sem warnings, Doctor21/21,56 tooling
+e validador verdes. Nenhum aparelho, notificação, som ou build real executado.
+Provider/AppState/ticks/aviso visual/tela/retorno/confirmar permissão por UI e
+conexão às ações do timer ainda faltam; todas as tasks US-018 seguem pendentes.
+O futuro provider deve usar snapshot/revisão atual no retry após cancelamentos
+parciais, sem declarar a preferência antiga desativada antes de confirmação.
+Integração de ações deve passar expectedSessionNumber ao timer; este coordenador
+ainda não executa essas ações nem assina callbacks onReceived automaticamente.
+Gate nativo continua necessário para SQLite Expo, notificações, permissões,
+relógio/foreground/background/lockscreen/cancelamento/som/vibração e assistivo.

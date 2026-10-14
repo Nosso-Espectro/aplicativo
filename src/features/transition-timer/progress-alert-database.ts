@@ -3,6 +3,7 @@ import { advanceAlertVersion, openTimerConnection, readAlertVersion, readTimerSe
 import { futureProgressAlerts, normalizedProgressAlerts, type ProgressAlertPreferences, type ProgressMark } from './progress-alerts';
 import { normalizedProgressNotification, type OwnedProgressNotification } from './progress-notification';
 import { timerAt } from './visual-timer';
+import { elapsedProgressMarks } from './progress-alert-reconciliation';
 
 async function readSnapshot(db: SQLiteDatabase) {
   const session = await readTimerSession(db);
@@ -58,6 +59,18 @@ export async function openProgressAlertDatabase() {
     forget: (identifier: string, expectedRevision: number) => change(expectedRevision, async (tx, current) => {
       if (!current.pending.some(entry => entry.identifier === identifier)) throw new Error('Owned timer alert unavailable.');
       await tx.runAsync('DELETE FROM timer_owned_notifications WHERE identifier = ?', identifier);
+    }),
+    consumeElapsed: (nowMs: number, expectedRevision: number) => change(expectedRevision, async (tx, current) => {
+      for (const minutes of elapsedProgressMarks(current, nowMs)) {
+        await tx.runAsync('INSERT INTO timer_delivered_marks (minutes) VALUES (?)', minutes);
+      }
+    }),
+    consumeOwned: (identifier: string, expectedRevision: number) => change(expectedRevision, async (tx, current) => {
+      const entry = current.pending.find(item => item.identifier === identifier);
+      if (!entry || entry.sessionNumber !== current.sessionNumber) throw new Error('Owned timer alert unavailable.');
+      if (!current.delivered.includes(entry.minutes)) {
+        await tx.runAsync('INSERT INTO timer_delivered_marks (minutes) VALUES (?)', entry.minutes);
+      }
     }),
     markDelivered: (minutes: ProgressMark, sessionNumber: number, nowMs: number, expectedRevision: number) => change(expectedRevision, async (tx, current) => {
       const active = timerAt(current.session, nowMs);

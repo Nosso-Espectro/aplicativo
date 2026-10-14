@@ -7,6 +7,8 @@ import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
 import { openTimerDatabase } from '../../../src/features/transition-timer/timer-database';
 import { openProgressAlertDatabase } from '../../../src/features/transition-timer/progress-alert-database';
 import { emptyProgressAlerts, type ProgressAlertPreferences } from '../../../src/features/transition-timer/progress-alerts';
+import { createProgressAlertCoordinator } from '../../../src/features/transition-timer/progress-alert-coordinator';
+import type { ProgressAlertEngine } from '../../../src/features/transition-timer/expo-progress-alert-engine';
 jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn() }));
 let directory: string; let connections: DatabaseSync[]; let failReadback: boolean; let failCommit: boolean;
 const enabled: ProgressAlertPreferences = { enabled: true, marks: [10, 5, 2], systemNotifications: true };
@@ -124,4 +126,173 @@ it('refuses future schema without downgrading or clearing the session', async ()
   const timer = await openTimerDatabase(); const saved = await timer.act({ type: 'start', durationMs: 10000 }, 1000, null);
   connections[0].exec('PRAGMA user_version=3'); await expect(openProgressAlertDatabase()).rejects.toThrow();
   expect(connections[0].prepare('PRAGMA user_version').get()).toEqual({ user_version: 3 }); expect(await timer.read()).toEqual(saved);
+});
+
+it('consumes passed marks during pause/reopening without emitting or replaying after clock rollback', async () => {
+  const timer = await openTimerDatabase(); const alerts = await openProgressAlertDatabase();
+  const started = await timer.act({ type: 'start', durationMs: 1200000 }, 1000, null);
+  await alerts.savePreferences(enabled, (await alerts.read()).revision);
+  await timer.act({ type: 'pause' }, 950000, started);
+  const consumed = await alerts.consumeElapsed(950000, (await alerts.read()).revision);
+  expect(consumed.delivered).toEqual([10, 5]);
+  const reopened = await openProgressAlertDatabase(); expect((await reopened.read()).delivered).toEqual([10, 5]);
+  expect((await reopened.consumeElapsed(1000, consumed.revision)).delivered).toEqual([10, 5]);
+});
+it('consumes known current ownership even before its deadline, preserving ownership until native cancellation', async () => {
+  const timer = await openTimerDatabase(); const alerts = await openProgressAlertDatabase();
+  await timer.act({ type: 'start', durationMs: 1200000 }, 1000, null);
+  let current = await alerts.savePreferences(enabled, (await alerts.read()).revision);
+  current = await alerts.reserve(10, 601000, 1000, current.revision);
+  current = await alerts.consumeOwned(current.pending[0].identifier, current.revision);
+  expect(current.delivered).toEqual([10]); expect(current.pending).toHaveLength(1);
+  await expect(alerts.consumeOwned('foreign-id', current.revision)).rejects.toThrow();
+});
+it('does not consume a previous-session notification into a new timer', async () => {
+  const timer = await openTimerDatabase(); const alerts = await openProgressAlertDatabase();
+  const started = await timer.act({ type: 'start', durationMs: 1200000 }, 1000, null);
+  let current = await alerts.savePreferences(enabled, (await alerts.read()).revision);
+  current = await alerts.reserve(10, 601000, 1000, current.revision);
+  await timer.act({ type: 'cancel' }, 1000, started);
+  await timer.act({ type: 'start', durationMs: 1200000 }, 1000, null);
+  const next = await alerts.read();
+  await expect(alerts.consumeOwned(current.pending[0].identifier, next.revision)).rejects.toThrow();
+  expect(await alerts.read()).toEqual(next);
+});
+
+function fakeEngine() {
+  const scheduled = new Set<string>(); const presented = new Set<string>();
+  const engine: ProgressAlertEngine = {
+    permission: jest.fn(async () => true), requestPermission: jest.fn(async () => true),
+    inspect: jest.fn(async entries => ({ scheduled: entries.filter(entry => scheduled.has(entry.identifier)).map(entry => entry.identifier), presented: entries.filter(entry => presented.has(entry.identifier)).map(entry => entry.identifier) })),
+    schedule: jest.fn(async entry => { scheduled.add(entry.identifier); }),
+    cancel: jest.fn(async entry => { scheduled.delete(entry.identifier); presented.delete(entry.identifier); }),
+    onReceived: jest.fn(() => () => {}), dispose: jest.fn(),
+  };
+  return { engine, scheduled, presented };
+}
+async function coordinatorFixture() {
+  const timer = await openTimerDatabase(); const alerts = await openProgressAlertDatabase();
+  const session = await timer.act({ type: 'start', durationMs: 1200000 }, 1000, null);
+  const native = fakeEngine(); const factory = jest.fn(() => native.engine); let now = 1000;
+  const coordinator = createProgressAlertCoordinator(alerts, factory, () => now);
+  return { timer, alerts, session, native, factory, coordinator, setTime: (value: number) => { now = value; } };
+}
+it('keeps visual-only restoration independent of native capability and never requests permission automatically', async () => {
+  const fixture = await coordinatorFixture(); const { coordinator, alerts, factory, native } = fixture;
+  await coordinator.reconcile(); expect(factory).not.toHaveBeenCalled();
+  await coordinator.save({ ...enabled, systemNotifications: false }, (await alerts.read()).revision);
+  fixture.setTime(602000); await coordinator.reconcile();
+  expect(factory).not.toHaveBeenCalled(); expect((await alerts.read()).delivered).toEqual([10]);
+  expect(native.engine.requestPermission).not.toHaveBeenCalled(); coordinator.dispose();
+});
+it('requires explicit system consent and persists every intent before scheduling, retaining IDs on repeat', async () => {
+  const { coordinator, alerts, native } = await coordinatorFixture(); const initial = await alerts.read();
+  await expect(coordinator.save(enabled, initial.revision)).rejects.toThrow('Timer alerts unavailable.');
+  expect(await alerts.read()).toEqual(initial);
+  await coordinator.requestSystemPermission();
+  jest.mocked(native.engine.schedule).mockImplementation(async entry => {
+    expect((await alerts.read()).pending).toContainEqual(entry); native.scheduled.add(entry.identifier);
+  });
+  const saved = await coordinator.save(enabled, initial.revision, true);
+  expect(saved.pending).toHaveLength(3); expect(native.engine.schedule).toHaveBeenCalledTimes(3);
+  await coordinator.reconcile(); expect(native.engine.schedule).toHaveBeenCalledTimes(3);
+  expect(native.engine.requestPermission).toHaveBeenCalledTimes(1); coordinator.dispose();
+});
+it('keeps ownership and confirmed preferences after cancel failure, then disables only after retry acknowledges cancellation', async () => {
+  const { coordinator, alerts, native } = await coordinatorFixture();
+  const saved = await coordinator.save(enabled, (await alerts.read()).revision, true);
+  jest.mocked(native.engine.cancel).mockRejectedValueOnce(new Error('synthetic secret failure'));
+  await expect(coordinator.save(emptyProgressAlerts, saved.revision)).rejects.toThrow('Timer alerts unavailable.');
+  expect(await alerts.read()).toEqual(saved);
+  const disabled = await coordinator.save(emptyProgressAlerts, saved.revision);
+  expect(disabled.preferences).toEqual(emptyProgressAlerts); expect(disabled.pending).toEqual([]);
+  expect(native.scheduled.size).toBe(0); coordinator.dispose();
+});
+it('recovers uncertain scheduling after reopening with the same reserved ID rather than duplicating it', async () => {
+  const { coordinator, alerts, native } = await coordinatorFixture();
+  jest.mocked(native.engine.schedule).mockImplementationOnce(async entry => { native.scheduled.add(entry.identifier); throw new Error('unknown RPC result'); });
+  await expect(coordinator.save(enabled, (await alerts.read()).revision, true)).rejects.toThrow();
+  const owned = await alerts.read(); expect(owned.pending).toHaveLength(3); coordinator.dispose();
+  const restored = createProgressAlertCoordinator(await openProgressAlertDatabase(), () => native.engine, () => 1000);
+  expect((await restored.reconcile()).pending).toEqual(owned.pending);
+  expect(native.engine.schedule).toHaveBeenCalledTimes(3); restored.dispose();
+});
+it('consumes passed/presented IDs and cancels them without claiming delivery or scheduling a catch-up burst', async () => {
+  const fixture = await coordinatorFixture(); const { coordinator, alerts, native } = fixture;
+  const saved = await coordinator.save(enabled, (await alerts.read()).revision, true);
+  native.presented.add(saved.pending.find(entry => entry.minutes === 10)!.identifier);
+  fixture.setTime(950000); const current = await coordinator.reconcile();
+  expect(current.delivered).toEqual([10, 5]); expect(current.pending.map(entry => entry.minutes)).toEqual([2]);
+  fixture.setTime(1000); await coordinator.reconcile(); expect(native.engine.schedule).toHaveBeenCalledTimes(3);
+  coordinator.dispose();
+});
+it('cancels only owned IDs when permission is revoked, preserving local configuration for explicit retry', async () => {
+  const { coordinator, alerts, native } = await coordinatorFixture();
+  await coordinator.save(enabled, (await alerts.read()).revision, true);
+  native.scheduled.add('foreign'); jest.mocked(native.engine.permission).mockResolvedValue(false);
+  await expect(coordinator.reconcile()).rejects.toThrow();
+  expect((await alerts.read()).preferences).toEqual(enabled); expect((await alerts.read()).pending).toEqual([]);
+  expect(native.scheduled).toEqual(new Set(['foreign'])); coordinator.dispose();
+});
+it('rejects stale revisions after native awaits and keeps ownership for subsequent cleanup', async () => {
+  const { coordinator, alerts, timer, session, native } = await coordinatorFixture();
+  const saved = await coordinator.save(enabled, (await alerts.read()).revision, true);
+  jest.mocked(native.engine.cancel).mockImplementationOnce(async entry => {
+    native.scheduled.delete(entry.identifier); await timer.act({ type: 'pause' }, 1000, session, saved.sessionNumber);
+  });
+  await expect(coordinator.save(emptyProgressAlerts, saved.revision)).rejects.toThrow();
+  expect((await alerts.read()).pending).toEqual(saved.pending); expect((await alerts.read()).preferences).toEqual(enabled);
+  await coordinator.reconcile(); expect((await alerts.read()).pending).toEqual([]); coordinator.dispose();
+});
+it.each(['readback', 'commit'])('rolls back consumption on %s failure without losing ownership or recording a false decision', async failure => {
+  const fixture = await coordinatorFixture(); const { coordinator, alerts } = fixture;
+  const saved = await coordinator.save(enabled, (await alerts.read()).revision, true);
+  if (failure === 'readback') failReadback = true; else failCommit = true;
+  await expect(alerts.consumeOwned(saved.pending[0].identifier, saved.revision)).rejects.toThrow();
+  await expect(alerts.consumeElapsed(950000, saved.revision)).rejects.toThrow();
+  failReadback = false; failCommit = false;
+  expect(await alerts.read()).toEqual(saved); coordinator.dispose();
+});
+it('does not overtake an uncertain RPC with a disable action or forget its ID before cancellation', async () => {
+  const { coordinator, alerts, native } = await coordinatorFixture();
+  let finish!: () => void; let reached!: () => void;
+  const entered = new Promise<void>(resolve => { reached = resolve; });
+  jest.mocked(native.engine.schedule).mockImplementationOnce(async entry => {
+    reached(); await new Promise<void>(resolve => { finish = resolve; }); native.scheduled.add(entry.identifier);
+  });
+  const saving = coordinator.save(enabled, (await alerts.read()).revision, true); await entered;
+  const pending = await alerts.read(); const disabling = coordinator.save(emptyProgressAlerts, pending.revision);
+  await Promise.resolve(); expect(native.engine.cancel).not.toHaveBeenCalled();
+  expect((await alerts.read()).pending).toEqual(pending.pending);
+  finish(); await saving; const disabled = await disabling;
+  expect(disabled.pending).toEqual([]); expect(disabled.preferences).toEqual(emptyProgressAlerts);
+  expect(native.scheduled.size).toBe(0); coordinator.dispose();
+});
+it('cancels an obsolete schedule that completes after the timer changes, retaining other intents for retry', async () => {
+  const { coordinator, alerts, native, timer, session } = await coordinatorFixture();
+  jest.mocked(native.engine.schedule).mockImplementationOnce(async entry => {
+    native.scheduled.add(entry.identifier); await timer.act({ type: 'pause' }, 1000, session, entry.sessionNumber);
+  });
+  await expect(coordinator.save(enabled, (await alerts.read()).revision, true)).rejects.toThrow();
+  expect(native.scheduled.size).toBe(0); expect((await alerts.read()).pending).toHaveLength(2);
+  expect((await alerts.read()).session?.phase).toBe('paused');
+  await coordinator.reconcile(); expect((await alerts.read()).pending).toEqual([]); coordinator.dispose();
+});
+it('does not publish changes or forget ownership after disposal during an in-flight cancellation', async () => {
+  const { coordinator, alerts, native } = await coordinatorFixture();
+  const saved = await coordinator.save(enabled, (await alerts.read()).revision, true);
+  jest.mocked(native.engine.cancel).mockImplementationOnce(async () => { coordinator.dispose(); });
+  await expect(coordinator.save(emptyProgressAlerts, saved.revision)).rejects.toThrow();
+  expect(await alerts.read()).toEqual(saved); expect(native.engine.dispose).toHaveBeenCalledTimes(1);
+  await expect(coordinator.reconcile()).rejects.toThrow();
+});
+it('ignores foreign or old-session received IDs and consumes current owned callbacks at most once', async () => {
+  const { coordinator, alerts, native } = await coordinatorFixture();
+  const saved = await coordinator.save(enabled, (await alerts.read()).revision, true);
+  expect(await coordinator.received('foreign')).toEqual(saved);
+  const id = saved.pending.find(entry => entry.minutes === 10)!.identifier;
+  const consumed = await coordinator.received(id); expect(consumed.delivered).toEqual([10]);
+  expect(consumed.pending.map(entry => entry.minutes)).toEqual([2, 5]);
+  expect(await coordinator.received(id)).toEqual(consumed);
+  expect(native.engine.schedule).toHaveBeenCalledTimes(3); coordinator.dispose();
 });
