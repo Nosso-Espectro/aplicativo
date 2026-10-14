@@ -1,6 +1,14 @@
 # Plano de implementação — Foco / Pomodoro Flexível
 
-Spec: [spec.md](spec.md). Milestone #18; Issues #25, #26. US025 refinada em 2026-10-14; US026 permanece sujeita às questões próprias.
+Spec: [spec.md](spec.md). Milestone #18; Issues #25, #26. US025 entregue pelo PR83; US026 refinada e Ready em 2026-10-14.
+
+## Plano vigente US026
+
+Cronômetro livre em `src/features/focus/`, rota própria `/focus/free` com provider de sessão próprio e memória efêmera. Reusar padrões reais de relógio/AppState/owner/rotas e layout modo9 da US025, sem unir estados independentes ou criar framework genérico por antecipação. Não iniciar cronômetro ao navegar; oferecer acesso quando a sessão Pomodoro não estiver ativa, respeitando encerramento/confirmação existente.
+
+Modelo puro com estado inicial/running/paused/finished, decorrido confirmado, relógio de última retomada/amostra e revisão de comandos. Prazo ausente; ticks apenas reconciliam decorrido. Pausa acumula diferença segura e congela; retomada cria baseline humano; finalizar preserva decorrido da sessão até nova sessão ou saída, sem histórico. Clock inválido/regressivo/overflow pausa no último valor confirmado sem tempo negativo ou meta artificial. Provider limpa intervalos/listeners e recusa callbacks antigos. Saída explícita ativa confirma; blur/unmount/saída externa descarta e reentrada vazia.
+
+Testes de zero/elapsed/acumulado/pausa/retomada/finalizar/novo, interrupções curtas sem penalização, atraso/background, clock regressivo/falha/inteiros safe, stale/duplicatas/desmontagem, Expo Router/retornos/mode9 e regressões Pomodoro/timer. Mesmos checks leves e skills; gate T012 nativeassistivo/offline/background/clock separado. Nenhum DB/rede/dep/permissão/áudio/notificação nova. #82 continua fora.
 
 ## Plano vigente US025
 

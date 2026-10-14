@@ -3,7 +3,7 @@ milestone: 18
 priority: P1
 tag: m010-foco-pomodoro-flexivel
 status: draft
-ready_stories: ["US-025"]
+ready_stories: ["US-025", "US-026"]
 source_checked: 2026-10-14
 ---
 
@@ -11,7 +11,18 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P1 — Foco / Pomodoro Flexível](https://github.com/Nosso-Espectro/aplicativo/milestone/18) (número 18).
 
-Estado consultado: aberta; #25 Ready após refinamento sob delegação funcional, #26 permanece em revisão. Nenhuma implementação desta milestone concluída.
+Estado consultado: milestone aberta; #25 entregue pelo PR83, #26 Ready após refinamento sob delegação funcional. Gates nativos continuam pendentes; nenhuma milestone/release pronta.
+
+## Refinamento US-026
+
+Recomendação registrada na Issue #26 sob delegação funcional de 2026-10-14; critérios originais preservados.
+
+- Cronômetro próprio separado do estado Pomodoro, começa em zero somente por comando humano. Contar decorrido acumulado mais diferença do relógio desde a retomada, sem soma de ticks.
+- Pausar congela o decorrido; retomar continua sem zerar. Background conta em sessão em curso e reconcilia ao retornar; sem prazo, som/vibração/notificação ou lembretes automáticos.
+- Finalizar mantém o decorrido da sessão nesta tela até nova sessão explícita ou saída, sem histórico/pontuação/meta/mínimo de duração. Nova sessão começa em zero.
+- Memória apenas, sem DB/rede/logs de sessão/dependência/permissão nova. Saída explícita ativa confirma descarte; saída externa/blur/unmount/processo morto descarta. Reentrada vazia. Não mudar de modo enquanto ativo sem finalizar/sair conforme confirmação.
+- Relógio inválido/regressivo ou cálculo fora de inteiro seguro pausa preservando último decorrido confirmado; recuperação por retomada humana ou finalização. Revisões/owner descartam comandos e callbacks antigos. Nenhum limite competitivo inventado, inferência ou diagnóstico.
+- Personalização #82 não Ready e Pomodoro #25 integrado fora da implementação desta branch; preservar seus fluxos.
 
 ## Refinamento US-025
 
@@ -103,7 +114,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Implementações de outras milestones, personalização #82, cronômetro #26 nesta branch, histórico, notificações/som/vibração automáticos, backend, IA, sincronização e diagnóstico. O refinamento torna apenas #25 Ready; não comprova implementação.
+Implementações de outras milestones, personalização #82, histórico, notificações/som/vibração automáticos, backend, IA, sincronização e diagnóstico. Uma branch por Issue: #25 não implementa cronômetro #26; #26 preserva o comportamento Pomodoro integrado. Refinamento/Ready não comprova implementação.
 
 ## Dependências funcionais
 
@@ -118,7 +129,7 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 ## Questões em aberto
 
 - Q-FOCO-01 — Escopo separado na #82, não Ready; limites, edição e retenção de preferências devem ter critérios antes de implementar personalização. Não bloqueia os presets de #25.
-- Q-FOCO-02 — Resolvida para #25 conforme refinamento: próximo período iniciado explicitamente, aviso visual/polite, prazo comparado ao retornar, memória efêmera e sem estímulos automáticos. #26 ainda requer refinamento próprio.
+- Q-FOCO-02 — Resolvida para #25 e #26 conforme refinamentos: próximo período Pomodoro iniciado explicitamente; cronômetro livre sem períodos, apenas contagem local. Background reconcilia relógio ao retorno sem estímulos automáticos; memória efêmera e saída descartável.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 

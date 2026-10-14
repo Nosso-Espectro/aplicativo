@@ -1,6 +1,6 @@
 # Tasks — Foco / Pomodoro Flexível
 
-Milestone #18: [spec.md](spec.md) e [plan.md](plan.md). US025 implementada e validada localmente em 2026-10-14; PR/CI/merge devem confirmar entrega. US026 e gate nativo T011 continuam pendentes.
+Milestone #18: [spec.md](spec.md) e [plan.md](plan.md). US025 entregue pelo PR83 em 2026-10-14. US026 Ready, ainda não implementada; gates nativos T011/T012 pendentes.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
@@ -20,8 +20,9 @@ Evidência local US025: 20 testes novos (12 modelo + 8 fluxo/provider); 145 rela
 
 ## US-026 — Issue #26
 
-- [ ] T006 [US-026] Em `src/features/focus/stopwatch`, atender RF-004 (critério 1 de #26): O cronômetro deve iniciar em zero e contar o tempo decorrido. Verificar com o cenário correspondente no PR.
-- [ ] T007 [US-026] Em `src/features/focus/stopwatch`, atender RF-005 (critério 2 de #26): Deve permitir pausar, retomar e finalizar. Verificar com o cenário correspondente no PR.
-- [ ] T008 [US-026] Em `src/features/focus/stopwatch`, atender RF-006 (critério 3 de #26): O recurso não deve penalizar o usuário por sessões curtas ou interrompidas. Verificar com o cenário correspondente no PR.
-- [ ] T009 [US-026] Adicionar testes de comportamento de RF-004, RF-005, RF-006 em `tests/features/focus/stopwatch`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
-- [ ] T010 [US-026] Revisar RNF-001 a RNF-004 na interface/dados de #26, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+- [ ] T006 [US-026] Modelo em `src/features/focus/`: zero e decorrido por diferença do relógio + acumulado, inteiro seguro e clock regressivo/falho preservando confirmado (RF-004).
+- [ ] T007 [US-026] Provider separado efêmero/AppState/owner/revisões e iniciar/pausar/retomar/finalizar/novo sem zerar na retomada (RF-005); background e cleanup sem publicação antiga.
+- [ ] T008 [US-026] UI/rota `/focus/free`/entrada/retornos/fallback/mode9/48dp/escalável, confirmação de saída ativa, reentrada vazia e finalizado local sem meta/histórico/pontuação ou penalização (RF-006).
+- [ ] T009 [US-026] Testes modelo/provider/Expo Router: zero/decorrido/acumulado/pausa/retomada/finalizar/novo, interrupção curta, background/clockerror/overflow, stale/duplicatas, saída/manter/desmontagem/reentrada e regressões Pomodoro/timer.
+- [ ] T010 [US-026] Revisar RNF-001 a RNF-004, privacidade/offline/clean-code/diff; Jest serial/lint/tipos/Doctor/tooling/validador/CI leve. Tasks só após comportamento; não comprovar native com mocks.
+- [ ] T012 [US-026] Gate nativo posterior no SHA integrado: relógio/background/processo morto/offline, back/gestos e readers/foco/ampliação/insets/alvos/contraste; nenhum aparelho autorizado por refinamento.
