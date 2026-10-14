@@ -4,11 +4,16 @@ Spec: [spec.md](spec.md). Milestone #15; Issues #19, #20. Plano proposto, sujeit
 
 ## Stack
 
-Inspeção em 2026-09-23: repositório sem código de aplicação, package.json, dependências ou ferramentas de build/teste. React Native e primeira versão sem backend são diretrizes explícitas do projeto, ainda não implementadas. Expo, linguagem, navegação e biblioteca de persistência não foram escolhidos. Não assumir stack web, banco ou servidor.
+Inspeção em 2026-10-14: Expo57.0.28/RN0.86.3/React19.2.3/TypeScript strict,
+Router/SQLite/Jest-RNTL/SQL real do Node existentes, Node24.21.0/npm11.19.0.
+Main2379922 inclui timer/avisos locais; nenhuma dependência/permissão nova para19.
+Builds somente remotos, nunca prebuild/Gradle/Xcode locais.
 
 ## Arquitetura atual
 
-Somente README e licença antes desta preparação. Não há componentes, modelos ou serviços existentes para reutilizar. Os caminhos abaixo são propostas de organização e não arquivos já criados.
+CAA/rotinas/perfil/apoio/regulação/timer/sons integrados. Reusar padrões de
+editor/navegação/SQLite privado/revisão/erro, sem editar dados ou banco de rotinas.
+Subtarefas não são execução de rotina; checkbox/progresso pertencem só a19.
 
 ## Estratégia
 
@@ -25,13 +30,26 @@ Módulo proposto: `src/features/task-breakdown/`.
 
 ## Modelo de dados
 
-Tarefa (identificador, título, subtarefas ordenadas e conclusão); modelo com sequência reutilizável. Instâncias criadas do modelo precisam de identidade independente.
-
-Representação física, tipos e migrações serão definidos após a escolha técnica; não instalar banco por antecipação.
+US-019: tarefa {id,title,revision,steps:[{id,title,completed}]} com IDs locais
+opacos/estáveis, texto livre obrigatório trim não vazio e bool estrito. Lista
+vazia inicialmente, tarefa sem etapas válida/progresso0de0/0%, sem falso sucesso.
+Subir/descer conserva IDs/conteúdo/status, apagar uma etapa recalcula somente
+essa tarefa, conclusão é reversível. Sem coleta de histórico/timestamps por
+conveniência, diagnóstico, mídia ou transformação automática.
+Identidades seguem o padrão local existente e não são credenciais; tests podem
+injetar IDs sintéticos. Cópias/identidades de modelos pertencem a20 e não serão
+criadas por antecipação. Modelo puro deve validar/clonar inputs para que draft
+não altere a versão confirmada.
 
 ## Persistência
 
-Persistir progresso (#19) e modelos reutilizáveis (#20); duplicar conteúdo sem vínculo mutável com o modelo.
+US-019: SQLite privado tear-task-breakdown.db schema1, tarefas/etapas ordenadas,
+revisão segura, fila/transação/readback/rollback/future-schema. CRUD de tarefa,
+edição completa e checkbox de progresso confirmam somente após commit. Alvo
+removido/revisão antiga recusados, sem resurrect por save antigo; erro/retry
+mantém draft/versão confirmada e preserva outros módulos. SQLite Node/reabertura
+testam persistência local; gate precisa SQLite Expo/offline/backups reais.
+Modelos/cópias independentes de20 têm persistência própria a refinar depois.
 
 ## Fluxos principais
 
@@ -59,23 +77,31 @@ Aplicar RNF-002 e RNF-004. Usar dados sintéticos nos testes; evitar dados pesso
 - Usar testes unitários para transformações de estado/dados; componentes para interação e acessibilidade; integração para persistência/capacidades nativas quando pertinentes.
 - Exercitar os casos de erro do spec e regressões das dependências reais.
 - Verificar em dispositivo/simulador os fluxos que dependem de voz, áudio, permissões ou notificações; mocks isolados não comprovam suporte nativo.
-- Selecionar E2E para fluxos críticos quando a infraestrutura existir. Executar testes, lint, typecheck quando aplicável e build antes de concluir.
+- Selecionar E2E para fluxos críticos quando a infraestrutura existir. Executar checks leves por Issue; builds somente remotos na main integrada, após disponibilidade segura do host.
 
-Hoje não existem runner, scripts de qualidade ou build do aplicativo. A validação da documentação não equivale a testes do produto e não habilita release.
+Jest serial,lint/typecheck,Doctor21/21,56tooling/validador/review e CI leve remoto
+antes da entrega. Nenhum teste alegado por esta preparação; tasks só após executar.
+Gate nativo/assistivo/offline continua necessário, sem release automática.
 
 ## Dependências técnicas
 
-Base React Native ainda a inicializar. Selecionar somente as bibliotecas necessárias aos critérios da história, documentando suporte offline, plataformas e permissões. Integrações funcionais estão em spec.md; reuso de temporizador/áudio pode ser avaliado quando houver código, sem criar framework antecipado.
+Stack e APIs locais existentes suficientes; sem nova biblioteca/framework.
+Rota própria e comando no quadro, lista/editor/retorno previsíveis. Checkbox e
+subir/descer explícitos, alvos48dp/texto escalável/contraste/modo9 preservados.
+Nenhum player/timer/aviso ou configuração global de outro módulo.
 
 ## Riscos
 
 Tarefa sem etapas, falha ao salvar progresso e modelo removido; cópia não deve modificar original (#19/#20).
 
-As questões em aberto da spec, a ausência de plataforma-alvo definida e a falta de comandos de qualidade impedem afirmar prontidão de implementação/release. Ver [auditoria](../../docs/backlog-audit.md).
+US-019 Ready após refinamento na Issue19; questões de modelos/catálogo da20
+continuam abertas e impedem afirmar milestone completa. Segurança61/auditoria51,
+builds e consentimento de instalação permanecem no monitor separado. Não operar
+celular, dados pessoais ou scripts autônomos não revisados para validar19.
 
 ## Decisões arquiteturais
 
 - Diretriz confirmada: React Native; MVP sem backend.
-- Proposta: módulos por capacidade em `src/features/`, sem fixar extensão/linguagem nem arquitetura de estado.
-- Pendente: plataformas e versões mínimas, bootstrap, navegação, persistência e ferramentas de qualidade.
+- US-019: TypeScript em src/features/task-breakdown, modelo/SQLite/editor/lista/rota pequenos, alinhados às convenções atuais.
+- Pendente para20: edição/exclusão de modelos e catálogo comum, sem redefinir seus critérios na19.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.

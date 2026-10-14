@@ -1,6 +1,6 @@
 # Tasks — Divisor de Tarefas
 
-Milestone #15: [spec.md](spec.md) e [plan.md](plan.md). Todas pendentes; não executadas nesta preparação.
+Milestone #15: [spec.md](spec.md) e [plan.md](plan.md). US-019 Ready em2026-10-14 após refinamento vivo; todas tasks pendentes e nenhuma implementação alegada.
 
 Os módulos e diretórios de teste são propostos, sem extensão definida. Ajustar ao bootstrap real sem perder RF/Issue. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 

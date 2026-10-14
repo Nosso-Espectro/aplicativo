@@ -3,15 +3,15 @@ milestone: 15
 priority: P1
 tag: m007-divisor-de-tarefas
 status: draft
-ready_stories: []
-source_checked: 2026-09-23
+ready_stories: ["US-019"]
+source_checked: 2026-10-14
 ---
 
 # Divisor de Tarefas
 
 Milestone GitHub: [P1 — Divisor de Tarefas](https://github.com/Nosso-Espectro/aplicativo/milestone/15) (número 15).
 
-Estado consultado: aberta; todas as histórias abaixo estão abertas. Especificação em revisão, não implementação concluída.
+US-019 Ready após refinamento vivo; ambas histórias continuam abertas e não implementadas. US-020 tem questões próprias pendentes, sem aprovação de milestone/release.
 
 ## Contexto
 
@@ -93,7 +93,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Implementações de outras milestones, requisitos não rastreados e decisões funcionais listadas como pendentes. Nesta execução apenas documentação e ferramentas de engenharia; nenhuma funcionalidade é implementada.
+US-019 não implementa modelos/catálogo de #20, histórico, compartilhamento, timer/avisos, navegação inferior ou funcionalidades de outros módulos. Sem dependência/permissão/rede/backend/IA nova.
 
 Decomposição automática com IA pertence à milestone P3, não a esta entrega manual.
 
@@ -109,10 +109,25 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-TAREFA-01 — Como editar/remover modelos e tratar exclusão de uma subtarefa em execução? Estes comportamentos não estão detalhados (#19/#20).
+- Q-TAREFA-01 — Resolvida somente para #19: não há estado em execução; remoção confirmada de subtarefa, inclusive concluída, preserva as demais e recalcula progresso. Editar/remover modelos de #20 continua aberto.
 - Q-TAREFA-02 — A milestone menciona modelos para tarefas comuns; #20 cobre modelos criados pelo usuário. Definir se há catálogo inicial e sua Issue. IA pertence à milestone P3.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
+
+Refinamento delegado na [origem](https://github.com/Nosso-Espectro/aplicativo/issues/19#issuecomment-6159780574):
+lista local inicialmente vazia, múltiplas tarefas com título livre obrigatório,
+editor salvar/cancelar explícitos. Tarefa sem etapas válida, progresso0de0/0%,
+não concluir automaticamente. Etapas com texto obrigatório/identidade estável,
+adicionar/editar, subir/descer preservando texto/status, remover com confirmação.
+Checkbox de conclusão reversível e progresso derivado das escolhas da pessoa,
+sem execução automática ou inferência clínica. Remoção da tarefa inteira confirma
+somente esse módulo. Estado confirmado depois do commit; erro genérico preserva
+draft/versão confirmada, retry/duplicatas/revisão obsoleta recusada, dados removidos
+não reaparecem por save antigo. SQLite privado schema1/fila/transação/readback/
+rollback/reabertura/offline, sem histórico ou dados de outros módulos. Entrada
+pelo quadro/rota própria/lista-editor-retorno, alvos48dp/texto escalável/contraste/
+modo9. Modelos/catálogo/Q-TAREFA-02 permanecem [na #20](https://github.com/Nosso-Espectro/aplicativo/issues/20#issuecomment-6159780837),
+não aprovar esses critérios nem a milestone por esta entrega. Tasks ainda pendentes.
 
 ## Rastreabilidade
 
