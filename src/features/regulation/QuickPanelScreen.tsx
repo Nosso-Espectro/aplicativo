@@ -6,6 +6,7 @@ import { panelDestinations, type PanelDestinationId } from './quick-panel';
 
 const icons: Record<PanelDestinationId, ComponentProps<typeof MaterialIcons>['name']> = {
   communication: 'chat-bubble-outline', sounds: 'graphic-eq', timer: 'timer', contact: 'person-outline',
+  'support-card': 'assignment',
 };
 export function QuickPanelScreen({ onOpen, onClose }: { onOpen(id: PanelDestinationId): void; onClose(): void }) {
   return <SafeAreaView style={styles.screen}><ScrollView contentContainerStyle={styles.content}>

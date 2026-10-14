@@ -2,10 +2,10 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
 import { QuickPanelScreen } from '../../../src/features/regulation/QuickPanelScreen';
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'Icon');
-it('offers four named, scalable 64dp commands without activation on render', () => {
+it('offers named, scalable 64dp commands without activation on render', () => {
   const open = jest.fn(); render(<QuickPanelScreen onOpen={open} onClose={jest.fn()} />);
   expect(open).not.toHaveBeenCalled();
-  for (const [id, label] of [['communication', 'Comunicação'], ['sounds', 'Sons'], ['timer', 'Timer de transição'], ['contact', 'Contato de confiança']]) {
+  for (const [id, label] of [['communication', 'Comunicação'], ['sounds', 'Sons'], ['timer', 'Timer de transição'], ['contact', 'Contato de confiança'], ['support-card', 'Cartão de apoio']]) {
     const button = screen.getByRole('button', { name: label });
     expect(StyleSheet.flatten(button.props.style).minHeight).toBe(64);
     fireEvent.press(button); expect(open).toHaveBeenLastCalledWith(id);

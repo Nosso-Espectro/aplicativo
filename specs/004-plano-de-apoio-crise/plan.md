@@ -180,10 +180,11 @@ framework ou integração externa. Segurança do host de build continua pendente
 
 Plano vazio, contato inválido e WhatsApp ausente; #13 exige informar indisponibilidade sem falhar. Tratamento de validação detalhado em Q-APOIO-03.
 
-US-011 entregue pelo PR67, US-013 Ready após refinamento no GitHub e confirmação
-da stack. US-012 aguarda painel #10 para cumprir acesso direto, não simulá-lo nem
-fechar a Issue. Q-APOIO-02/04 continuam nas histórias dependentes; não aprovar
-milestone/release por implementar somente editores. Ver [auditoria](../../docs/backlog-audit.md).
+US-011 entregue pelo PR67, US-013 pelo PR68, painel #10 pelo PR72. US-012
+implementada/testada em SupportCardScreen/support-card e rota support-card com
+acesso real do painel; CI/integração ainda aguardados. Q-APOIO-04 cumprida no fluxo
+testado, não por stub; compartilhamentoQ-APOIO-02 e gates nativos continuam
+pendentes. Não aprovar milestone/release somente pelos checks leves. Ver [auditoria](../../docs/backlog-audit.md).
 
 ## Decisões arquiteturais
 

@@ -3,6 +3,7 @@ export const panelDestinations = [
   { id: 'sounds', label: 'Sons', path: '/regulation-sounds' },
   { id: 'timer', label: 'Timer de transição', path: '/transition-timer' },
   { id: 'contact', label: 'Contato de confiança', path: '/trusted-contact' },
+  { id: 'support-card', label: 'Cartão de apoio', path: '/support-card' },
 ] as const;
 export type PanelDestinationId = typeof panelDestinations[number]['id'];
 

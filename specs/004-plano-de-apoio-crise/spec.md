@@ -11,7 +11,7 @@ source_checked: 2026-10-14
 
 Milestone GitHub: [P0 — Plano de Apoio / Crise](https://github.com/Nosso-Espectro/aplicativo/milestone/12) (número 12).
 
-Milestone aberta. US-011 integrada pelo PR #67 e US-013 pelo PR #68. Painel #10 integrado pelo PR #72; US-012 Ready após refinamento vivo para cartão/acesso real. Tasks de US-012 ainda pendentes. Builds e validações nativas/assistivas permanecem no gate; milestone não concluída.
+Milestone aberta. US-011 integrada pelo PR #67 e US-013 pelo PR #68. Painel #10 integrado pelo PR #72; US-012 implementada/testada na branch da Issue, aguardando CI/integração. Builds e validações nativas/assistivas permanecem no gate; milestone não concluída.
 
 ## Contexto
 
@@ -52,9 +52,9 @@ Como usuário em dificuldade de comunicação, quero mostrar meu plano de apoio 
 
 #### Critérios de aceite
 
-- [ ] Deve existir uma visualização em tela cheia.
-- [ ] A visualização deve priorizar texto grande e alto contraste.
-- [ ] Deve haver acesso direto a partir do painel de regulação.
+- [x] Deve existir uma visualização em tela cheia.
+- [x] A visualização deve priorizar texto grande e alto contraste.
+- [x] Deve haver acesso direto a partir do painel de regulação.
 
 ### US-013 — Acionar contato de confiança pelo WhatsApp
 
