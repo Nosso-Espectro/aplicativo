@@ -130,3 +130,18 @@ vazias, stale target/remoção, rollback de create/edit/complete/delete/readback
 commit, fila, schema futuro/corrupção/overflow e exclusão com FKoff isolada.
 Editor/lista/retorno/checkbox confirmado e integração UI ainda faltam; todas
 tasksUS019 pendentes, nenhum PR/aparelho/build/validação SQLite Expo alegados.
+
+Provider e editor isolados preparados: TaskProvider reutiliza abertura em efeito,
+descarta publicação após desmontagem, bloqueia operações duplicadas e publica
+somente o resultado confirmado do banco. save/complete/remove recebem revisão
+capturada; falha mantém tarefas confirmadas. TaskEditor mantém draft separado e
+revisão inicial, valida/foca títulos obrigatórios, adiciona/edita/reordena com
+IDs/status preservados e confirma remoção inclusive de etapa concluída. Cancelar
+descarta draft; salvar aguarda commit sem navegação prematura. Controles de 48dp,
+texto escalável, SafeArea/KeyboardAvoidingView/scroll e feedback textual neutro,
+sem animação/voz/rede. Nove testes de componentes/provider com banco falso:
+validação/vazio, edição/ordem/remoção, cancelamento, erro/retry/draft, duplicata/
+commit tardio/desmontagem, stale removido, StrictMode/abertura e progresso/removal
+confirmados. Lista/detail/checkbox visível/rotas/entrada no quadro ainda faltam;
+editor não está exposto no aplicativo e todas tasks de aceitação permanecem
+pendentes. Testes de UI não provam leitor de tela, foco ou SQLite Expo nativos.
