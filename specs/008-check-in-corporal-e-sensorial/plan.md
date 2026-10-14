@@ -18,16 +18,16 @@ Não implementar a milestone inteira em uma branch. A inicialização técnica p
 
 ## Componentes envolvidos
 
-Módulo proposto: `src/features/sensory-check-in/`.
+Módulo de #21: `src/features/sensory-check-in/`.
 
-- `src/features/sensory-check-in/check-in-form` — [US-021] Realizar check-in corporal e sensorial guiado.
+- `src/features/sensory-check-in/CheckInForm.tsx` e `check-in-model.ts` — [US-021] Realizar check-in corporal e sensorial guiado, rota `src/app/check-in/`.
 - `src/features/sensory-check-in/check-in-summary` — [US-022] Exibir resumo do check-in.
 
 ## Modelo de dados
 
 Respostas opcionais por item do check-in; resumo derivado apenas das respostas presentes. Histórico persistente não é pressuposto desta milestone.
 
-Representação física, tipos e migrações serão definidos após a escolha técnica; não instalar banco por antecipação.
+US021: `CheckInState` com índice, respostas opcionais por ID tipado e indicador de encerramento. Reducer valida escala por item, rejeita eventos de pergunta anterior/duplicados, mantém revisão em memória e limpa respostas ao finalizar/reset. Sem migração/banco.
 
 ## Persistência
 
@@ -35,7 +35,7 @@ US021 aprovada: estado local de componente/reducer, respostas tipadas opcionais 
 
 ## Fluxos principais
 
-Sequência de capacidades: Realizar check-in corporal e sensorial guiado → Exibir resumo do check-in.
+US021: quadro → check-in → selecionar e continuar ou pular → revisar com pergunta anterior → encerrar sem resultado clínico → quadro. Sair antes do fim também descarta. Scroll volta ao topo sem animação ao mudar pergunta. Resumo de #22 não implementado nesta etapa.
 
 Validar cada critério no seu fluxo e as integrações indicadas em spec.md; a sequência não impõe um único percurso de interface.
 
@@ -72,11 +72,11 @@ Base implementada, sem bibliotecas novas ou uso de temporizador/áudio. #21 não
 
 Perguntas puladas e resumo sem respostas (#21/#22); não preencher respostas por inferência.
 
-As questões em aberto da spec, a ausência de plataforma-alvo definida e a falta de comandos de qualidade impedem afirmar prontidão de implementação/release. Ver [auditoria](../../docs/backlog-audit.md).
+US021 Ready após aprovação explícita. Sugestões/atalhos/retenção de #22 ainda pendentes. Leitor de tela/foco, texto ampliado/insets/alvos e abertura offline reais permanecem gate nativo T012; testes RNTL não comprovam conformidade total ou release. Ver [auditoria](../../docs/backlog-audit.md).
 
 ## Decisões arquiteturais
 
 - Diretriz confirmada: React Native; MVP sem backend.
-- Proposta: módulos por capacidade em `src/features/`, sem fixar extensão/linguagem nem arquitetura de estado.
+- Módulo isolado em TypeScript/reducer e estado local de componente, sem provider global ou acesso a DB de outro módulo.
 - US021: rota `/check-in`, estado efêmero local, oito perguntas fixas revisadas na Issue, sem sugestão/diagnóstico/DB. Navegação mantém animação da preferência existente (none em modo9).
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.
