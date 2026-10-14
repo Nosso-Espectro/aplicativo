@@ -197,3 +197,18 @@ si/origem independentes, vazio válido, trim/IDs únicos, rejeição de factory 
 reutiliza IDs da origem e edição de draft sem alterar modelo. Nenhum modelo
 persistido/UI alegado: migração/banco/provider/lista/editor/rotas/fluxos ainda
 faltam e todas tasks US-020 permanecem pendentes. Sem dependência/permissão/rede.
+
+Persistência US-020 preparada isoladamente: openTaskWorkspaceDatabase no arquivo
+existente migra schema1→2 em transação sem alterar tarefas/IDs/status/revisões.
+Templates/steps próprios sem completed, mesma fila/validação da origem e readback/
+commit/rollback. readWorkspace/createTemplate/saveTemplate/removeTemplate/
+createTaskFromTemplate confirmam resultado somente após commit. Origem/revisão
+checadas dentro da transação; IDs novos na cópia, editar/remover modelo não toca
+instâncias e remover origem não apaga modelo. Schema2 incompleto não é recriado,
+schema futuro recusado. openTaskDatabase preserva contrato legado list/save/
+complete/remove via mesma implementação, sem adaptar mocks para esconder APIs.
+Oito testes SQLite Node novos: migração preserva v1/rollback-retry, reabertura
+offline e independência, vazio, origem/modelo stale/removido, fila, rollback de
+create/edit/delete/copy por commit/readback, corrupção/overflow/tabela ausente.
+Total17testes banco; provider/UI/rotas de modelos ainda faltam, todas tasks20
+pendentes. Nenhum SQLite Expo/build/aparelho/host ou gate nativo alegado.
