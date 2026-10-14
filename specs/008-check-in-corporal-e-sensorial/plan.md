@@ -4,11 +4,11 @@ Spec: [spec.md](spec.md). Milestone #16; Issues #21, #22. Plano proposto, sujeit
 
 ## Stack
 
-Inspeção em 2026-09-23: repositório sem código de aplicação, package.json, dependências ou ferramentas de build/teste. React Native e primeira versão sem backend são diretrizes explícitas do projeto, ainda não implementadas. Expo, linguagem, navegação e biblioteca de persistência não foram escolhidos. Não assumir stack web, banco ou servidor.
+Inspeção em 2026-10-14: Expo SDK57, React Native0.86.3, React19.2.3, TypeScript strict, Expo Router, Jest/RNTL. Node24.21.0/npm11.19.0. Primeira versão sem backend; sem dependência nova para #21.
 
 ## Arquitetura atual
 
-Somente README e licença antes desta preparação. Não há componentes, modelos ou serviços existentes para reutilizar. Os caminhos abaixo são propostas de organização e não arquivos já criados.
+Quadro em `src/app/index.tsx`, navegação por Expo Router e preferência de baixa estimulação via `LowStimulationProvider`. Usar padrões reais de SafeAreaView/ScrollView, ícones MaterialIcons e controles acessíveis. Não acoplar check-in ao banco de tarefas ou perfil.
 
 ## Estratégia
 
@@ -31,7 +31,7 @@ Representação física, tipos e migrações serão definidos após a escolha t�
 
 ## Persistência
 
-Manter respostas durante o fluxo; retenção após fechamento não definida. Não antecipar coleta para Histórico P3.
+US021 aprovada: estado local de componente/reducer, respostas tipadas opcionais por pergunta; nenhuma resposta padrão. Não persistir nem transmitir. Sair/finalizar/desmontar descarta a sessão, nova entrada vazia. Voltar revisa resposta; pular apaga a resposta do item. Resumo/transferência para #22 ainda pendentes, não antecipar Histórico P3.
 
 ## Fluxos principais
 
@@ -41,7 +41,7 @@ Validar cada critério no seu fluxo e as integrações indicadas em spec.md; a s
 
 ## Offline
 
-Manter respostas durante o fluxo; retenção após fechamento não definida. Não antecipar coleta para Histórico P3.
+US021 opera sem rede e sem armazenamento; respostas somente em memória da sessão. Reentrada inicia sem respostas. #22 requer refinamento próprio.
 
 Recursos locais não devem depender de autenticação ou API. Capacidades externas explicitamente solicitadas devem informar indisponibilidade sem impedir os recursos locais; não confundir falta de backend próprio com ausência de qualquer serviço externo futuro.
 
@@ -59,13 +59,14 @@ Aplicar RNF-002 e RNF-004. Usar dados sintéticos nos testes; evitar dados pesso
 - Usar testes unitários para transformações de estado/dados; componentes para interação e acessibilidade; integração para persistência/capacidades nativas quando pertinentes.
 - Exercitar os casos de erro do spec e regressões das dependências reais.
 - Verificar em dispositivo/simulador os fluxos que dependem de voz, áudio, permissões ou notificações; mocks isolados não comprovam suporte nativo.
-- Selecionar E2E para fluxos críticos quando a infraestrutura existir. Executar testes, lint, typecheck quando aplicável e build antes de concluir.
+- Testar todas as oito perguntas, seleções/escalas, pular inclusive resposta anterior, retorno/revisão, fim sem resposta, encerramento/reentrada vazia, rota direta/fallback e modo9 com Expo Router real. Validar entradas inválidas no reducer sem inferência.
+- Executar Jest serial, lint, tipos, Doctor e checks leves. Builds exclusivamente remotos/manuais no SHA integrado; testes assistivos/aparelho são gate separado, não aprovação por mocks.
 
-Hoje não existem runner, scripts de qualidade ou build do aplicativo. A validação da documentação não equivale a testes do produto e não habilita release.
+Jest/RNTL e Expo Router testing library existentes. Sem build local e sem operar celular na implementação. Evidência de testes simulados não habilita release.
 
 ## Dependências técnicas
 
-Base React Native ainda a inicializar. Selecionar somente as bibliotecas necessárias aos critérios da história, documentando suporte offline, plataformas e permissões. Integrações funcionais estão em spec.md; reuso de temporizador/áudio pode ser avaliado quando houver código, sem criar framework antecipado.
+Base implementada, sem bibliotecas novas ou uso de temporizador/áudio. #21 não depende das integrações de #22.
 
 ## Riscos
 
@@ -77,5 +78,5 @@ As questões em aberto da spec, a ausência de plataforma-alvo definida e a falt
 
 - Diretriz confirmada: React Native; MVP sem backend.
 - Proposta: módulos por capacidade em `src/features/`, sem fixar extensão/linguagem nem arquitetura de estado.
-- Pendente: plataformas e versões mínimas, bootstrap, navegação, persistência e ferramentas de qualidade.
+- US021: rota `/check-in`, estado efêmero local, oito perguntas fixas revisadas na Issue, sem sugestão/diagnóstico/DB. Navegação mantém animação da preferência existente (none em modo9).
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.
