@@ -12,6 +12,7 @@ export default function TasksScreen() {
     {context.error && <Text accessibilityRole="alert" style={styles.error}>{context.error}</Text>}
     {context.error && <TaskCommand icon="refresh" label="Tentar abrir tarefas novamente" onPress={context.retry} />}
     <TaskCommand icon="add" label="Nova tarefa" disabled={context.loading || context.busy || Boolean(context.error)} onPress={() => router.push('/tasks/new')} />
+    <TaskCommand icon="library-books" label="Modelos de tarefas" onPress={() => router.push('/tasks/templates')} />
     {!context.loading && !context.error && context.tasks.length === 0 && <Text style={styles.text}>Ainda não há tarefas salvas.</Text>}
     {context.tasks.map(task => {
       const progress = taskProgress(task.steps);

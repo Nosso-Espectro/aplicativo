@@ -225,3 +225,28 @@ e tarefa de outra conexão sem selecionar destino errado. Fixtures do editor19
 explicitam contrato workspace; métodos de modelo não usados nesses testes
 recusam execução, sem fallback de capacidade ausente. UI/model list/editor/
 rotas/comando Salvar como modelo AINDA FALTAM; nenhuma task20 concluída.
+
+## Fluxo US-020 verificado localmente
+
+TaskDetail Salvar como modelo com commit antes de navegar; Tarefas→Modelos→
+detalhe/lista vazios/erro/fallback. TemplateDetail mostra conteúdo sem progresso,
+cria tarefa da versão confirmada e navega somente comID exato após commit;
+editar/cancelar/remover modelo com confirmação preserva instâncias. TaskEditor
+reaproveitado por união task/template, rótulos e formulário comuns; mode modelo
+oculta conclusão/stripprogress, revisão inicial/draft separado preservados.
+Rotas soblayoutTaskProvider/mode9 existente, sem novo framework/dependências.
+Seis testes de UI/rotas com SQLiteNode adicionados: salvar/copiar/editar cópia/
+deletar isolado, draft/ordem/remoção/validação/cancel/rollback-retry, commitpending/
+duplicatas sem navegação, copy/deleteerro sem sucesso, vazio/offline/reabertura/
+lowmode/directlink, stale editor e confirmação obsoleta de outra conexão.
+Revisão local: controls48dp/SafeArea/scroll/teclado/fonte escalável/contraste
+202124-branco/16634D, headers/alerts/polite e texto independente de cor, sem som/
+animação inesperada. ApenasID em parâmetros, sem título/progresso/PII; banco
+privado/offline, sem rede/permissão/dependência/histórico/diagnóstico/IA/catálogo.
+T007–T011/T013 verificadas, T014 SQLiteExpo/nativo/assistivo/backups permanece
+pendente. Não aprovar milestone/release por mocks ou SQLiteNode; repetir suíte
+completa/lint/tipos/Doctor/tooling/validador/review/CI antes integrar PR.
+
+Verificação local de entrega20: 552Jest/72suítes completos,55relacionados/5,
+lint/tipos sem warnings,Doctor21/21,56tooling,validador/diffcheck verdes. Revisão
+sem regressão impeditiva encontrada; limitações nativas T014 registradas.

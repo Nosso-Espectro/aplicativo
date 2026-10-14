@@ -16,6 +16,9 @@ import List from '../../../src/app/tasks';
 import New from '../../../src/app/tasks/new';
 import Detail from '../../../src/app/tasks/[id]';
 import Edit from '../../../src/app/tasks/edit/[id]';
+import Templates from '../../../src/app/tasks/templates';
+import Template from '../../../src/app/tasks/templates/[id]';
+import EditTemplate from '../../../src/app/tasks/templates/edit/[id]';
 import StartupScreen from '../../../src/app';
 import { SentenceProvider } from '../../../src/features/communication/sentence/SentenceProvider';
 import { CustomCardsProvider } from '../../../src/features/communication/custom-cards/CustomCardsProvider';
@@ -36,7 +39,8 @@ function GlobalLayout() {
   return <LowStimulationProvider><LowStimulationControl /><SentenceProvider><CustomCardsProvider><Slot /></CustomCardsProvider></SentenceProvider></LowStimulationProvider>;
 }
 const routes = { _layout: GlobalLayout, index: StartupScreen, 'tasks/_layout': TasksLayout, 'tasks/index': List,
-  'tasks/new': New, 'tasks/[id]': Detail, 'tasks/edit/[id]': Edit };
+  'tasks/new': New, 'tasks/[id]': Detail, 'tasks/edit/[id]': Edit,
+  'tasks/templates/index': Templates, 'tasks/templates/[id]': Template, 'tasks/templates/edit/[id]': EditTemplate };
 beforeEach(() => {
   jest.clearAllMocks(); directory = mkdtempSync(join(tmpdir(), 'tear-task-flow-')); connections = [];
   failCommit = false; holdCommit = null;
@@ -209,4 +213,90 @@ it('returns the exact committed copy rather than another task added through a di
     expect(copied?.title).toBe('Sintética'); expect(copied?.steps).toHaveLength(1);
   });
   expect(workspaceContext.tasks).toHaveLength(3);
+});
+it('saves an actual task as a model, copies without progress, edits the copy independently and removes only the model', async () => {
+  renderRouter(routes, { initialUrl: '/tasks' }); await screen.findByText('Ainda não há tarefas salvas.');
+  await newTask('Original', ['Uma', 'Duas']); await press('Abrir tarefa: Original');
+  await act(async () => fireEvent.press(screen.getByRole('checkbox', { name: 'Etapa 1: Uma' })));
+  await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Etapa 1: Uma' })).toBeChecked());
+  await press('Salvar como modelo'); await screen.findByRole('button', { name: 'Abrir modelo: Original' });
+  await press('Abrir modelo: Original'); expect(screen.queryByRole('checkbox')).toBeNull();
+  await press('Criar tarefa deste modelo'); await screen.findByText('0 de 2 etapas concluídas (0%).');
+  await press('Editar tarefa'); fireEvent.changeText(screen.getByLabelText('Título da tarefa'), 'Cópia');
+  fireEvent.changeText(screen.getByLabelText('Título da etapa 1'), 'Só a cópia'); await press('Salvar tarefa');
+  await screen.findByRole('header', { name: 'Cópia' }); await press('Voltar às tarefas'); await press('Modelos de tarefas');
+  await press('Abrir modelo: Original'); expect(screen.getByText('1. Uma')).toBeOnTheScreen();
+  await press('Remover modelo'); await press('Manter modelo'); await press('Remover modelo'); await press('Confirmar remoção do modelo');
+  await screen.findByText('Ainda não há modelos salvos.'); await press('Voltar às tarefas');
+  expect(screen.getByRole('button', { name: 'Abrir tarefa: Cópia' })).toBeOnTheScreen();
+  expect(screen.getByRole('button', { name: 'Abrir tarefa: Original' })).toBeOnTheScreen();
+  expect(connections[0].prepare('SELECT count(*) AS total FROM tasks').get()).toMatchObject({ total: 2 });
+});
+it('edits model drafts with order/removal/validation/cancel and preserves draft through rollback and retry', async () => {
+  renderRouter(routes, { initialUrl: '/tasks' }); await screen.findByText('Ainda não há tarefas salvas.');
+  await newTask('Original', ['Uma', 'Duas']); await press('Abrir tarefa: Original'); await press('Salvar como modelo');
+  await press('Abrir modelo: Original'); await press('Editar modelo');
+  expect(screen.queryByText('Não concluída')).toBeNull(); await press('Descer etapa 1'); await press('Cancelar');
+  expect(screen.getByText('1. Uma')).toBeOnTheScreen(); await press('Editar modelo'); await press('Descer etapa 1');
+  await press('Remover etapa 2'); await press('Confirmar remoção da etapa'); await press('Adicionar etapa');
+  await press('Salvar modelo'); expect(screen.getByText('Informe o título de cada etapa.')).toBeOnTheScreen();
+  fireEvent.changeText(screen.getByLabelText('Título da etapa 2'), 'Nova'); fireEvent.changeText(screen.getByLabelText('Título do modelo'), '');
+  await press('Salvar modelo'); expect(screen.getByText('Informe o título do modelo.')).toBeOnTheScreen();
+  fireEvent.changeText(screen.getByLabelText('Título do modelo'), 'Modelo editado'); failCommit = true; await press('Salvar modelo');
+  await screen.findByText(/Seu preenchimento foi mantido/); expect(screen.getByLabelText('Título da etapa 1').props.value).toBe('Duas');
+  failCommit = false; await press('Salvar modelo'); await screen.findByRole('header', { name: 'Modelo editado' });
+  expect(screen.getByText('2. Nova')).toBeOnTheScreen(); await press('Voltar aos modelos'); await press('Voltar às tarefas');
+  await press('Abrir tarefa: Original'); expect(screen.getByRole('checkbox', { name: 'Etapa 1: Uma' })).toBeOnTheScreen();
+});
+it('keeps save-as-model and copy pending without navigation or duplicates, then recovers generic failure', async () => {
+  const view = renderRouter(routes, { initialUrl: '/tasks' }); await screen.findByText('Ainda não há tarefas salvas.');
+  await newTask('Original', ['Etapa']); await press('Abrir tarefa: Original'); const detailPath = view.getPathname();
+  failCommit = true; await press('Salvar como modelo'); await screen.findByText(/A tarefa foi mantida/); expect(view.getPathname()).toBe(detailPath);
+  failCommit = false; holdCommit = new Promise(resolve => { releaseCommit = resolve; }); await press('Salvar como modelo');
+  expect(view.getPathname()).toBe(detailPath); expect(screen.getByRole('button', { name: 'Salvar como modelo' })).toBeDisabled();
+  await press('Salvar como modelo'); await act(async () => { holdCommit = null; releaseCommit(); });
+  await screen.findByRole('button', { name: 'Abrir modelo: Original' }); expect(connections[0].prepare('SELECT count(*) AS total FROM task_templates').get()).toMatchObject({ total: 1 });
+  await press('Abrir modelo: Original'); const modelPath = view.getPathname();
+  holdCommit = new Promise(resolve => { releaseCommit = resolve; }); await press('Criar tarefa deste modelo'); await press('Criar tarefa deste modelo');
+  expect(view.getPathname()).toBe(modelPath); expect(screen.getByRole('button', { name: 'Criar tarefa deste modelo' })).toBeDisabled();
+  await act(async () => { holdCommit = null; releaseCommit(); }); await screen.findByText('0 de 1 etapas concluídas (0%).');
+  expect(connections[0].prepare('SELECT count(*) AS total FROM tasks').get()).toMatchObject({ total: 2 });
+});
+it('does not claim copy or model deletion success on rollback, and retries removal explicitly', async () => {
+  const view = renderRouter(routes, { initialUrl: '/tasks' }); await screen.findByText('Ainda não há tarefas salvas.');
+  await newTask('Original'); await press('Abrir tarefa: Original'); await press('Salvar como modelo'); await press('Abrir modelo: Original');
+  const path = view.getPathname(); failCommit = true; await press('Criar tarefa deste modelo'); await screen.findByText(/Os dados salvos foram mantidos/);
+  expect(view.getPathname()).toBe(path); expect(connections[0].prepare('SELECT count(*) AS total FROM tasks').get()).toMatchObject({ total: 1 });
+  await press('Remover modelo'); await press('Confirmar remoção do modelo'); await screen.findByText(/Os dados salvos foram mantidos/);
+  expect(screen.getByRole('button', { name: 'Confirmar remoção do modelo' })).toBeEnabled(); failCommit = false;
+  await press('Confirmar remoção do modelo'); await screen.findByText('Ainda não há modelos salvos.');
+});
+it('restores empty models offline and preserves low stimulation and direct-link fallback', async () => {
+  const fetch = jest.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('offline'));
+  const view = renderRouter(routes, { initialUrl: '/tasks/templates/edit/missing' }); await screen.findByText('Modelo não encontrado.');
+  await press('Voltar aos modelos'); await screen.findByText('Ainda não há modelos salvos.'); await press('Voltar às tarefas');
+  await newTask('Vazio'); await press('Abrir tarefa: Vazio'); await press('Salvar como modelo'); await press('Abrir modelo: Vazio');
+  await screen.findByText('Ainda não há etapas neste modelo.');
+  const toggle = screen.getByRole('switch', { name: 'Modo de baixa estimulação' });
+  await act(async () => fireEvent(toggle, 'valueChange', true)); await waitFor(() => expect(toggle).toBeChecked());
+  await press('Criar tarefa deste modelo'); await screen.findByText('0 de 0 etapas concluídas (0%).'); expect(toggle).toBeChecked();
+  view.unmount(); for (const db of connections) db.close(); connections = [];
+  renderRouter(routes, { initialUrl: '/tasks/templates' }); await screen.findByRole('button', { name: 'Abrir modelo: Vazio' });
+  expect(fetch).not.toHaveBeenCalled();
+});
+it('keeps stale editor drafts and refuses outdated removal confirmations when another connection changes a model', async () => {
+  renderRouter(routes, { initialUrl: '/tasks' }); await screen.findByText('Ainda não há tarefas salvas.');
+  await newTask('Original'); await press('Abrir tarefa: Original'); await press('Salvar como modelo'); await press('Abrir modelo: Original');
+  await press('Editar modelo'); const external = await openTaskWorkspaceDatabase();
+  let latest = (await external.readWorkspace()).templates[0];
+  await external.saveTemplate({ ...latest, title: 'Outra versão' }, latest);
+  fireEvent.changeText(screen.getByLabelText('Título do modelo'), 'Meu draft'); await press('Salvar modelo');
+  await screen.findByText(/Seu preenchimento foi mantido/); expect(screen.getByLabelText('Título do modelo').props.value).toBe('Meu draft');
+  expect((await external.readWorkspace()).templates[0].title).toBe('Outra versão');
+  await press('Cancelar'); await press('Voltar aos modelos'); await press('Voltar às tarefas'); await press('Voltar ao quadro');
+  await press('Abrir tarefas'); await screen.findByRole('button', { name: 'Abrir tarefa: Original' }); await press('Modelos de tarefas');
+  await press('Abrir modelo: Outra versão'); await press('Remover modelo');
+  latest = (await external.readWorkspace()).templates[0]; await external.saveTemplate({ ...latest, title: 'Versão mais nova' }, latest);
+  await press('Confirmar remoção do modelo'); await screen.findByText(/Os dados salvos foram mantidos/);
+  expect((await external.readWorkspace()).templates[0].title).toBe('Versão mais nova');
 });
