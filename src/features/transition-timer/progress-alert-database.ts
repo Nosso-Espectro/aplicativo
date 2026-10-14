@@ -1,9 +1,9 @@
 import { type SQLiteDatabase } from 'expo-sqlite';
 import { advanceAlertVersion, openTimerConnection, readAlertVersion, readTimerSession } from './timer-schema';
-import { futureProgressAlerts, normalizedProgressAlerts, progressMarks, type ProgressAlertPreferences, type ProgressMark } from './progress-alerts';
+import { futureProgressAlerts, normalizedProgressAlerts, type ProgressAlertPreferences, type ProgressMark } from './progress-alerts';
+import { normalizedProgressNotification, type OwnedProgressNotification } from './progress-notification';
 import { timerAt } from './visual-timer';
 
-type OwnedNotification = { identifier: string; sessionNumber: number; minutes: ProgressMark; atMs: number };
 async function readSnapshot(db: SQLiteDatabase) {
   const session = await readTimerSession(db);
   const version = await readAlertVersion(db);
@@ -14,11 +14,8 @@ async function readSnapshot(db: SQLiteDatabase) {
   const delivered = await db.getAllAsync<{ minutes: ProgressMark }>('SELECT minutes FROM timer_delivered_marks');
   const preferences = normalizedProgressAlerts({ enabled: flags.enabled === 1, systemNotifications: flags.system_notifications === 1, marks: marks.map(row => row.minutes) });
   const deliveredMarks = normalizedProgressAlerts({ ...preferences, marks: delivered.map(row => row.minutes) }).marks;
-  const pending = await db.getAllAsync<OwnedNotification>('SELECT identifier, session_number AS sessionNumber, minutes, at_ms AS atMs FROM timer_owned_notifications ORDER BY identifier');
-  for (const entry of pending) {
-    if (!Number.isSafeInteger(entry.sessionNumber) || entry.sessionNumber < 1 || !progressMarks.includes(entry.minutes) || !Number.isSafeInteger(entry.atMs) || entry.atMs < 0
-      || !new RegExp(`^tear-transition-${entry.sessionNumber}-${entry.minutes}-[0-9]+$`).test(entry.identifier)) throw new Error('Invalid owned notification.');
-  }
+  const rows = await db.getAllAsync<OwnedProgressNotification>('SELECT identifier, session_number AS sessionNumber, minutes, at_ms AS atMs FROM timer_owned_notifications ORDER BY identifier');
+  const pending = rows.map(normalizedProgressNotification);
   return { session, sessionNumber: session ? version.session_counter : null, revision: version.revision, preferences, delivered: deliveredMarks, pending };
 }
 export type ProgressAlertSnapshot = Awaited<ReturnType<typeof readSnapshot>>;

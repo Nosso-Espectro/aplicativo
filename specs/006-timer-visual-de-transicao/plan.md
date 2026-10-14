@@ -93,6 +93,36 @@ Provider/tela/motor nativos ainda não usam essas APIs; nenhuma task de aceitaç
 concluída por persistência isolada. SQLite real do Node não comprova SQLite Expo
 nem cancelamento/avisos no dispositivo.
 
+Adaptador local expo-progress-alert-engine.ts preparado e testado isoladamente:
+factory tardia, sem chamada nativa/prompt ao construir; permission só consulta e
+requestPermission é comando separado para confirmação humana. iOS interpreta
+AUTHORIZED/PROVISIONAL/EPHEMERAL do OS e soundfalse se allowsSound não é true;
+Android26+ consulta canal estável, cria apenas na solicitação explícita se ausente
+e não reescreve som/vibração existentes ou ignora canal bloqueado. Canal padrão
+de importância normal/privado sem bypassDND/badge/lights, som/vibração sujeitos ao
+OS e à confirmação prévia. Android24/25 não finge ter canais: usa notificação
+local comum respeitando OS. Sem tokenpush/haptics/player/handler global ou
+redirecionamento. Estado de entrega continua responsabilidade nativa, não promessa.
+Protocolo OwnedProgressNotification valida/copia ID próprio sessão/marco/revisão
+e tempo; readSnapshot também o utiliza. schedule aceita só intenção já registrada
+pelo coordenador, recusa passado/sem permissão e verifica ID retornado/estado
+agendado ou presente. inspect filtra IDs exatos da lista registrada e não lê SDK
+quando vazio; não expõe payloads de outros módulos. cancel cancela/dismiss somente
+ID próprio e verifica ausência antes de sucesso, preservando ledger em falha.
+Fila assíncrona serial não ultrapassa RPC pendente; retry explícito após rejeição.
+dispose limpa listeners/descarta callbacks antigos; cancela schedule que termina
+depois do dispose, mas não remove alarmes confirmados que precisam sobreviver em
+background. onReceived usa ownership atual/unsubscribe idempotente/guard ativo.
+Adapter não persiste prefs, não infere consentimento e não decide consumo visual:
+coordenador deve validar snapshot/revision/identidade antes e após cada chamada,
+manter IDs em efeito incerto e conciliar queries/clock/pause/cancel/restart.
+Dezoito testes falsos do SDK mais regressões; suíte443/65 aprovada, lint/tipos,
+Doctor21/21,56tooling/validador. Não comprova RPCs tardios/foco/som/vibração/
+lockscreen/entrega real, manifest final ou ausência de rede. Coordenador/provider/
+UI ainda faltam e todas tasks US018 continuam pendentes. Sem aviso/aparelho/build
+real. Falha recente SSH do build anterior US012 é acompanhada pelo monitor,
+não autoriza build local nem mudança de backend nesta implementação.
+
 US-017: sessão inicialmente null, depois running/paused/finished, duração e
 restante em milissegundos e término absoluto quando running; validação estrita
 de duração1s–24h e estados coerentes. Relógio recebido pelos cálculos para testes,
