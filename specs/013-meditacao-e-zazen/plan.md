@@ -49,7 +49,7 @@ corrigidas com factorynames/Router real sem fakeAPI/timeout/supressão.
 Tipo unknown do id corrigido com expectedId após comparação estrita, sem cast.
 Review de conteúdo/RF-RNF/code/privacy/offline/UI/diff não encontrou regressão
 impeditiva; nenhum pacote/config/permissão/DB/histórico/player/voz alterado.
-T006-T009 verificadas; T010 aguarda PR/CI últimohead; T012 nativo PENDENTE.
+T006-T010 verificadas; PR100 anexado, CI38620299198 SUCCESS no head7f6e63f8e26c07e0c42b5d5b8c138ad016217950. Conferir último head documental verde antes squash. Android/iOS SKIPPED não são builds; T012 nativo PENDENTE.
 Sem host/nativejob/buildlocal/phone/preview8093/tag/release nesta execução.
 
 ## Histórico US031 — Integrada PR99
