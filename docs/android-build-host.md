@@ -8,18 +8,32 @@ nenhum OOM/MCE na consulta limitada do kernel. Seis arquivos principais do JDK17
 coincidem com o archive oficial cujo SHA256 foi confirmado. Essas evidencias
 nao determinam bug HotSpot/JNI/VM/hardware nem integridade do host.
 
-Recuperacao a validar: installer fixa Temurin21.0.12.1+1 oficial/SHA256, em
+Recuperacao implantada: installer fixa Temurin21.0.12.1+1 oficial/SHA256, em
 `/opt/tear-build/jdk-21.0.12.1+1`; wrapper usa esse JDK somente na conta de build.
 Gradle9.3.1 suporta Java21. Nao muda Java/Kotlin target do app ou JDK global,
 alternatives, servicos, credenciais e nao executa provisionamento completo.
 JDK17 e relatorios antigos permanecem para diagnostico/retorno manual.
 
-Implantar somente com processos/flock vazios e hash anterior conferido, guardar
+Para futuras implantacoes, exigir processos/flock vazios e hash anterior conferido, guardar
 copia do wrapper anterior fora do checkout, instalar root:root/mode755 de forma
 atomica e comparar o hash publicado. Depois de integrar o PR, build manual
 both/SSH no SHA integrado e verificacao de artefatos/licencas/assinatura sao
 obrigatorios para demonstrar recuperacao. Teste estatico nao prova esse resultado.
 Nao reabre a investigacao de seguranca #61 dispensada pelo usuario.
+
+Evidencia de 2026-10-15: PR110 integrado na main
+`8578702a08db79cec2af378814af065540fbeaf1`, CI do PR/main aprovados.
+Installer remoto confirmou checksum oficial e JDK21 como tear-build; wrapper
+root:root755 SHA256 `f695ee8d849dfb3e513b9e076fb3ad110c7848fb95e25a634f0f31af2b1c5ca5`,
+copia anterior preservada fora do checkout. Diagnostico compileReleaseKotlin
+com JDK21 passou em13m1s. O [run38743232948](https://github.com/Nosso-Espectro/aplicativo/actions/runs/38743232948)
+both/SSH no SHA acima passou: quality, Android51m26s e iOSsimulador24m34s.
+Gate remoto aprovado; dois ZIPs conferidos com digest oficial, ranges206,
+Content-Range, tamanho/CRC/entradas e notices exatos do commit. APK SHA256
+`b5cea4e0000f74df0d7e1ae679562f41087817d708380b7d5e853c76def9712d`,
+assinatura v2 valida e certificado compativel com a instalacao anterior.
+Isso demonstra recuperacao dessa compilacao, nao causa raiz nem garantia futura.
+O registro documental posterior nao representa novo binario ou gate de release.
 
 Referencias: [compatibilidade Gradle](https://docs.gradle.org/current/userguide/compatibility.html),
 [release Temurin21](https://github.com/adoptium/temurin21-binaries/releases/tag/jdk-21.0.12.1%2B1).

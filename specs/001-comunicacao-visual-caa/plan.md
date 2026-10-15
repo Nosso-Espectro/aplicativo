@@ -15,10 +15,13 @@ vazios e hash anterior, com copia de retorno fora do checkout e substituicao
 atomica do wrapper. Sem provisionamento completo ou reboot. Confirmar hash/mode,
 JDK21 em execucao e build manual both/SSH no SHA integrado da main.
 
-Run38736161153 both/GitHub ja ativo preservado: controle em outro ambiente,
-nao prova recuperacao do servidor. Novo run SSH somente apos encerrar esse run
-e checks de integracao. Validar artefatos SHA/digest/CRC/notices/assinatura e
-somente entao a instalacao Samsung ja autorizada. Sem novos dados, UI ou features.
+Controle38736161153 both/GitHub encerrou com quality/iOSSUCCESS e falha
+compileReleaseKotlin/InvocationTargetException, sem causa interna no log curto.
+No servidor, compileReleaseKotlin/JDK21 passou em13m1s. Apos encerrar o controle,
+integrar PR110 e conferir preflight, run38743232948 both/SSH passou no SHA
+8578702a08db79cec2af378814af065540fbeaf1. Artefatos SHA/digest/ranges206/CRC/notices
+e assinaturaAPK verificados. Instalacao Samsung tem autorizacao propria e nao
+integra prova de causa raiz/gate assistivo. Sem novos dados, UI ou features.
 
 Limites: SIGSEGV em pagina nao executavel durante hashing Gradle; arquivo do JDK17
 coincide com distribuicao oficial, heap/RAM nao esgotados e consulta limitada sem
