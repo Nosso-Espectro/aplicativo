@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { checkInOptions, checkInQuestions, checkInReducer, emptyCheckIn } from './check-in-model';
 import { checkInSummary, type CheckInTool } from './check-in-summary';
+import { SaveHistoryButton } from '../history/SaveHistoryButton';
 
 function Command({ label, icon, disabled = false, onPress }: {
   label: string; icon: ComponentProps<typeof MaterialIcons>['name']; disabled?: boolean; onPress(): void;
@@ -44,6 +45,7 @@ export function CheckInForm({ onExit, onOpenTool }: { onExit(): void; onOpenTool
           <Text style={styles.text}>{item.question}</Text>
           <Text style={[styles.text, styles.answer]}>{item.answer}</Text>
         </View>)}
+        {summary.length > 0 && <SaveHistoryButton content={{ type: 'check-in', answers: state.answers }} />}
         <Text accessibilityRole="header" style={styles.question}>Possibilidades</Text>
         <Command label="Você pode abrir o painel de regulação" icon="dashboard" onPress={() => leave(() => onOpenTool('regulation'))} />
         <Command label="Você pode revisar seu contato de confiança" icon="chat-bubble-outline" onPress={() => leave(() => onOpenTool('trusted-contact'))} />

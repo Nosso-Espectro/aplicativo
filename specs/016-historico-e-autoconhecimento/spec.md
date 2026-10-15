@@ -2,9 +2,9 @@
 milestone: 24
 priority: P3
 tag: m016-historico-e-autoconhecimento
-status: draft
-ready_stories: []
-source_checked: 2026-09-23
+status: ready
+ready_stories: ["US-038"]
+source_checked: 2026-10-15
 ---
 
 # Histórico e Autoconhecimento
@@ -83,6 +83,30 @@ Esta história deve priorizar autonomia, previsibilidade, baixa carga cognitiva 
 
 ## Requisitos funcionais
 
+### Refinamento autorizado de US-038 em 2026-10-15
+
+Origem: confirmação humana para iniciar #38 e salvar somente por ação explícita;
+[registro na Issue](https://github.com/Nosso-Espectro/aplicativo/issues/38#issuecomment-6190658207).
+Os critérios originais acima permanecem inalterados. Apenas US-038 está Ready.
+
+- No resumo final do check-in com alguma resposta e na rotina concluída, oferecer
+  `Salvar no histórico`. Sem toque, nenhum registro; perguntas puladas não são salvas.
+- Snapshot independente com ID próprio, instante da ação e tipo. Check-in guarda
+  somente respostas fornecidas; rotina guarda nome e quantidade de etapas, sem imagens
+  nem IDs de origem. Alterações nas origens não modificam os registros anteriores.
+- SQLite local entre sessões, sem expiração automática, servidor, rede ou coleta de
+  outras ferramentas. Exclusão individual/global pertence a #40, ainda não implementada.
+- Lista mais recente primeiro; empates por ordem de inserção decrescente. Exibir data
+  e hora locais e filtros `Todos`, `Check-ins`, `Rotinas concluídas`.
+- Abrir pela lista de Ferramentas; voltar ao quadro. Estados de carregamento, vazio,
+  filtro vazio, erro genérico e retry. Sem inferência clínica, tendências ou agregados.
+- Um salvamento por intenção visível; bloquear duplos toques, retry com o mesmo ID,
+  comandos após blur/unmount e feedback tardio. Commit já autorizado pode terminar;
+  não prometer cancelamento SQLite nem coleta retroativa de sessões temporárias.
+- Preservar navegação, modo de baixa estimulação e usos atuais sem salvar. Sem novas
+  dependências/permissões. SQLite Expo, offline real, ampliação e leitores em aparelho
+  permanecem verificações nativas pendentes, distintas da suíte sintética/SQLite Node.
+
 - **RF-001** — O histórico deve apresentar registros em ordem cronológica. (#38, critério 1.)
 - **RF-002** — O usuário deve conseguir filtrar por tipo de registro. (#38, critério 2.)
 - **RF-003** — A apresentação não deve inferir diagnóstico ou causa clínica. (#38, critério 3.)
@@ -106,7 +130,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-Implementações de outras milestones, requisitos não rastreados e decisões funcionais listadas como pendentes. Nesta execução apenas documentação e ferramentas de engenharia; nenhuma funcionalidade é implementada.
+US-039 e US-040, IA, backend, sincronização, captura automática, instrumentação de outras ferramentas e demais requisitos não rastreados estão fora desta entrega de US-038.
 
 ## Dependências funcionais
 
@@ -121,8 +145,8 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 ## Questões em aberto
 
-- Q-HIST-01 — Quais eventos geram registros, quais campos, retenção e ativação de coleta? #38 não autoriza instrumentar todo o app silenciosamente.
-- Q-HIST-02 — Direção cronológica, tipos de filtro, períodos e definição de tendências precisam de critérios mensuráveis (#38/#39).
+- Q-HIST-01 — Resolvida para #38 pelo refinamento acima: opt-in por registro, dois tipos e campos mínimos, retenção local sem expiração automática. Não instrumentar outros módulos.
+- Q-HIST-02 — Direção e tipos resolvidos para #38 acima; períodos e tendências de #39 continuam pendentes.
 - Q-HIST-03 — Como a exclusão afeta dados originais de rotinas/check-ins versus cópias no histórico (#40)? Não inferir remoção global.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
@@ -145,4 +169,4 @@ Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma
 | RNF-003 | #38, #39, #40 | Todas acima | Revisão por história em tasks.md |
 | RNF-004 | #38, #39, #40 | Todas acima | Revisão por história em tasks.md |
 
-As tasks de testes cobrem os RFs da respectiva história. Branches previstas, commits, PRs e tags seguem o [workflow](../../docs/development-workflow.md) e o [índice](../README.md); nenhum desses artefatos Git foi criado nesta preparação.
+As tasks de testes cobrem os RFs da respectiva história. Branches, commits e PRs seguem o [workflow](../../docs/development-workflow.md) e o [índice](../README.md). A implementação atual limita-se a US-038; não há release ou tag desta milestone.

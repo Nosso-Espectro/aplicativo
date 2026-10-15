@@ -49,6 +49,11 @@ export default function StartupScreen() {
         <MaterialIcons name="fact-check" size={24} color="#16634D" accessible={false} />
         <Text style={{ color: '#16634D', fontSize: 18, flexShrink: 1 }}>Check-in corporal e sensorial</Text>
       </Pressable>
+      <Pressable accessibilityRole="button" accessibilityLabel="Abrir histórico" onPress={() => navigate('/history')}
+        style={{ minHeight: 48, flexDirection: 'row', gap: 8, alignItems: 'center', padding: 12 }}>
+        <MaterialIcons name="history" size={24} color="#16634D" accessible={false} />
+        <Text style={{ color: '#16634D', fontSize: 18, flexShrink: 1 }}>Histórico</Text>
+      </Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel="Abrir perfil de comunicação" onPress={() => navigate('/profile')}
         style={{ minHeight: 48, flexDirection: 'row', gap: 8, alignItems: 'center', padding: 12 }}>
         <MaterialIcons name="person-outline" size={24} color="#16634D" accessible={false} />
