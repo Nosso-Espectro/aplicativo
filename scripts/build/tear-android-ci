@@ -21,7 +21,7 @@ if [[ "$operation" == artifact ]]; then
 fi
 
 export PATH=/opt/tear-build/node/bin:/opt/tear-build/android-sdk/cmdline-tools/latest/bin:/opt/tear-build/android-sdk/platform-tools:$PATH
-export JAVA_HOME=/opt/tear-build/jdk-17.0.20.1+1
+export JAVA_HOME=/opt/tear-build/jdk-21.0.12.1+1
 [[ -x "$JAVA_HOME/bin/java" ]] || { printf 'Verified build JDK unavailable.\n' >&2; exit 69; }
 export PATH="$JAVA_HOME/bin:$PATH"
 export ANDROID_HOME=/opt/tear-build/android-sdk

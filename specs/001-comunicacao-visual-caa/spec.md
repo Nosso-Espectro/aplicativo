@@ -3,11 +3,45 @@ milestone: 9
 priority: P0
 tag: m001-comunicacao-visual-caa
 status: draft
-ready_stories: ["US-041", "US-001", "US-002", "US-003", "US-004", "US-005", "US-052", "US-085", "US-087", "US-088", "US-095", "US-097"]
-source_checked: 2026-10-14
+ready_stories: ["US-041", "US-001", "US-002", "US-003", "US-004", "US-005", "US-052", "US-085", "US-087", "US-088", "US-095", "US-097", "US-109"]
+source_checked: 2026-10-15
 ---
 
 # Feature Specification: P0 — Comunicação Visual / CAA
+
+### US-109 — Recuperar JVM do build Android no servidor dedicado (Priority: P0)
+
+GitHub Issue: [#109](https://github.com/Nosso-Espectro/aplicativo/issues/109)
+
+Como mantenedor, quero recuperar a compilação Android na conta dedicada sem alterar Java global, serviços, credenciais ou dados do aplicativo.
+
+**Criterios de aceite originais da Issue109:**
+
+- [ ] Instalar Temurin 21.0.12.1+1 oficial, compatível com Gradle 9.3.1, em caminho próprio root-owned, validando checksum fixo e recusando sobrescrita; preservar JDK17 para retorno manual.
+- [ ] Wrapper usa somente esse JDK no build; preservar SHA integrado/main-only, forced command, flock, usuário restrito, limites de memória, relatórios fora do checkout e contrato artifact.
+- [ ] Não modificar stack do app, Java global, serviços, credenciais, permissões do aparelho ou executar build local; não prometer causa raiz nem saneamento de host.
+- [ ] Testes de contrato/sintaxe, checks leves pertinentes e revisão antes de integração. Registrar implantação com hashes e modos conferidos, sem logs brutos ou secrets.
+- [ ] Reexecutar Mobile quality manual both/android_backend=ssh no SHA integrado após processos/flock/runs conferidos. Exigir sucesso real e verificar artefatos, notices e assinatura; build não aprova gates assistivos/offline nem corrige causa física não demonstrada.
+
+Pedido humano de 2026-10-15: investigar, corrigir o servidor e repetir o build.
+Como mantenedor, quero recuperar a JVM exclusiva de build sem alterar Java global,
+servicos, credenciais ou dados do app. Ready tecnico apos revisar a Issue109,
+dependencia existente #49 e compatibilidade Gradle9.3.1/JDK21. Nao reabre #61.
+
+- **RF-032**: instalar Temurin21.0.12.1+1 oficial em caminho proprio root-owned,
+  checksum fixo, sem sobrescrita; preservar JDK17 para retorno manual.
+- **RF-033**: usar JDK21 somente no wrapper dedicado, preservando main/SHA, forced
+  command, flock, conta restrita, memoria e diagnosticos fora do checkout.
+- **RF-034**: testar contrato/sintaxe e checks leves, revisar diff e conferir hashes
+  e modos da implantacao; nunca publicar logs brutos ou credenciais.
+- **RF-035**: verificar build manual both/SSH no SHA integrado, artefatos/notices e
+  assinatura. Sucesso nao prova causa raiz, integridade do host ou gates nativos.
+
+Origem: [Issue109](https://github.com/Nosso-Espectro/aplicativo/issues/109).
+Tasks T066-T069. Sem alteracao de app, SDK, Java global, servicos ou produto.
+Run38731039581 falhou por SIGSEGV; JDK17 coincide com archive oficial, havia RAM
+livre e nenhum OOM/MCE na consulta limitada. Causa raiz ainda nao determinada.
+JDK21 e uma recuperacao tecnica a validar, nao um bug upstream comprovado.
 
 Manutenção técnica vigente95: Doctor online passou a exigir seis patchesSDK57 publicados2026-10-14. [Issue95](https://github.com/Nosso-Espectro/aplicativo/issues/95) registra escopo separado e Ready antes de código; nenhum pacote ainda atualizado nesta preparação. Preservar entregas existentes/US031 em branch própria e todos gates nativos/segurança. Seções históricas abaixo não instruem reimplementar histórias já integradas.
 
@@ -668,6 +702,10 @@ Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma
 | RF-029 | [#97](https://github.com/Nosso-Espectro/aplicativo/issues/97) | US-097 | T059 |
 | RF-030 | [#97](https://github.com/Nosso-Espectro/aplicativo/issues/97) | US-097 | T060 |
 | RF-031 | [#97](https://github.com/Nosso-Espectro/aplicativo/issues/97) | US-097 | T061 |
+| RF-032 | [#109](https://github.com/Nosso-Espectro/aplicativo/issues/109) | US-109 | T066 |
+| RF-033 | [#109](https://github.com/Nosso-Espectro/aplicativo/issues/109) | US-109 | T067 |
+| RF-034 | [#109](https://github.com/Nosso-Espectro/aplicativo/issues/109) | US-109 | T068 |
+| RF-035 | [#109](https://github.com/Nosso-Espectro/aplicativo/issues/109) | US-109 | T069 |
 | RNF-001 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |
 | RNF-002 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |
 | RNF-003 | #1, #2, #3, #4, #5 | Todas acima | Revisão por história em tasks.md |

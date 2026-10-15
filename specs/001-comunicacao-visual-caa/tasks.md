@@ -234,6 +234,13 @@ US-004 e US-005 seguem em branches próprias e só integram quando passarem seus
 Nenhuma história é declarada Ready/Done por constar aqui; verificar DoR, critérios originais e
 Definition of Done antes de executar e concluir cada Issue.
 
+## Recuperacao JVM US-109 / Issue #109
+
+- [x] T066 [US-109] RF-032: fixar installer oficial Temurin21.0.12.1+1/checksum, preservar JDK17/global e recusar sobrescrita. Evidencia: checksum oficial aprovado pelo installer remoto, java-version21.0.12.1+1 confirmado; JDK17 preservado.
+- [x] T067 [US-109] RF-033: wrapper dedicado usa JDK21 preservando main/SHA/flock/conta/memoria/diagnosticos/contrato artifact. Evidencia: diff de uma linha no wrapper, contratos/sintaxe/rejeicao de comandos passaram; compilacao remota permanece em T069.
+- [x] T068 [US-109] RF-034: testes de contrato/sintaxe/checks leves/review/CI e implantacao com hash/mode conferidos, sem secrets/logs brutos. Evidencia: 56 tooling/1023 Jest111/lint/tipos/Doctor21-21/validador289tasks/diff/review PASS; CI38737703211 no head c363bb8 SUCCESS. Wrapper remoto f695ee8d849dfb3e513b9e076fb3ad110c7848fb95e25a634f0f31af2b1c5ca5 root:root755, Java21 como tear-build confirmado, copia anterior retida. CI do ultimo commit documental deve ser reconferido antes merge; build T069 ainda pendente.
+- [ ] T069 [US-109] RF-035: build manual both/SSH na main integrada, artefatos/digests/CRC/notices/assinatura verificados; nao aprovar causa raiz, host integro ou gates assistivos/offline.
+
 ## Correção de comandos desmontados US003
 
 - [x] T064 [US-003] RF-009/RF-011: reproduzir stop/read antigos após desmontagem e impedir efeitos antes de activate, mantendo cleanup normal, tokens e retry, sem política nova de blur/background. Evidência: dois RED reproduzidos (stop extra e pause de som indevida), três testes novos PASS incluindo StrictMode e integração com controlador de som real/engine sintético.
