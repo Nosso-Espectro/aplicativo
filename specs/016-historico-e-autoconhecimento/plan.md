@@ -8,7 +8,26 @@ Inspeção em 2026-10-15: Expo 57, React Native 0.86.3, React 19.2.3, TypeScript
 
 ## Arquitetura atual
 
-CheckInForm mantém respostas efêmeras e RoutinePlayer apresenta progresso SQLite. Integrar botão de snapshot apenas nos estados finalizados, sem alterar seus DAOs ou transformar conclusão em coleta. Reutilizar MaterialIcons, SafeAreaView, padrões de foco/owner e lista Ferramentas. As propostas de #39/#40 abaixo não são implementação autorizada.
+CheckInForm mantém respostas efêmeras e RoutinePlayer apresenta progresso SQLite. Histórico opt-in #38 integrado; reutilizar seu DAO, tela, MaterialIcons, SafeAreaView e padrões de foco/owner. #40 autorizada para exclusão; #39 continua proposta, sem implementação autorizada.
+
+### Decisão de implementação US-040
+
+- Estender somente `history-database.ts` e `HistoryScreen.tsx`, com seleção de exclusão
+  validada em `history-model.ts`. Sem provider global nem DAO de origem alterado.
+- Schema 2 preserva tabela/conteúdo schema1 e cria `history_deleted_ids(id)` para
+  bloquear salvamentos antigos dos IDs removidos, inclusive após reabertura. IDs técnicos
+  sem payload não são backup dos registros nem promessa de apagamento físico seguro.
+- `remove(selection)` usa a mesma FIFO e transação: ler conjunto atual, validar alvo,
+  exigir conjunto exato de IDs para exclusão total, gravar recibos/DELETE parametrizado,
+  ler resultado antes do commit e retorná-lo para atualizar lista/filtro. Falha faz rollback.
+- Confirmação inline com efeito, alvo/quantidade e cancelamento. Ref de intenção revogável
+  + owner por foco; saída/troca de filtro invalidam comando. Guardar in-flight síncrono;
+  descarte de feedback antigo não cancela commit autorizado. Nova entrada recarrega via FIFO.
+- Falha de exclusão mantém última lista, revoga confirmação e oferece atualizar/reconfirmar;
+  não fazer retries destrutivos automáticos. UI não promete apagar origens ou backups.
+- Testar schema1→2, reabertura, individual/global, CAS com novos registros, recibos,
+  stale saves, FIFO/rollback, cancel/filter/blur/unmount, confirmação e lista derivada;
+  Router com SQLite Node real e regressões #38. Gates nativos separados em T023.
 
 ### Decisão de implementação US-038
 
@@ -29,21 +48,21 @@ Não implementar a milestone inteira em uma branch. A inicialização técnica p
 
 ## Componentes envolvidos
 
-Módulo US-038: `src/features/history/`. Os nomes abaixo para #39/#40 continuam propostas.
+Módulo US-038/US-040: `src/features/history/`. O nome abaixo para #39 continua proposta.
 
 - `src/features/history/HistoryScreen.tsx` — [US-038] Consultar histórico de registros.
 - `src/features/history/trends` — [US-039] Visualizar tendências simples.
-- `src/features/history/record-deletion` — [US-040] Excluir dados do histórico.
+- `src/features/history/history-database.ts` e `HistoryScreen.tsx` — [US-040] Excluir dados do histórico.
 
 ## Modelo de dados
 
 União discriminada `check-in`/`routine`, ID próprio e instante em milissegundos da ação. Payload apenas com respostas válidas fornecidas ou nome/quantidade de etapas. Sem IDs de origem, imagens, sugestões, causa clínica ou eventos de outras ferramentas.
 
-Schema 1 em SQLite próprio: ID primário, saved_at e conteúdo JSON validado; índice por saved_at. Ordem decrescente por saved_at e rowid. Q-HIST-01 resolvida para #38; períodos/agregados permanecem #39, não implementados aqui.
+Schema 1 entregue em #38, migrado para 2 em #40: ID primário, saved_at e conteúdo JSON validado; índice por saved_at e tabela de IDs excluídos sem payload. Ordem decrescente por saved_at e rowid. Q-HIST-01 resolvida para #38; períodos/agregados permanecem #39, não implementados aqui.
 
 ## Persistência
 
-Snapshots persistem entre sessões sem expiração automática. O botão informa os dados salvos e só abre o banco ao toque; lista abre ao consultar. Exclusão #40 e derivados #39 não fazem parte desta implementação. Não alterar/remover dados das origens.
+Snapshots persistem entre sessões sem expiração automática. O botão informa os dados salvos e só abre o banco ao toque; lista abre ao consultar. #40 oferece exclusão lógica confirmada individual/global; derivados de #39 não fazem parte desta implementação. Não alterar/remover dados das origens.
 
 ## Fluxos principais
 
@@ -65,7 +84,7 @@ Aplicar RNF-001 e a Skill accessibility-neuroinclusive: rótulos e ordem de foco
 
 Aplicar RNF-002 e RNF-004. Usar dados sintéticos nos testes; evitar dados pessoais em logs. Controlar compartilhamento e permissões nas ações que realmente necessitam deles. Não adicionar telemetria, conta ou serviço externo por conveniência técnica.
 
-Dados sensoriais são sensíveis. SQLite fica no sandbox do aplicativo; não há criptografia adicional nesta Issue nem promessa de proteção contra aparelho comprometido/backup do sistema. Android já declara allowBackup=false; isso não atesta iOS/manifesto final ou comportamento do OS. Sem logs de conteúdo, parâmetros de rota pessoais, imagens ou cópia dos arquivos de origem. Retenção e futura exclusão exigem gate nativo e #40 antes de declarar a milestone pronta.
+Dados sensoriais são sensíveis. SQLite fica no sandbox do aplicativo; não há criptografia adicional nesta Issue nem promessa de proteção contra aparelho comprometido/backup do sistema. Android já declara allowBackup=false; isso não atesta iOS/manifesto final ou comportamento do OS. Sem logs de conteúdo, parâmetros de rota pessoais, imagens ou cópia dos arquivos de origem. Após excluir, apenas IDs técnicos permanecem para impedir reintrodução; não há promessa de apagar fisicamente WAL/backups/arquivos do OS. Retenção/exclusão exigem gate nativo antes de declarar a milestone pronta.
 
 ## Estratégia de testes
 
@@ -85,11 +104,11 @@ Reutilizar stack e bibliotecas existentes. Nenhuma nova dependência, permissão
 
 Sem registros, filtro/período vazio e falha de exclusão; manter coerência dos agregados (#38–#40).
 
-US-038 Ready após refino; #39/#40 ainda dependem das suas questões. Retenção sensível, backup do OS, SQLite Expo e acessibilidade real precisam de verificação específica; não declarar release/milestone pronta.
+US-038/US-040 Ready após seus refinos; #39 ainda depende das suas questões. Retenção sensível, backup do OS, SQLite Expo e acessibilidade real precisam de verificação específica; não declarar release/milestone pronta.
 
 ## Decisões arquiteturais
 
 - Diretriz confirmada: React Native; MVP sem backend.
 - Módulo coeso em `src/features/history/`, DAO local lazy e estado de apresentação efêmero, sem provider global nem alterações de schema nas origens.
-- Pendente: verificações nativas e refino/implementação separados de #39/#40.
+- Pendente: verificações nativas e refino/implementação separados de #39.
 - Proibido tratar este plano como aprovação de requisitos ausentes. Decisões funcionais voltam ao GitHub e decisões técnicas serão registradas neste plano quando fundamentadas.

@@ -1,8 +1,8 @@
 # Tasks — Histórico e Autoconhecimento
 
-Milestone #24: [spec.md](spec.md) e [plan.md](plan.md). US-038 em implementação; #39/#40 continuam pendentes.
+Milestone #24: [spec.md](spec.md) e [plan.md](plan.md). US-038 integrada; #40 autorizada/Ready e em implementação; #39 pendente sem Ready.
 
-US-038 usa os caminhos reais do plano atualizado; #39/#40 mantêm propostas, sem implementação autorizada. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
+US-038/US-040 usam os caminhos reais do plano atualizado; #39 mantém proposta, sem implementação autorizada. Cada bloco pertence à branch da sua Issue; IDs T são locais à spec.
 
 Executar somente depois da Definition of Ready. Não há marcação [P]: alterações de UI/contratos são verificadas em sequência para evitar conflito entre histórias.
 
@@ -51,8 +51,39 @@ T020 permanece pendente e não é substituída por testes automatizados.
 
 ## US-040 — Issue #40
 
-- [ ] T011 [US-040] Em `src/features/history/record-deletion`, atender RF-007 (critério 1 de #40): Deve ser possível excluir um registro individual. Verificar com o cenário correspondente no PR.
-- [ ] T012 [US-040] Em `src/features/history/record-deletion`, atender RF-008 (critério 2 de #40): Deve existir opção para excluir todo o histórico mediante confirmação explícita. Verificar com o cenário correspondente no PR.
-- [ ] T013 [US-040] Em `src/features/history/record-deletion`, atender RF-009 (critério 3 de #40): A exclusão deve atualizar imediatamente as visualizações derivadas. Verificar com o cenário correspondente no PR.
-- [ ] T014 [US-040] Adicionar testes de comportamento de RF-007, RF-008, RF-009 em `tests/features/history/record-deletion`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
-- [ ] T015 [US-040] Revisar RNF-001 a RNF-004 na interface/dados de #40, executar verificações aplicáveis e registrar evidências no PR; atualizar estas tasks somente após validação.
+Refino humano/GitHub/spec/plan em 2026-10-15; critérios originais preservados.
+
+- [x] T021 [US-040] Migrar schema1→2 preservando snapshots, exclusão transacional individual/global CAS/FIFO e recibos sem conteúdo para impedir ressurreição por retries antigos.
+- [x] T022 [US-040] Integrar confirmação revogável, cancelamento/filtro/saída/owner, busy/erro/atualizar/reconfirmar e atualizar lista derivada somente após commit, preservando mode9/origens.
+- [ ] T023 [US-040] Verificar em aparelho migração/SQLite Expo/offline/reabertura, confirmação/leitores/foco/ampliação/insets/toque e exclusão. Não aprovar por Node/mocks/build.
+
+- [x] T011 [US-040] Em `src/features/history/history-database.ts` e `HistoryScreen.tsx`, atender RF-007 (critério 1 de #40): Deve ser possível excluir um registro individual. Verificar com o cenário correspondente no PR.
+- [x] T012 [US-040] Em `src/features/history/history-database.ts` e `HistoryScreen.tsx`, atender RF-008 (critério 2 de #40): Deve existir opção para excluir todo o histórico mediante confirmação explícita. Verificar com o cenário correspondente no PR.
+- [x] T013 [US-040] Em `src/features/history/HistoryScreen.tsx`, atender RF-009 (critério 3 de #40): A exclusão deve atualizar imediatamente as visualizações derivadas. Verificar com o cenário correspondente no PR.
+- [x] T014 [US-040] Adicionar testes de comportamento de RF-007, RF-008, RF-009 em `tests/features/history/`; cobrir fluxo principal, ausência de dados e erros pertinentes descritos no spec, sem dados pessoais reais.
+- [x] T015 [US-040] Revisar RNF-001 a RNF-004 na interface/dados de #40 e executar verificações locais aplicáveis; evidências abaixo, verificações reais em aparelho permanecem T023.
+
+### Evidências locais US-040 em 2026-10-15
+
+- 28 novos testes: 13 de modelo/SQLite Node real, 10 controles e 5 Router com SQLite
+  Node real. Migração1→2/reabertura/rollback de migração e de exclusão, individual/global,
+  CAS com inserção/exclusão concorrente, FIFO, recibos sem conteúdo/stale save bloqueado,
+  confirmação/cancelamento/troca de filtro/blur/unmount/StrictMode/duplo toque.
+- 61 testes relacionados em 6 suítes PASS na execução completa final. Suíte completa serial:
+  1023 testes/111 suítes PASS (79.389s). Lint sem warnings, tipos, Doctor21/21 e
+  56 tooling (3.096s) PASS; validador estrutural com 285 tasks e diff-check válidos.
+- RF-007/008: o DAO e a tela removem apenas alvos confirmados; com filtro ativo,
+  confirmação global informa todos os tipos/quantidade. Alteração do conjunto exige
+  atualizar/reconfirmar, sem apagar novos registros não revisados.
+- RF-009/RNF-003: nenhuma remoção otimista; retorno transacional confirmado atualiza
+  lista/filtros/vazios. Falha mantém último estado e exige nova confirmação. Router
+  confirma commit autorizado após saída sem feedback/nav antigos; rotinas reais preservadas.
+- RNF-001: revisão local de alvos >=48dp, nomes/hints, texto flexível/contraste de
+  cores, confirmação inline anunciada e rolada sem animação, cancelamento e modo9
+  preservado. Leitores/foco/contraste renderizado/ampliação/insets reais exigem T023.
+- Regressão de rolagem: ao trocar o alvo com a confirmação já montada, repetir
+  scrollTo na posição conhecida sem depender de novo onLayout; teste sintético
+  verifica o comando sem animação. Layout tardio de intenção revogada é ignorado.
+- RNF-002/004: sem rede, PII em logs, dependências/permissões novas ou diagnóstico;
+  somente IDs técnicos permanecem após remover conteúdo. Exclusão lógica não promete
+  apagamento físico seguro/WAL/backups. Sem host/phone/build local/binário/release.

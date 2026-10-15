@@ -22,7 +22,7 @@ const rows: HistoryRecord[] = [
 beforeEach(() => {
   jest.clearAllMocks(); mockFocused = true;
   save.mockReset().mockResolvedValue(undefined); list.mockReset().mockResolvedValue(rows);
-  jest.mocked(historyStorage).mockResolvedValue({ save, list });
+  jest.mocked(historyStorage).mockResolvedValue({ save, list, remove: jest.fn() });
 });
 function callback(name = 'Salvar no histórico'): () => void {
   let node = screen.getByRole('button', { name });
@@ -57,10 +57,10 @@ it('ignores commands captured before unmount and before blur/refocus', async () 
   expect(historyStorage).not.toHaveBeenCalled();
 });
 it('does not authorize a write if opening completes only after leaving', async () => {
-  let resolve!: (db: { save: typeof save; list: typeof list }) => void;
+  let resolve!: (db: Awaited<ReturnType<typeof historyStorage>>) => void;
   jest.mocked(historyStorage).mockImplementationOnce(() => new Promise(done => { resolve = done; }));
   const view = render(<SaveHistoryButton content={content} />); await press(); view.unmount();
-  await act(async () => resolve({ save, list })); expect(save).not.toHaveBeenCalled();
+  await act(async () => resolve({ save, list, remove: jest.fn() })); expect(save).not.toHaveBeenCalled();
 });
 it('preserves a pending authorized write across focus changes without duplicate save or stuck controls', async () => {
   let resolve!: () => void; save.mockImplementationOnce(() => new Promise<void>(done => { resolve = done; }));

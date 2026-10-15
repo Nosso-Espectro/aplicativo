@@ -48,8 +48,8 @@ async function finishCheckIn() {
   await act(async () => fireEvent.press(screen.getByRole('radio', { name: 'Sim' })));
   await press('Continuar'); for (let index = 1; index < 8; index++) await press('Pular pergunta');
 }
-function callback(): () => void {
-  let node = screen.getByRole('button', { name: 'Salvar no histórico' });
+function callback(name = 'Salvar no histórico'): () => void {
+  let node = screen.getByRole('button', { name });
   while (node.parent && typeof node.props.onPress !== 'function') node = node.parent;
   return node.props.onPress as () => void;
 }
@@ -105,4 +105,69 @@ it('rolls back a failed save in the actual flow and retries the same snapshot wi
   fixture.failResult(false); expect(await (await historyStorage()).list()).toEqual([]);
   await press('Salvar no histórico'); await screen.findByText('Salvo no histórico.');
   expect(await (await historyStorage()).list()).toHaveLength(1);
+});
+
+async function seededHistory() {
+  const db = await historyStorage();
+  await db.save({ id: 'check-in-test', savedAt: 1000, type: 'check-in', answers: { thirst: 'yes' } });
+  await db.save({ id: 'routine-test', savedAt: 2000, type: 'routine', name: 'Rotina preservada', steps: 1 });
+  return db;
+}
+it('deletes individual and all filtered snapshots durably without touching the real source routine', async () => {
+  const db = await seededHistory(); const originalDb = await openRoutineDatabase();
+  const original = await originalDb.save({ name: 'Rotina preservada', steps: [{ id: 'step-original', title: 'Etapa preservada', imageUri: null }] });
+  const fetch = jest.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('offline'));
+  const view = renderRouter(routes, { initialUrl: '/history' }); await screen.findByText('Rotina preservada');
+  await press('Excluir registro 1'); await press('Confirmar exclusão');
+  expect(screen.queryByText('Rotina preservada')).toBeNull(); expect(await originalDb.list()).toEqual(original);
+  expect(await db.list()).toHaveLength(1);
+  await act(async () => fireEvent.press(screen.getByRole('radio', { name: 'Rotinas concluídas' })));
+  expect(screen.getByText('Nenhum registro deste tipo.')).toBeOnTheScreen();
+  await press('Excluir todo o histórico'); await press('Confirmar exclusão');
+  expect(screen.getByText('Ainda não há registros salvos.')).toBeOnTheScreen();
+  expect(await (await openHistoryDatabase()).list()).toEqual([]); expect(await originalDb.list()).toEqual(original);
+  expect(fetch).not.toHaveBeenCalled(); expect(view.getSearchParams()).toEqual({});
+});
+it('keeps SQLite unchanged after cancelling or after real Router blur/refocus of old confirmation', async () => {
+  const db = await seededHistory(); const before = await db.list();
+  renderRouter(routes, { initialUrl: '/history' }); await screen.findByText('Rotina preservada');
+  await press('Excluir todo o histórico'); const cancelled = callback('Confirmar exclusão');
+  await press('Manter registros'); await act(async () => cancelled()); expect(await db.list()).toEqual(before);
+  await press('Excluir todo o histórico'); const old = callback('Confirmar exclusão');
+  await act(async () => router.push('/outside')); await screen.findByText('Outra tela');
+  await act(async () => router.back()); await screen.findByText('Rotina preservada');
+  await act(async () => old()); expect(await db.list()).toEqual(before);
+  expect(screen.queryByRole('button', { name: 'Confirmar exclusão' })).toBeNull();
+});
+it('commits an authorized deletion across Router exit and reloads cleanly without old feedback', async () => {
+  const db = await seededHistory();
+  const view = renderRouter(routes, { initialUrl: '/history' }); await screen.findByText('Rotina preservada');
+  let release!: () => void; fixture.delayCommit(new Promise<void>(done => { release = done; }));
+  await press('Excluir todo o histórico'); await press('Confirmar exclusão');
+  await waitFor(() => expect(fixture.isWaiting()).toBe(true));
+  await act(async () => router.push('/outside')); await screen.findByText('Outra tela');
+  await act(async () => router.back()); await act(async () => release());
+  await screen.findByText('Ainda não há registros salvos.'); expect(await db.list()).toEqual([]);
+  expect(view.getPathname()).toBe('/history'); expect(screen.queryByText('Exclusão concluída.')).toBeNull();
+});
+it('does not delete a new record that was not reviewed, then refreshes and requires fresh confirmation', async () => {
+  const db = await seededHistory(); renderRouter(routes, { initialUrl: '/history' }); await screen.findByText('Rotina preservada');
+  await press('Excluir todo o histórico');
+  await db.save({ id: 'new-unreviewed', savedAt: 3000, type: 'routine', name: 'Novo registro', steps: 2 });
+  await press('Confirmar exclusão'); await screen.findByRole('alert');
+  expect(await db.list()).toHaveLength(3); expect(screen.queryByText('Exclusão concluída.')).toBeNull();
+  await press('Atualizar histórico'); await screen.findByText('Novo registro');
+  await press('Excluir todo o histórico');
+  expect(screen.getByText('Serão excluídos 3 registros de todos os tipos, inclusive os ocultos pelo filtro.')).toBeOnTheScreen();
+  await press('Confirmar exclusão'); expect(await db.list()).toEqual([]);
+});
+it('retains the last committed contents when deletion fails and retries only after a new confirmation', async () => {
+  const db = await seededHistory(); const before = await db.list();
+  renderRouter(routes, { initialUrl: '/history' }); await screen.findByText('Rotina preservada');
+  fixture.failResult(true); await press('Excluir todo o histórico'); const old = callback('Confirmar exclusão');
+  await press('Confirmar exclusão'); await screen.findByRole('alert'); fixture.failResult(false);
+  expect(await db.list()).toEqual(before); expect(screen.getByText('Rotina preservada')).toBeOnTheScreen();
+  await act(async () => old()); expect(await db.list()).toEqual(before);
+  await press('Atualizar histórico'); await screen.findByText('Rotina preservada');
+  await press('Excluir todo o histórico'); await press('Confirmar exclusão'); expect(await db.list()).toEqual([]);
 });
