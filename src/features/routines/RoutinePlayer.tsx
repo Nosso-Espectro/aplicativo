@@ -5,6 +5,7 @@ import { useRoutines } from './RoutineProvider';
 import { routineExecution, type ProgressAction } from './routine-execution';
 import { RoutineCommand, RoutinePage, routineStyles as styles } from './RoutineUI';
 import type { RoutineStep } from './routine-model';
+import { SaveHistoryButton } from '../history/SaveHistoryButton';
 
 export function RoutinePlayer({ id, onClose, onEdit }: { id: string; onClose(): void; onEdit(): void }) {
   const context = useRoutines();
@@ -51,6 +52,7 @@ export function RoutinePlayer({ id, onClose, onEdit }: { id: string; onClose(): 
     {!unavailable && routine.steps.length > 0 && <>
       {execution.done ? <>
         <Text accessibilityRole="header" accessibilityLiveRegion="polite" style={styles.heading}>Rotina concluída</Text>
+        <SaveHistoryButton key={JSON.stringify([id, routine.name, routine.steps])} content={{ type: 'routine', name: routine.name, steps: routine.steps.length }} />
         <RoutineCommand icon="replay" label="Reiniciar rotina" disabled={busy} onPress={() => {
           if (!isCurrent() || inFlight.current) return;
           const intent = {}; restartIntent.current = intent; setConfirmRestart(intent); setFailed(null);
