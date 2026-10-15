@@ -234,6 +234,13 @@ US-004 e US-005 seguem em branches próprias e só integram quando passarem seus
 Nenhuma história é declarada Ready/Done por constar aqui; verificar DoR, critérios originais e
 Definition of Done antes de executar e concluir cada Issue.
 
+## Recuperacao JVM US-109 / Issue #109
+
+- [ ] T066 [US-109] RF-032: fixar installer oficial Temurin21.0.12.1+1/checksum, preservar JDK17/global e recusar sobrescrita.
+- [ ] T067 [US-109] RF-033: wrapper dedicado usa JDK21 preservando main/SHA/flock/conta/memoria/diagnosticos/contrato artifact.
+- [ ] T068 [US-109] RF-034: testes de contrato/sintaxe/checks leves/review/CI e implantacao com hash/mode conferidos, sem secrets/logs brutos.
+- [ ] T069 [US-109] RF-035: build manual both/SSH na main integrada, artefatos/digests/CRC/notices/assinatura verificados; nao aprovar causa raiz, host integro ou gates assistivos/offline.
+
 ## Correção de comandos desmontados US003
 
 - [x] T064 [US-003] RF-009/RF-011: reproduzir stop/read antigos após desmontagem e impedir efeitos antes de activate, mantendo cleanup normal, tokens e retry, sem política nova de blur/background. Evidência: dois RED reproduzidos (stop extra e pause de som indevida), três testes novos PASS incluindo StrictMode e integração com controlador de som real/engine sintético.

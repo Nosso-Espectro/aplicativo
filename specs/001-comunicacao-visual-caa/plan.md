@@ -1,5 +1,32 @@
 # Implementation Plan: P0 — Comunicação Visual / CAA
 
+## Recuperacao JVM US-109 / Issue #109
+
+Escopo Ready antes codigo: trocar somente o runtime do wrapper SSH para
+Temurin21.0.12.1+1, SHA256 oficial
+ce79869e1307ed8ee1e2baa86a412b1eb5b75d10a01006d788a6f968bcfaee94.
+Instalacao paralela em /opt/tear-build/jdk-21.0.12.1+1, root-owned sem escrita
+de grupo/outros. Preservar JDK17/Java global/servicos/credenciais/relatorios.
+Gradle9.3.1 admite JDK21; nao mudar Java/Kotlin target do app, SDK ou dependencias.
+
+Primeiro contratos de installer/wrapper/testes de rejeicao; depois alterar
+checksum/URL/versao e JAVA_HOME. Implantar somente apos conferir processos/flock
+vazios e hash anterior, com copia de retorno fora do checkout e substituicao
+atomica do wrapper. Sem provisionamento completo ou reboot. Confirmar hash/mode,
+JDK21 em execucao e build manual both/SSH no SHA integrado da main.
+
+Run38736161153 both/GitHub ja ativo preservado: controle em outro ambiente,
+nao prova recuperacao do servidor. Novo run SSH somente apos encerrar esse run
+e checks de integracao. Validar artefatos SHA/digest/CRC/notices/assinatura e
+somente entao a instalacao Samsung ja autorizada. Sem novos dados, UI ou features.
+
+Limites: SIGSEGV em pagina nao executavel durante hashing Gradle; arquivo do JDK17
+coincide com distribuicao oficial, heap/RAM nao esgotados e consulta limitada sem
+OOM/MCE. Isso nao distingue bug HotSpot/JNI/VM/hardware. Troca de JDK e mitigacao
+a validar, nao prova de causa raiz. Nao reabre investigacao de seguranca #61.
+Fontes: https://docs.gradle.org/current/userguide/compatibility.html e release
+https://github.com/adoptium/temurin21-binaries/releases/tag/jdk-21.0.12.1%2B1.
+
 ## Correção de comandos desmontados US003
 
 Refino #3/Ready antes código: reproduzir stop antigo após desmontagem atingindo
