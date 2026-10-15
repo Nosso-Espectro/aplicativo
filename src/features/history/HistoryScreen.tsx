@@ -11,6 +11,7 @@ const filters = [{ value: 'all', label: 'Todos' }, { value: 'check-in', label: '
 type DeletionIntent = { selection: HistoryDeletion };
 export function HistoryScreen({ onExit }: { onExit(): void }) {
   const scroll = useRef<ScrollView>(null);
+  const confirmationY = useRef(0);
   const [records, setRecords] = useState<HistoryRecord[]>([]);
   const [filter, setFilter] = useState<HistoryFilter>('all');
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -39,6 +40,7 @@ export function HistoryScreen({ onExit }: { onExit(): void }) {
   function requestDeletion(selection: HistoryDeletion) {
     if (!current() || status !== 'ready' || inFlight.current) return;
     const next = { selection }; intent.current = next; setConfirmation(next); setFeedback(null);
+    if (confirmation) scroll.current?.scrollTo({ y: confirmationY.current, animated: false });
   }
   async function confirmDeletion(selected: DeletionIntent) {
     if (!current() || inFlight.current || intent.current !== selected) return;
@@ -72,7 +74,11 @@ export function HistoryScreen({ onExit }: { onExit(): void }) {
       onPress={() => requestDeletion({ kind: 'all', ids: records.map(record => record.id) })}>
       <MaterialIcons name="delete-sweep" size={24} color="#962D32" accessible={false} /><Text style={styles.deleteLabel}>Excluir todo o histórico</Text>
     </Pressable>}
-    {confirmation && <View style={styles.confirmation} onLayout={event => scroll.current?.scrollTo({ y: event.nativeEvent.layout.y, animated: false })}>
+    {confirmation && <View style={styles.confirmation} onLayout={event => {
+      if (!current() || intent.current !== confirmation) return;
+      confirmationY.current = event.nativeEvent.layout.y;
+      scroll.current?.scrollTo({ y: confirmationY.current, animated: false });
+    }}>
       <Text accessibilityRole="header" accessibilityLiveRegion="polite" style={styles.title}>{confirmation.selection.kind === 'all' ? 'Excluir todo o histórico?' : 'Excluir este registro?'}</Text>
       <Text style={styles.text}>{confirmation.selection.kind === 'all'
         ? confirmation.selection.ids.length === 1 ? 'Será excluído 1 registro, mesmo se estiver oculto pelo filtro.'

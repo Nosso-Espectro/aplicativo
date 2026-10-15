@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { ScrollView } from 'react-native';
 import { HistoryScreen } from '../../../src/features/history/HistoryScreen';
 import { historyStorage } from '../../../src/features/history/history-storage';
 import type { HistoryRecord } from '../../../src/features/history/history-model';
@@ -109,4 +110,14 @@ it('does not issue deletion when storage becomes available only after unmount', 
   jest.mocked(historyStorage).mockImplementationOnce(() => new Promise(done => { resolve = done; }));
   await press('Confirmar exclusão'); view.unmount();
   await act(async () => resolve({ save, list, remove })); expect(remove).not.toHaveBeenCalled();
+});
+it('brings a replaced confirmation back into view without waiting for another layout event', async () => {
+  const scroll = jest.spyOn(ScrollView.prototype, 'scrollTo');
+  try {
+    await mount(); await press('Excluir registro 1');
+    const heading = screen.getByRole('header', { name: 'Excluir este registro?' });
+    fireEvent(heading.parent!, 'layout', { nativeEvent: { layout: { y: 260, x: 0, width: 300, height: 240 } } });
+    scroll.mockClear(); await press('Excluir registro 2');
+    expect(scroll).toHaveBeenCalledWith({ y: 260, animated: false }); expect(remove).not.toHaveBeenCalled();
+  } finally { scroll.mockRestore(); }
 });

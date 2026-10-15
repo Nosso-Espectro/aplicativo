@@ -65,12 +65,12 @@ Refino humano/GitHub/spec/plan em 2026-10-15; critérios originais preservados.
 
 ### Evidências locais US-040 em 2026-10-15
 
-- 27 novos testes: 13 de modelo/SQLite Node real, 9 controles e 5 Router com SQLite
+- 28 novos testes: 13 de modelo/SQLite Node real, 10 controles e 5 Router com SQLite
   Node real. Migração1→2/reabertura/rollback de migração e de exclusão, individual/global,
   CAS com inserção/exclusão concorrente, FIFO, recibos sem conteúdo/stale save bloqueado,
   confirmação/cancelamento/troca de filtro/blur/unmount/StrictMode/duplo toque.
-- 60 testes relacionados em 6 suítes PASS (5.490s). Suíte completa serial:
-  1022 testes/111 suítes PASS (79.549s). Lint sem warnings, tipos, Doctor21/21 e
+- 61 testes relacionados em 6 suítes PASS na execução completa final. Suíte completa serial:
+  1023 testes/111 suítes PASS (79.389s). Lint sem warnings, tipos, Doctor21/21 e
   56 tooling (3.096s) PASS; validador estrutural com 285 tasks e diff-check válidos.
 - RF-007/008: o DAO e a tela removem apenas alvos confirmados; com filtro ativo,
   confirmação global informa todos os tipos/quantidade. Alteração do conjunto exige
@@ -81,6 +81,9 @@ Refino humano/GitHub/spec/plan em 2026-10-15; critérios originais preservados.
 - RNF-001: revisão local de alvos >=48dp, nomes/hints, texto flexível/contraste de
   cores, confirmação inline anunciada e rolada sem animação, cancelamento e modo9
   preservado. Leitores/foco/contraste renderizado/ampliação/insets reais exigem T023.
+- Regressão de rolagem: ao trocar o alvo com a confirmação já montada, repetir
+  scrollTo na posição conhecida sem depender de novo onLayout; teste sintético
+  verifica o comando sem animação. Layout tardio de intenção revogada é ignorado.
 - RNF-002/004: sem rede, PII em logs, dependências/permissões novas ou diagnóstico;
   somente IDs técnicos permanecem após remover conteúdo. Exclusão lógica não promete
   apagamento físico seguro/WAL/backups. Sem host/phone/build local/binário/release.

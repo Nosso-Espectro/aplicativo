@@ -96,7 +96,7 @@ Os critérios originais acima permanecem inalterados. US-040 foi refinada separa
   somente respostas fornecidas; rotina guarda nome e quantidade de etapas, sem imagens
   nem IDs de origem. Alterações nas origens não modificam os registros anteriores.
 - SQLite local entre sessões, sem expiração automática, servidor, rede ou coleta de
-  outras ferramentas. Exclusão individual/global pertence a #40, ainda não implementada.
+  outras ferramentas. Exclusão individual/global segue o refinamento separado de #40 abaixo.
 - Lista mais recente primeiro; empates por ordem de inserção decrescente. Exibir data
   e hora locais e filtros `Todos`, `Check-ins`, `Rotinas concluídas`.
 - Abrir pela lista de Ferramentas; voltar ao quadro. Estados de carregamento, vazio,
