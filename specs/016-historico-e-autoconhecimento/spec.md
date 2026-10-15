@@ -3,7 +3,7 @@ milestone: 24
 priority: P3
 tag: m016-historico-e-autoconhecimento
 status: ready
-ready_stories: ["US-038"]
+ready_stories: ["US-038", "US-040"]
 source_checked: 2026-10-15
 ---
 
@@ -11,7 +11,8 @@ source_checked: 2026-10-15
 
 Milestone GitHub: [P3 — Histórico e Autoconhecimento](https://github.com/Nosso-Espectro/aplicativo/milestone/24) (número 24).
 
-Estado consultado: aberta; todas as histórias abaixo estão abertas. Especificação em revisão, não implementação concluída.
+Estado consultado em 2026-10-15: milestone aberta, US-038 integrada pelo PR107;
+US-040 autorizada e Ready, US-039 ainda sem Ready. Gates nativos continuam pendentes.
 
 ## Contexto
 
@@ -87,7 +88,7 @@ Esta história deve priorizar autonomia, previsibilidade, baixa carga cognitiva 
 
 Origem: confirmação humana para iniciar #38 e salvar somente por ação explícita;
 [registro na Issue](https://github.com/Nosso-Espectro/aplicativo/issues/38#issuecomment-6190658207).
-Os critérios originais acima permanecem inalterados. Apenas US-038 está Ready.
+Os critérios originais acima permanecem inalterados. US-040 foi refinada separadamente abaixo.
 
 - No resumo final do check-in com alguma resposta e na rotina concluída, oferecer
   `Salvar no histórico`. Sem toque, nenhum registro; perguntas puladas não são salvas.
@@ -106,6 +107,30 @@ Os critérios originais acima permanecem inalterados. Apenas US-038 está Ready.
 - Preservar navegação, modo de baixa estimulação e usos atuais sem salvar. Sem novas
   dependências/permissões. SQLite Expo, offline real, ampliação e leitores em aparelho
   permanecem verificações nativas pendentes, distintas da suíte sintética/SQLite Node.
+
+### Refinamento autorizado de US-040 em 2026-10-15
+
+Origem: pedido humano para prosseguir com #40 após recomendação de priorizar controle
+dos dados; [registro na Issue](https://github.com/Nosso-Espectro/aplicativo/issues/40#issuecomment-6191026963).
+Preservar os três critérios originais e a entrega de #38.
+
+- Excluir apenas snapshots do histórico, nunca rotinas/etapas ou dados das origens.
+- Exclusão individual com identificação do registro, confirmação e opção de manter.
+  Exclusão total confirma a quantidade de todos os tipos, independentemente do filtro,
+  informa que não pode ser desfeita e não afeta rotinas.
+- Se o conjunto mudar durante a confirmação total, não ampliar silenciosamente o alvo:
+  falhar sem excluir, oferecer atualizar e exigir confirmação nova do conjunto atual.
+- Cancelar, trocar filtro, sair, blur e unmount revogam confirmações e comandos antigos.
+  Duplos toques não duplicam operações. Commit já autorizado pode terminar após saída,
+  sem navegação/feedback tardios; não prometer cancelamento de SQLite.
+- Após commit confirmado, atualizar lista/filtros derivados imediatamente. Falha não
+  simula sucesso nem esvazia a lista; permitir atualizar e confirmar novamente.
+- Schema 2 migra schema 1 sem perda. IDs técnicos de registros removidos são mantidos
+  sem respostas, nome da rotina ou conteúdo, para impedir reintrodução por retries antigos.
+  Trata-se de exclusão lógica: não prometer apagamento forense, de WAL ou backups do OS.
+- Preservar ordenação, filtros, mode9, navegação e opt-in de #38. Sem #39, IA, rede,
+  novas permissões/dependências ou logs pessoais. Testes sintéticos/SQLite Node não
+  substituem SQLite Expo, leitores e fluxo offline em aparelho.
 
 - **RF-001** — O histórico deve apresentar registros em ordem cronológica. (#38, critério 1.)
 - **RF-002** — O usuário deve conseguir filtrar por tipo de registro. (#38, critério 2.)
@@ -130,7 +155,7 @@ Offline e persistência seguem os critérios específicos dos RFs; não se presu
 
 ## Fora de escopo
 
-US-039 e US-040, IA, backend, sincronização, captura automática, instrumentação de outras ferramentas e demais requisitos não rastreados estão fora desta entrega de US-038.
+US-039, IA, backend, sincronização, captura automática, instrumentação de outras ferramentas e demais requisitos não rastreados continuam fora das entregas autorizadas de US-038/US-040.
 
 ## Dependências funcionais
 
@@ -147,7 +172,7 @@ São cenários derivados dos critérios e da DoD, não novas funcionalidades. As
 
 - Q-HIST-01 — Resolvida para #38 pelo refinamento acima: opt-in por registro, dois tipos e campos mínimos, retenção local sem expiração automática. Não instrumentar outros módulos.
 - Q-HIST-02 — Direção e tipos resolvidos para #38 acima; períodos e tendências de #39 continuam pendentes.
-- Q-HIST-03 — Como a exclusão afeta dados originais de rotinas/check-ins versus cópias no histórico (#40)? Não inferir remoção global.
+- Q-HIST-03 — Resolvida em #40 pelo refinamento acima: remover apenas snapshots do histórico e preservar as origens, sem promessa de apagamento forense/backup OS.
 
 Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma história só está Ready quando suas ambiguidades bloqueantes forem resolvidas no GitHub e refletidas aqui.
 
@@ -169,4 +194,4 @@ Questões transversais: [auditoria do backlog](../../docs/backlog-audit.md). Uma
 | RNF-003 | #38, #39, #40 | Todas acima | Revisão por história em tasks.md |
 | RNF-004 | #38, #39, #40 | Todas acima | Revisão por história em tasks.md |
 
-As tasks de testes cobrem os RFs da respectiva história. Branches, commits e PRs seguem o [workflow](../../docs/development-workflow.md) e o [índice](../README.md). A implementação atual limita-se a US-038; não há release ou tag desta milestone.
+As tasks de testes cobrem os RFs da respectiva história. Branches, commits e PRs seguem o [workflow](../../docs/development-workflow.md) e o [índice](../README.md). Entregas autorizadas US-038/US-040; não há release ou tag desta milestone.

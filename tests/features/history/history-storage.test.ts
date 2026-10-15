@@ -10,7 +10,7 @@ it('rejects web without opening SQLite, retries opening failure and reuses only 
     Object.defineProperty(Platform, 'OS', { configurable: true, value: 'android' });
     jest.mocked(openHistoryDatabase).mockRejectedValueOnce(new Error('synthetic open failure'));
     await expect(historyStorage()).rejects.toThrow();
-    const db = { list: jest.fn(), save: jest.fn() }; jest.mocked(openHistoryDatabase).mockResolvedValueOnce(db);
+    const db = { list: jest.fn(), save: jest.fn(), remove: jest.fn() }; jest.mocked(openHistoryDatabase).mockResolvedValueOnce(db);
     expect(await historyStorage()).toBe(db); expect(await historyStorage()).toBe(db);
     expect(openHistoryDatabase).toHaveBeenCalledTimes(2);
   } finally { Object.defineProperty(Platform, 'OS', { configurable: true, value: os }); }

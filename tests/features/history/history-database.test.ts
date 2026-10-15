@@ -60,9 +60,9 @@ it.each([{ ...first, id: '../invalid' }, { ...first, savedAt: NaN }, { ...first,
   'rejects invalid identity or timestamp %p', input => expect(() => historyRecord(input)).toThrow());
 it('fails closed on unknown schema and malformed stored payload without resetting data', async () => {
   const db = await openHistoryDatabase(); await db.save(first);
-  fixture.connections[0].exec('PRAGMA user_version=2');
+  fixture.connections[0].exec('PRAGMA user_version=3');
   await expect(openHistoryDatabase()).rejects.toThrow('History storage unavailable.');
-  fixture.connections[0].exec('PRAGMA user_version=1');
+  fixture.connections[0].exec('PRAGMA user_version=2');
   fixture.connections[0].prepare('UPDATE history_records SET content=?').run('{broken');
   await expect(db.list()).rejects.toThrow();
   expect(fixture.connections[0].prepare('SELECT COUNT(*) AS total FROM history_records').get()).toEqual({ total: 1 });

@@ -5,6 +5,15 @@ export type HistoryContent =
   | { type: 'routine'; name: string; steps: number };
 export type HistoryRecord = HistoryContent & { id: string; savedAt: number };
 export type HistoryFilter = 'all' | HistoryContent['type'];
+export type HistoryDeletion = { kind: 'record'; id: string } | { kind: 'all'; ids: readonly string[] };
+
+export function historyDeletion(input: HistoryDeletion): HistoryDeletion {
+  const ids = input.kind === 'record' ? [input.id] : input.kind === 'all' ? [...input.ids] : [];
+  if (ids.length === 0 || new Set(ids).size !== ids.length || ids.some(id => typeof id !== 'string' || !/^[a-zA-Z0-9-]{1,100}$/.test(id))) {
+    throw new Error('Invalid history deletion.');
+  }
+  return input.kind === 'record' ? { kind: 'record', id: ids[0] } : { kind: 'all', ids };
+}
 
 export function historyContent(input: unknown): HistoryContent {
   if (!input || typeof input !== 'object') throw new Error('Invalid history content.');
