@@ -2,14 +2,14 @@
 set -euo pipefail
 
 [[ $(id -u) == 0 ]] || { printf 'JDK installation requires root.\n' >&2; exit 77; }
-version=17.0.20.1+1
-checksum=3808d1d15e3ec6bd5b84057fb5d84c33d8a1536a258146bcea2e603fc726e08e
+version=21.0.12.1+1
+checksum=ce79869e1307ed8ee1e2baa86a412b1eb5b75d10a01006d788a6f968bcfaee94
 target="/opt/tear-build/jdk-$version"
 [[ ! -e "$target" ]] || { printf 'JDK destination already exists; refusing to overwrite.\n' >&2; exit 73; }
 temporary=$(mktemp -d)
 trap 'rm -rf "$temporary"' EXIT
 curl --fail --location --silent --show-error --retry 2 --connect-timeout 20 --max-time 300 \
-  https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.20.1%2B1/OpenJDK17U-jdk_x64_linux_hotspot_17.0.20.1_1.tar.gz \
+  https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jdk_x64_linux_hotspot_21.0.12.1_1.tar.gz \
   -o "$temporary/jdk.tar.gz"
 printf '%s  %s\n' "$checksum" "$temporary/jdk.tar.gz" | sha256sum -c -
 mkdir "$temporary/jdk"

@@ -1,5 +1,31 @@
 # Android Build Host
 
+## Recuperacao JVM de 2026-10-15 - Issue #109
+
+O run38731039581 falhou na JVM17 durante hashing Gradle, com SIGSEGV/SEGV_ACCERR
+e PC em pagina rw-p nao executavel. Heap usado ~570MiB/4GiB e RAM livre ~24GiB;
+nenhum OOM/MCE na consulta limitada do kernel. Seis arquivos principais do JDK17
+coincidem com o archive oficial cujo SHA256 foi confirmado. Essas evidencias
+nao determinam bug HotSpot/JNI/VM/hardware nem integridade do host.
+
+Recuperacao a validar: installer fixa Temurin21.0.12.1+1 oficial/SHA256, em
+`/opt/tear-build/jdk-21.0.12.1+1`; wrapper usa esse JDK somente na conta de build.
+Gradle9.3.1 suporta Java21. Nao muda Java/Kotlin target do app ou JDK global,
+alternatives, servicos, credenciais e nao executa provisionamento completo.
+JDK17 e relatorios antigos permanecem para diagnostico/retorno manual.
+
+Implantar somente com processos/flock vazios e hash anterior conferido, guardar
+copia do wrapper anterior fora do checkout, instalar root:root/mode755 de forma
+atomica e comparar o hash publicado. Depois de integrar o PR, build manual
+both/SSH no SHA integrado e verificacao de artefatos/licencas/assinatura sao
+obrigatorios para demonstrar recuperacao. Teste estatico nao prova esse resultado.
+Nao reabre a investigacao de seguranca #61 dispensada pelo usuario.
+
+Referencias: [compatibilidade Gradle](https://docs.gradle.org/current/userguide/compatibility.html),
+[release Temurin21](https://github.com/adoptium/temurin21-binaries/releases/tag/jdk-21.0.12.1%2B1).
+Secoes seguintes preservam o historico; versoes e resultados antigos nao sao
+evidencia de recuperacao do build atual.
+
 ## Retomada autorizada da geração — Issue #61
 
 Após a recuperação técnica, o usuário pediu explicitamente usar novamente o

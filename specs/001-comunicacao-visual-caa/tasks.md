@@ -236,8 +236,8 @@ Definition of Done antes de executar e concluir cada Issue.
 
 ## Recuperacao JVM US-109 / Issue #109
 
-- [ ] T066 [US-109] RF-032: fixar installer oficial Temurin21.0.12.1+1/checksum, preservar JDK17/global e recusar sobrescrita.
-- [ ] T067 [US-109] RF-033: wrapper dedicado usa JDK21 preservando main/SHA/flock/conta/memoria/diagnosticos/contrato artifact.
+- [x] T066 [US-109] RF-032: fixar installer oficial Temurin21.0.12.1+1/checksum, preservar JDK17/global e recusar sobrescrita. Evidencia: checksum oficial aprovado pelo installer remoto, java-version21.0.12.1+1 confirmado; JDK17 preservado.
+- [x] T067 [US-109] RF-033: wrapper dedicado usa JDK21 preservando main/SHA/flock/conta/memoria/diagnosticos/contrato artifact. Evidencia: diff de uma linha no wrapper, contratos/sintaxe/rejeicao de comandos passaram; compilacao remota permanece em T069.
 - [ ] T068 [US-109] RF-034: testes de contrato/sintaxe/checks leves/review/CI e implantacao com hash/mode conferidos, sem secrets/logs brutos.
 - [ ] T069 [US-109] RF-035: build manual both/SSH na main integrada, artefatos/digests/CRC/notices/assinatura verificados; nao aprovar causa raiz, host integro ou gates assistivos/offline.
 
